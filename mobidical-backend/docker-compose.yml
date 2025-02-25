@@ -1,0 +1,115 @@
+services:
+# we need to define the containers(services) that our compose file will manage 
+# in our case we have 4 services: 
+# 1- migrate-generate : handle the generation of the database generation
+# 2- migrate-run : Applies the database migration
+# 3- app : the main application service 
+# 4- db : the postgreSQL database service
+  migrate:
+    build: 
+      context: .
+      # Add build caching
+      cache_from:
+        - node:latest
+    entrypoint: sh -c "echo TASK=${TASK}; npm run ${TASK}"
+    env_file:
+      - ./config/.env.${ENV}.local
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+    volumes:
+      - .:/app:delegated  # Use delegated for better performance
+      - /app/node_modules  # Anonymous volume for node_modules
+    # Add resource constraints
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Add build caching
+      cache_from:
+        - node:latest
+    command: npm run start:${ENV:-development}
+    env_file:
+      - ./config/.env.${ENV:-development}.local
+    volumes:
+      - .:/app:delegated  # Use delegated for better performance
+      - /app/node_modules
+      - npm-cache:/root/.npm  # Cache npm packages
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+    # Add resource constraints
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+    # Add healthcheck for app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  db:
+    container_name: postgres_${COMPOSE_PROJECT_NAME}
+    image: postgres:latest
+    env_file:
+      - ./config/.env.${ENV:-development}.local
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d  # For any initialization scripts
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Add PostgreSQL optimization settings
+    command: 
+      - "postgres"
+      - "-c"
+      - "max_connections=100"
+      - "-c"
+      - "shared_buffers=256MB"
+      - "-c"
+      - "effective_cache_size=768MB"
+      - "-c"
+      - "maintenance_work_mem=64MB"
+      - "-c"
+      - "checkpoint_completion_target=0.9"
+    # Add resource constraints
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+
+volumes:
+  db_data:
+    name: "${COMPOSE_PROJECT_NAME}_db_data"
+  npm-cache:  # Add volume for npm cache
+    name: "${COMPOSE_PROJECT_NAME}_npm_cache"
+
+networks:
+  app-network:
+    name: "${COMPOSE_PROJECT_NAME}_network"
+    driver: bridge
+    # Add network optimization
+    driver_opts:
+      com.docker.network.driver.mtu: 1450
