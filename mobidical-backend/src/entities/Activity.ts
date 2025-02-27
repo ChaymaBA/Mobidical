@@ -3,13 +3,13 @@ import { User } from "./User";
 @Entity("activities")
 export class Activity {
   @PrimaryGeneratedColumn()
-  Id!: number; // ID de l'activité, généré automatiquement
+  Id!: number; 
 
   @ManyToOne(() => User, (user) => user.activities)
-  Utilisateur!: User; // Relation avec l'entité User
+  Utilisateur!: User; 
 
   @Column({ type: "text", nullable: false })
-  description!: string; // Description de l'activité
+  description!: string; 
 
   participerActivite(): void {
     console.log(`${this.Utilisateur.username} participe à l'activité: ${this.description}.`);
