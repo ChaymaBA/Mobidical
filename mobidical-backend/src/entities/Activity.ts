@@ -12,6 +12,6 @@ export class Activity {
   description!: string; 
 
   participerActivite(): void {
-    console.log(`${this.Utilisateur.username} participe à l'activité: ${this.description}.`);
+    
   }
 }

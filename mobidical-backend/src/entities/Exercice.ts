@@ -20,6 +20,6 @@ export class Exercice {
   progression!: Progression;
   
   lancerExercice(): void {
-    console.log(`Lancement de l'exercice de type ${this.type} avec difficulté ${this.NiveauDeDifficulte}`);
+   
   }
 }

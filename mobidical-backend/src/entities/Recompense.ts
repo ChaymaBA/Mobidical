@@ -16,6 +16,6 @@ export class Recompense {
   progression!: Progression[]; 
 
   attribuerRecompense(): void {
-    console.log(`Récompense attribuée: ${this.Nom} nécessitant ${this.pointsNecessaires} points.`);
+    
   }
 }

@@ -20,6 +20,6 @@ export class Progression {
   recompense!: Recompense; 
 
   enregistrerProgression(): void {
-    console.log(`Progression enregistrée: Score ${this.score} obtenu le ${this.date}`);
+    
   }
 }

@@ -15,6 +15,6 @@ export class Feedback {
   note!: number;
 
   ajouterFeedback(): void {
-    console.log(`Feedback ajouté par ${this.user.username}: ${this.commentaire} avec une note de ${this.note}/10.`);
+   
   }
 }
