@@ -10,8 +10,7 @@ import { $styles } from "../theme"
 type Presets = "default" | "filled" | "reversed"
 
 // Props pour le bouton
-export interface ButtonProps extends PressableProps {
-    text?: string
+export interface ButtonProps extends PressableProps {git    text?: string
     style?: StyleProp<ViewStyle>
     pressedStyle?: StyleProp<ViewStyle>
     textStyle?: StyleProp<TextStyle>
