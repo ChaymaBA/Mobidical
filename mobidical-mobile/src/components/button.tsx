@@ -1,128 +1,44 @@
-import { ComponentType } from "react"
-import {
-    Pressable,
-    PressableProps,
-    PressableStateCallbackType,
-    StyleProp,
-    TextStyle,
-    ViewStyle,
-} from "react-native"
-import type { ThemedStyle, ThemedStyleArray } from "@/theme"
-import { $styles } from "../theme"
-import { Text, TextProps } from "./text"
+import React from "react"
+import { View, Text, StyleSheet } from "react-native"
+import { Pressable, PressableProps, PressableStateCallbackType, StyleProp, TextStyle, ViewStyle } from "react-native"
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
+import { NavigationContainer } from "@react-navigation/native"
 import { useAppTheme } from "@/utils/useAppTheme"
+import { $styles } from "../theme"
 
+// Type des presets pour les boutons
 type Presets = "default" | "filled" | "reversed"
 
-export interface ButtonAccessoryProps {
-    style: StyleProp<any>
-    pressableState: PressableStateCallbackType
-    disabled?: boolean
-}
-
+// Props pour le bouton
 export interface ButtonProps extends PressableProps {
-    /**
-     * Text which is looked up via i18n.
-     */
-    tx?: TextProps["tx"]
-    /**
-     * The text to display if not using `tx` or nested components.
-     */
-    text?: TextProps["text"]
-    /**
-     * Optional options to pass to i18n. Useful for interpolation
-     * as well as explicitly setting locale or translation fallbacks.
-     */
-    txOptions?: TextProps["txOptions"]
-    /**
-     * An optional style override useful for padding & margin.
-     */
+    text?: string
     style?: StyleProp<ViewStyle>
-    /**
-     * An optional style override for the "pressed" state.
-     */
     pressedStyle?: StyleProp<ViewStyle>
-    /**
-     * An optional style override for the button text.
-     */
     textStyle?: StyleProp<TextStyle>
-    /**
-     * An optional style override for the button text when in the "pressed" state.
-     */
     pressedTextStyle?: StyleProp<TextStyle>
-    /**
-     * An optional style override for the button text when in the "disabled" state.
-     */
     disabledTextStyle?: StyleProp<TextStyle>
-    /**
-     * One of the different types of button presets.
-     */
     preset?: Presets
-    /**
-     * An optional component to render on the right side of the text.
-     * Example: `RightAccessory={(props) => <View {...props} />}`
-     */
-    RightAccessory?: ComponentType<ButtonAccessoryProps>
-    /**
-     * An optional component to render on the left side of the text.
-     * Example: `LeftAccessory={(props) => <View {...props} />}`
-     */
-    LeftAccessory?: ComponentType<ButtonAccessoryProps>
-    /**
-     * Children components.
-     */
-    children?: React.ReactNode
-    /**
-     * disabled prop, accessed directly for declarative styling reasons.
-     * https://reactnative.dev/docs/pressable#disabled
-     */
     disabled?: boolean
-    /**
-     * An optional style override for the disabled state
-     */
-    disabledStyle?: StyleProp<ViewStyle>
+    onPress?: () => void
 }
 
-/**
- * A component that allows users to take actions and make choices.
- * Wraps the Text component with a Pressable component.
- * @see [Documentation and Examples]{@link https://docs.infinite.red/ignite-cli/boilerplate/app/components/Button/}
- * @param {ButtonProps} props - The props for the `Button` component.
- * @returns {JSX.Element} The rendered `Button` component.
- * @example
- * <Button
- *   tx="common:ok"
- *   style={styles.button}
- *   textStyle={styles.buttonText}
- *   onPress={handleButtonPress}
- * />
- */
+// Button Component
 export function Button(props: ButtonProps) {
     const {
-        tx,
         text,
-        txOptions,
         style: $viewStyleOverride,
         pressedStyle: $pressedViewStyleOverride,
         textStyle: $textStyleOverride,
         pressedTextStyle: $pressedTextStyleOverride,
         disabledTextStyle: $disabledTextStyleOverride,
-        children,
-        RightAccessory,
-        LeftAccessory,
         disabled,
-        disabledStyle: $disabledViewStyleOverride,
         ...rest
     } = props
 
     const { themed } = useAppTheme()
 
     const preset: Presets = props.preset ?? "default"
-    /**
-     * @param {PressableStateCallbackType} root0 - The root object containing the pressed state.
-     * @param {boolean} root0.pressed - The pressed state.
-     * @returns {StyleProp<ViewStyle>} The view style based on the pressed state.
-     */
+
     function $viewStyle({ pressed }: PressableStateCallbackType): StyleProp<ViewStyle> {
         return [
             themed($viewPresets[preset]),
@@ -131,11 +47,7 @@ export function Button(props: ButtonProps) {
             !!disabled && $disabledViewStyleOverride,
         ]
     }
-    /**
-     * @param {PressableStateCallbackType} root0 - The root object containing the pressed state.
-     * @param {boolean} root0.pressed - The pressed state.
-     * @returns {StyleProp<TextStyle>} The text style based on the pressed state.
-     */
+
     function $textStyle({ pressed }: PressableStateCallbackType): StyleProp<TextStyle> {
         return [
             themed($textPresets[preset]),
@@ -146,69 +58,21 @@ export function Button(props: ButtonProps) {
     }
 
     return (
-        <Pressable
-            style={$viewStyle}
-            accessibilityRole="button"
-            accessibilityState={{ disabled: !!disabled }}
-            {...rest}
-            disabled={disabled}
-        >
+        <Pressable style={$viewStyle} accessibilityRole="button" {...rest} disabled={disabled}>
             {(state) => (
                 <>
-                    {!!LeftAccessory && (
-                        <LeftAccessory style={$leftAccessoryStyle} pressableState={state} disabled={disabled} />
-                    )}
-
-                    <Text tx={tx} text={text} txOptions={txOptions} style={$textStyle(state)}>
-                        {children}
-                    </Text>
-
-                    {!!RightAccessory && (
-                        <RightAccessory
-                            style={$rightAccessoryStyle}
-                            pressableState={state}
-                            disabled={disabled}
-                        />
-                    )}
+                    <Text style={$textStyle(state)}>{text}</Text>
                 </>
             )}
         </Pressable>
     )
 }
 
-const $baseViewStyle: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-    minHeight: 56,
-    borderRadius: 4,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.sm,
-    overflow: "hidden",
-})
-
-const $baseTextStyle: ThemedStyle<TextStyle> = ({ typography }) => ({
-    fontSize: 16,
-    lineHeight: 20,
-    fontFamily: typography.primary.medium,
-    textAlign: "center",
-    flexShrink: 1,
-    flexGrow: 0,
-    zIndex: 2,
-})
-
-const $rightAccessoryStyle: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-    marginStart: spacing.xs,
-    zIndex: 1,
-})
-const $leftAccessoryStyle: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-    marginEnd: spacing.xs,
-    zIndex: 1,
-})
-
+// Style par défaut pour les vues et les textes du bouton
 const $viewPresets: Record<Presets, ThemedStyleArray<ViewStyle>> = {
     default: [
         $styles.row,
-        $baseViewStyle,
+        { minHeight: 56, borderRadius: 4, justifyContent: "center", alignItems: "center", paddingVertical: 8, paddingHorizontal: 16 },
         ({ colors }) => ({
             borderWidth: 1,
             borderColor: colors.palette.neutral400,
@@ -217,20 +81,20 @@ const $viewPresets: Record<Presets, ThemedStyleArray<ViewStyle>> = {
     ],
     filled: [
         $styles.row,
-        $baseViewStyle,
+        { minHeight: 56, borderRadius: 4, justifyContent: "center", alignItems: "center", paddingVertical: 8, paddingHorizontal: 16 },
         ({ colors }) => ({ backgroundColor: colors.palette.neutral300 }),
     ],
     reversed: [
         $styles.row,
-        $baseViewStyle,
+        { minHeight: 56, borderRadius: 4, justifyContent: "center", alignItems: "center", paddingVertical: 8, paddingHorizontal: 16 },
         ({ colors }) => ({ backgroundColor: colors.palette.neutral800 }),
     ],
 }
 
 const $textPresets: Record<Presets, ThemedStyleArray<TextStyle>> = {
-    default: [$baseTextStyle],
-    filled: [$baseTextStyle],
-    reversed: [$baseTextStyle, ({ colors }) => ({ color: colors.palette.neutral100 })],
+    default: [{ fontSize: 16, lineHeight: 20, textAlign: "center" }],
+    filled: [{ fontSize: 16, lineHeight: 20, textAlign: "center" }],
+    reversed: [{ fontSize: 16, lineHeight: 20, textAlign: "center", color: "#fff" }],
 }
 
 const $pressedViewPresets: Record<Presets, ThemedStyle<ViewStyle>> = {
@@ -244,3 +108,67 @@ const $pressedTextPresets: Record<Presets, ThemedStyle<ViewStyle>> = {
     filled: () => ({ opacity: 0.9 }),
     reversed: () => ({ opacity: 0.9 }),
 }
+
+// Tab Bar Component
+const Tab = createBottomTabNavigator()
+
+function HomeScreen() {
+    return (
+        <View style={styles.screenContainer}>
+            <Text style={styles.screenText}>Home Screen</Text>
+            <Button text="Go to Settings" preset="filled" onPress={() => { }} />
+        </View>
+    )
+}
+
+function SettingsScreen() {
+    return (
+        <View style={styles.screenContainer}>
+            <Text style={styles.screenText}>Settings Screen</Text>
+            <Button text="Go to Home" preset="reversed" onPress={() => { }} />
+        </View>
+    )
+}
+
+// Tab Navigation
+function TabBar() {
+    return (
+        <NavigationContainer>
+            <Tab.Navigator
+                screenOptions={{
+                    tabBarStyle: {
+                        backgroundColor: "#f8f8f8",
+                        borderTopWidth: 1,
+                        borderTopColor: "#ddd",
+                    },
+                    tabBarLabelStyle: {
+                        fontSize: 12,
+                        color: "#333",
+                    },
+                }}
+            >
+                <Tab.Screen name="Home" component={HomeScreen} />
+                <Tab.Screen name="Settings" component={SettingsScreen} />
+            </Tab.Navigator>
+        </NavigationContainer>
+    )
+}
+
+// App Component
+export default function App() {
+    return <TabBar />
+}
+
+// Styles
+const styles = StyleSheet.create({
+    screenContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#f5f5f5",
+    },
+    screenText: {
+        fontSize: 20,
+        marginBottom: 20,
+    },
+})
