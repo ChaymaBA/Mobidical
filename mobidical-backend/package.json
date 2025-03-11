@@ -5,8 +5,8 @@
   "scripts": {
     "build": "tsc",
     "start": "nodemon",
-    "start:development": "ENV_FILE=./config/.env.development.local npm run start",
-    "start:staging": "ENV_FILE=./config/env.staging.local npm run start",
+    "start:development": "set ENV_FILE=./config/.env.development.local && npm run start",
+    "start:staging": "set ENV_FILE=./config/env.staging.local && npm run start",
     "start:beta": "ENV_FILE=./config/.env.beta.local npm run start",
     "start:prod": "ENV_FILE=./config/env.production npm run start",
     "lint": "eslint 'src/**/*.{js,ts}' --fix",
@@ -30,7 +30,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "compression": "^1.7.5",
@@ -60,6 +60,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
+    "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",
