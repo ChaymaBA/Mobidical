@@ -1,20 +1,20 @@
 const palette = {
-    // Couleurs du fond vert
-    background100: "#4A8F3A",  // Vert clair
-    background200: "#2F6425",  // Vert foncé
+    // Couleurs du fond adaptées à l'image
+    background100: "#F5E1A6",  // Beige clair (couleur dominante de l'image)
+    background200: "#DCC48E",  // Beige plus foncé pour la variation
 
-    // Couleurs de la chouette
+    // coleur premieur 
     owl100: "#D29A61",    // Brun clair
     owl200: "#8B5A2B",    // Brun foncé
     owlBeak: "#F4B400",   // Jaune bec
     owlEye: "#FFD700",    // Jaune œil
     owlBook: "#357ABD",   // Bleu livre
 
-    // Couleurs du lion
+    // Couleurs secondaire 
     lion100: "#FFA726",   // Orange clair
     lion200: "#D84315",   // Orange foncé
     lionMane: "#A52A2A",  // Brun foncé crinière
-    lionBook: "#3775A4",  // Bleu livre
+    lionBook: "#3388C9FF",  // Bleu livre
     lionTongue: "#E57373", // Rose langue
 
     // Autres couleurs utiles

@@ -3,6 +3,7 @@ import { colors } from "./colors"
 import { spacing } from "./spacing"
 import { typography, customFontsToLoad } from "./typography"
 import { $styles } from "./styles"
+import { images } from "./images"
 
 /**
  * L'objet Theme contient toutes les informations nécessaires pour styliser l'application.
@@ -12,6 +13,7 @@ export interface Theme {
     spacing: typeof spacing // Définition des espacements pour les marges et les paddings.
     typography: typeof typography // Définition des styles de typographie.
     styles: typeof $styles // Styles globaux prédéfinis.
+    images : typeof images
 }
 
 /**
@@ -22,6 +24,7 @@ export const theme: Theme = {
     spacing, // Inclusion des espacements définis dans spacing.ts.
     typography, // Inclusion des styles typographiques définis dans typography.ts.
     styles: $styles, // Inclusion des styles globaux.
+    images // Inclusion des images
 }
 
 /**
@@ -77,7 +80,10 @@ export const useAppTheme = () => {
         } else if (Array.isArray(themedStyle)) {
             return themedStyle.map((style) => {
                 if (typeof style === "function") {
-                    return style(theme)
+                    if (typeof style === "function") {
+                        return style(theme)
+                    }
+                    return style
                 }
                 return style
             })
@@ -94,3 +100,4 @@ export { spacing }
 export { typography }
 export { customFontsToLoad }
 export { $styles }
+export { images}

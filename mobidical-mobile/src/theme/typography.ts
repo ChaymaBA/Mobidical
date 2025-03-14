@@ -19,7 +19,8 @@ export const customFontsToLoad = {
     spaceGroteskRegular,
     spaceGroteskMedium,
     spaceGroteskSemiBold,
-    spaceGroteskBold,
+        spaceGroteskBold
+    }
 
 const fonts = {
     spaceGrotesk: {

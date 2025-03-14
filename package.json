@@ -1,0 +1,30 @@
+{
+  "name": "mobidical",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dghama/Mobidical.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dghama/Mobidical/issues"
+  },
+  "homepage": "https://github.com/dghama/Mobidical#readme",
+  "description": "",
+  "dependencies": {
+    "@types/react-native": "^0.72.8",
+    "expo": "^52.0.37",
+    "react-native-keyboard-controller": "^1.16.7",
+    "react-native": "0.76.7"
+  },
+  "devDependencies": {
+    "@types/react": "~18.3.12",
+    "typescript": "^5.8.2"
+  }
+}
