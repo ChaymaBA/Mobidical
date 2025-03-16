@@ -41,6 +41,7 @@ export class AuthController {
         user: {
           id: result.user.id,
           username: result.user.username,
+          lastName: result.user.lastName,
           email: result.user.email
         },
         tokens: {
@@ -63,6 +64,7 @@ export class AuthController {
         user: {
           id: result.user.id,
           username: result.user.username,
+          lastName: result.user.lastName, 
           email: result.user.email
         },
         tokens: {
@@ -103,10 +105,88 @@ export class AuthController {
       res.json({
         id: user.id,
         username: user.username,
+        lastName: user.lastName,
         email: user.email
       });
     } catch (error) {
       this.handleError(res, error);
     }
   }
+
+  async updateProfile(req: Request, res: Response): Promise<void> {
+    try {
+      const user = req.user; // Assurez-vous que l'utilisateur est authentifié
+      if (!user) {
+        res.status(401).json({ message: 'Unauthorized' });
+        return;
+      }
+  
+      // Récupérer les données envoyées dans la requête (par exemple, nom, email, etc.)
+      const { username, email, lastName } = req.body;
+  
+      // Vérifier si de nouvelles données ont été fournies et mettre à jour l'utilisateur
+      const updatedUser = await this.authService.updateUserProfile(user.id, {
+        username, email, lastName
+      });
+  
+      res.json({
+        message: 'Profile updated successfully',
+        user: updatedUser
+      });
+    } catch (error) {
+      this.handleError(res, error);
+    }
+  }
+
+  
+  async deleteUser(req: Request, res: Response): Promise<void> {
+    try {
+      const user = req.user; // Assurez-vous que l'utilisateur est authentifié
+      if (!user) {
+        res.status(401).json({ message: 'Unauthorized' });
+        return;
+      }
+  
+      // Appeler le service pour supprimer l'utilisateur
+      await this.authService.deleteUser(user.id);
+  
+      res.json({
+        message: 'User deleted successfully'
+      });
+    } catch (error) {
+      this.handleError(res, error);
+    }
+  }
+  
+
+  async forgotPassword(req: Request, res: Response): Promise<void> {
+    try {
+      const { email } = req.body;
+      const result = await this.authService.forgotPassword(email);
+
+      res.json({
+        message: 'Reset password token sent successfully',
+        resetToken: result.resetToken
+      });
+    } catch (error) {
+      this.handleError(res, error);
+    }
+  }
+
+  async resetPassword(req: Request, res: Response): Promise<void> {
+    try {
+      const { resetToken, newPassword } = req.body;
+      await this.authService.resetPassword(resetToken, newPassword);
+
+      res.json({
+        message: 'Password reset successfully'
+      });
+    } catch (error) {
+      this.handleError(res, error);
+    }
+  }
+
 }
+
+
+

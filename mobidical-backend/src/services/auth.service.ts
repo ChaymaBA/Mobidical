@@ -66,4 +66,52 @@ export class AuthService {
 
     return { accessToken: newAccessToken };
   }
+
+
+  async updateUserProfile(userId: number, updateData: Partial<UserRegistration>): Promise<User> {
+    return this.userRepository.updateUser(userId, updateData);
+  }
+
+  async deleteUser(userId: number): Promise<void> {
+    return this.userRepository.deleteUser(userId);
+  }
+  
+
+  async forgotPassword(email: string): Promise<{ resetToken: string }> {
+    // Chercher l'utilisateur par email
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) {
+      throw new Error('Email not found');
+    }
+
+    // Générer un token de réinitialisation
+    const resetToken = TokenUtil.generateResetPasswordToken(user);
+
+    // Enregistrer le token dans la base de données (si nécessaire)
+    await this.userRepository.saveResetPasswordToken(user.id, resetToken);
+
+    return { resetToken };
+  }
+
+  // Méthode pour réinitialiser le mot de passe
+  async resetPassword(resetToken: string, newPassword: string): Promise<void> {
+    // Vérifier et valider le token
+    const payload = TokenUtil.verifyResetPasswordToken(resetToken);
+    if (!payload) {
+      throw new Error('Invalid reset token');
+    }
+
+    // Trouver l'utilisateur
+    const user = await this.userRepository.findByEmail(payload.email);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Hacher le nouveau mot de passe
+    const hashedPassword = await PasswordUtil.hashPassword(newPassword);
+
+    // Mettre à jour le mot de passe dans la base de données
+    await this.userRepository.updateUserPassword(user.id, hashedPassword);
+  }
+  
 }

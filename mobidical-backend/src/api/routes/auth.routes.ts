@@ -1,4 +1,4 @@
-import { UserRegistrationDto, UserLoginDto } from '@/dtos/auth.dto';
+import { UserRegistrationDto, UserLoginDto,ForgotPasswordDto, ResetPasswordDto } from '@/dtos/auth.dto';
 import express from 'express';
 import { AuthController } from '../controllers/auth.controller';
 import { AuthMiddleware } from '../middlewares/auth.middleware';
@@ -35,6 +35,33 @@ export function initAuthRoutes(authController: AuthController) {
     AuthMiddleware.authenticate,
     authController.getProfile.bind(authController)
   );
+
+  // Update profile route
+  authRoutes.put(
+    '/profile', 
+    AuthMiddleware.authenticate,
+  authController.updateProfile.bind(authController)
+); 
+
+// Delete profile route
+  authRoutes.delete(
+  '/profile',
+   AuthMiddleware.authenticate, 
+   authController.deleteUser.bind(authController)
+  ); 
+
+// Forgot password route
+  authRoutes.post(
+    '/forgot-password',
+    ValidationMiddleware.validate(ForgotPasswordDto),
+    authController.forgotPassword.bind(authController)
+  );
+
+authRoutes.post(
+  '/reset-password',
+  ValidationMiddleware.validate(ResetPasswordDto),
+  authController.resetPassword.bind(authController)
+);
 
   return authRoutes;
 }
