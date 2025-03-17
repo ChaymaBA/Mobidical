@@ -13,7 +13,7 @@ export interface Theme {
     spacing: typeof spacing // Définition des espacements pour les marges et les paddings.
     typography: typeof typography // Définition des styles de typographie.
     styles: typeof $styles // Styles globaux prédéfinis.
-    images : typeof images
+    images: typeof images // Images utilisées dans l'application.
 }
 
 /**
@@ -24,7 +24,7 @@ export const theme: Theme = {
     spacing, // Inclusion des espacements définis dans spacing.ts.
     typography, // Inclusion des styles typographiques définis dans typography.ts.
     styles: $styles, // Inclusion des styles globaux.
-    images // Inclusion des images
+    images, // Inclusion des images.
 }
 
 /**
@@ -78,15 +78,20 @@ export const useAppTheme = () => {
         if (typeof themedStyle === "function") {
             return themedStyle(theme)
         } else if (Array.isArray(themedStyle)) {
-            return themedStyle.map((style) => {
+            return themedStyle.flatMap<T | readonly T[]>((style) => {
+                if (style === null || style === undefined) return [] as T[];
                 if (typeof style === "function") {
-                    if (typeof style === "function") {
-                        return style(theme)
-                    }
-                    return style
+                    return [(style as ThemedStyle<T>)(theme)]
+                } else if (Array.isArray(style)) {
+                    return style.map((nestedStyle) => {
+                        if (typeof nestedStyle === "function") {
+                            return (nestedStyle as ThemedStyle<T>)(theme)
+                        }
+                        return nestedStyle
+                    }).filter((nestedStyle): nestedStyle is T => nestedStyle !== null && nestedStyle !== undefined)
                 }
-                return style
-            })
+                return [style] as T[]
+            }).filter((style): style is T => style !== null && style !== undefined)
         }
         return themedStyle as T
     }
@@ -100,4 +105,4 @@ export { spacing }
 export { typography }
 export { customFontsToLoad }
 export { $styles }
-export { images}
+export { images }

@@ -1,12 +1,9 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import ButtonTest from '../src/components/button'; // Vérifie le chemin
-import NomPrenomInput from '../src/components/text_input/nom&prenom'; // Vérifie le chemin
-import PasswordInput from '../src/components/text_input/password';
-import EmailTest from '../src/components/text_input/email';
-import PhoneNumberInput from '@/src/components/text_input/num';
-
-
+import TabNavigation from '../src/navigation/tabNavigation'; 
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+const Tab = createBottomTabNavigator();
 
 export default function Index() {
   return (
@@ -14,12 +11,9 @@ export default function Index() {
 
       {/* Ajout d'un titre */}
       <Text style={{ fontSize: 20, marginBottom: 20 }}>MOBIDICAL</Text>
-      <EmailTest/>
-      <PhoneNumberInput />
-      <NomPrenomInput />
-      <PasswordInput />
-      <ButtonTest />
-
+    <NavigationContainer>
+      <TabNavigation />
+    </NavigationContainer>
     </View> 
   );
 }
