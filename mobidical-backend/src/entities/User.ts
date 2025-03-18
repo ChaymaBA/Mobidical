@@ -1,7 +1,8 @@
 import * as Entities from "@/entities/";
 
 import { Column, Entity, Generated, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-
+import { Feedback } from "./Feedback";
+import { Activity } from "@/entities/";
 @Entity("users")
 export class User {
   @PrimaryGeneratedColumn()
@@ -31,4 +32,13 @@ export class User {
 
   @OneToMany(() => Entities.LoginAttempt, (loginAttempt) => loginAttempt.user)
   loginAttempts!: Entities.LoginAttempt[];
+
+  @OneToMany(() => Entities.Exercice, (exercice) => exercice.user)
+  exercices!: Entities.Exercice[];
+
+  @OneToMany(() => Feedback, (feedback) => feedback.user)
+  feedbacks!: Feedback[];
+
+  @OneToMany(() => Activity, (activity) => activity.Utilisateur)
+  activities!: Activity[];
 }

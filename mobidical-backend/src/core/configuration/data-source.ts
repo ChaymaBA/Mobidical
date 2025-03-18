@@ -1,4 +1,5 @@
 import { DataSource } from 'typeorm';
+console.log(process.env.POSTGRES_USER, process.env.POSTGRES_PASSWORD, process.env.POSTGRES_DB);
 
 export const AppDataSource = new DataSource({
   type: 'postgres',

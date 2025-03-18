@@ -31,10 +31,7 @@ export class UserRepository {
         username: userData.username,
         email: userData.email,
         password_hash: hashedPassword,
-        is_active: true,
-        organization: userData.organizationId 
-          ? { id: userData.organizationId } 
-          : undefined
+        is_active: true
       });
 
       return this.repository.save(user);
