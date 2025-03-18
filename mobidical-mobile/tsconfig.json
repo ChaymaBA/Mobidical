@@ -7,11 +7,14 @@
       "dom.iterable",
       "esnext"
     ],
+    "strict": true,
+    "paths": {
+      "@/*": ["./*"]
+    },
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "esnext",
@@ -28,8 +31,9 @@
     "node_modules/expo/jest.config.js"
   ],
   "include": [
-    "src/**/*",
+    "**/*.ts",
+    "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-  ]
+, "core/services", "hooks", "theme", "core/config", "i18n", "core/store", "constants/types", "core/utils", "core/models"  ]
 }
