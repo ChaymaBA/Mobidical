@@ -47,7 +47,7 @@ export default function RegisterScreen() {
         setLoading(false);
         return;
       }
-      await signUp(email, password, firstName, lastName);
+      await signUp(email, password);
       router.replace('/(tabs)');
     } catch (error) {
       console.error(error);
