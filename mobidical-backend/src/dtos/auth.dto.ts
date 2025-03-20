@@ -1,11 +1,11 @@
 import * as zod from 'zod';
-
+import { passwordRegex, usernameRegex} from '@/constants/regex';
 export const UserRegistrationDto = zod.object({
   username: zod
     .string()
     .min(3, 'Username must be at least 3 characters')
     .max(50, 'Username must be less than 50 characters')
-    .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'),
+    .regex(usernameRegex, 'Username can only contain letters, numbers, and underscores'),
 
   lastName: zod
     .string()
@@ -19,8 +19,7 @@ export const UserRegistrationDto = zod.object({
   password: zod
     .string()
     .min(8, 'Password must be at least 8 characters')
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, 
-      'Password must include uppercase, lowercase, number, and special character'),
+    .regex(passwordRegex, 'Password must include uppercase, lowercase, number, and special character'),
   
   organizationId: zod.number().optional()
 });

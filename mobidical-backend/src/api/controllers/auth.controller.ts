@@ -1,35 +1,10 @@
 import { UserRegistrationDto, UserLoginDto } from '@/dtos/auth.dto';
 import { AuthService } from '@/services/auth.service';
 import { Request, Response } from 'express';
-
+import { handleError } from '@/core/helpers/errorHandler';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  // Add error handling method
-  private handleError(res: Response, error: unknown): void {
-    console.error(error);
-
-    if (error instanceof Error) {
-      switch (error.message) {
-        case 'Email already exists':
-          res.status(409).json({ message: 'Email is already registered' });
-          break;
-        case 'Invalid credentials':
-          res.status(401).json({ message: 'Invalid email or password' });
-          break;
-        default:
-          res.status(500).json({ 
-            message: 'An unexpected error occurred',
-            error: error.message 
-          });
-      }
-    } else {
-      res.status(500).json({ 
-        message: 'An unexpected error occurred',
-        error: String(error)
-      });
-    }
-  }
 
   async register(req: Request, res: Response): Promise<void> {
     try {
@@ -50,7 +25,7 @@ export class AuthController {
         }
       });
     } catch (error) {
-      this.handleError(res, error);
+      handleError(res, error);
     }
   }
 
@@ -73,9 +48,11 @@ export class AuthController {
         }
       });
     } catch (error) {
-      this.handleError(res, error);
+      console.log("Error occurred during login:", error);
+      handleError(res, error);
     }
   }
+  
 
   async refreshToken(req: Request, res: Response): Promise<void> {
     try {
@@ -89,7 +66,7 @@ export class AuthController {
         }
       });
     } catch (error) {
-      this.handleError(res, error);
+      handleError(res, error);
     }
   }
 
@@ -109,7 +86,7 @@ export class AuthController {
         email: user.email
       });
     } catch (error) {
-      this.handleError(res, error);
+      handleError(res, error);
     }
   }
 
@@ -134,7 +111,7 @@ export class AuthController {
         user: updatedUser
       });
     } catch (error) {
-      this.handleError(res, error);
+      handleError(res, error);
     }
   }
 
@@ -154,7 +131,7 @@ export class AuthController {
         message: 'User deleted successfully'
       });
     } catch (error) {
-      this.handleError(res, error);
+      handleError(res, error);
     }
   }
   
@@ -169,7 +146,7 @@ export class AuthController {
         resetToken: result.resetToken
       });
     } catch (error) {
-      this.handleError(res, error);
+      handleError(res, error);
     }
   }
 
@@ -182,7 +159,7 @@ export class AuthController {
         message: 'Password reset successfully'
       });
     } catch (error) {
-      this.handleError(res, error);
+      handleError(res, error);
     }
   }
 
