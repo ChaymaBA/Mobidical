@@ -1,3 +1,4 @@
+import { colors } from '@/theme';
 import React, { ReactNode } from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
 
@@ -17,10 +18,10 @@ export const Card = ({ children, style, elevation = 2 }: CardProps) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: 'white',
+    backgroundColor: colors.palette.white,
     borderRadius: 12,
     padding: 16,
-    shadowColor: '#000',
+    shadowColor: colors.palette.black,
     shadowOffset: {
       width: 0,
       height: 2,

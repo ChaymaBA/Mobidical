@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Chrome as Home, User, Settings } from 'lucide-react-native';
+import { Chrome as Home, MessageCircle, Telescope, Gamepad2 as Gamepad, BrainCircuit } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -10,22 +10,29 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
+          title: 'Communication',
+          tabBarIcon: ({ color, size }) => <MessageCircle size={size} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="interaction"
         options={{
-          title: 'Profile',
-          tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
+          title: 'Interaction',
+          tabBarIcon: ({ color, size }) => <Telescope size={size} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="settings"
+        name="games"
         options={{
-          title: 'Settings',
-          tabBarIcon: ({ color, size }) => <Settings size={size} color={color} />,
+          title: 'Games',
+          tabBarIcon: ({ color, size }) => <Gamepad size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="moto_skills"
+        options={{
+          title: 'Moto Skills',
+          tabBarIcon: ({ color, size }) => <BrainCircuit size={size} color={color} />,
         }}
       />
     </Tabs>
