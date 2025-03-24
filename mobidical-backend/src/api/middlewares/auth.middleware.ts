@@ -9,6 +9,7 @@ declare global {
         id: number;
         email: string;
         username: string;
+        lastName: string;
       };
     }
   }
@@ -41,7 +42,8 @@ export class AuthMiddleware {
     req.user = {
       id: decoded.id,
       email: decoded.email,
-      username: decoded.username
+      username: decoded.username,
+      lastName: decoded.lastName
     };
     next();
   }

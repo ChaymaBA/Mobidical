@@ -29,6 +29,7 @@ export class UserRepository {
   
       const user = this.repository.create({
         username: userData.username,
+        lastName: userData.lastName,
         email: userData.email,
         password_hash: hashedPassword,
         is_active: true
@@ -39,7 +40,54 @@ export class UserRepository {
 
   async updateLastLogin(userId: number): Promise<void> {
     await this.repository.update(userId, { 
+      lastLogin: new Date() 
       // You could add a last_login_at column to track this
     });
   }
+
+  async updateUser(userId: number, updateData: Partial<UserRegistration>): Promise<User> {
+    // Trouver l'utilisateur
+    const user = await this.repository.findOne({ where: { id: userId } });
+  
+    if (!user) {
+      throw new Error('User not found');
+    }
+  
+    // Appliquer les nouvelles valeurs à l'objet `user`
+    Object.assign(user, updateData);
+  
+    // Sauvegarder les modifications
+    return this.repository.save(user);
+  }
+  
+  
+  async deleteUser(userId: number): Promise<void> {
+    const result = await this.repository.delete(userId);
+    
+    if (result.affected === 0) {
+      throw new Error('User not found');
+    }
+  }
+
+  // Nouvelle méthode pour enregistrer un token de réinitialisation du mot de passe
+  async saveResetPasswordToken(userId: number, token: string): Promise<void> {
+    const user = await this.repository.findOne({ where: { id: userId } });
+    
+    if (user) {
+      user.resetPasswordToken = token;
+      user.resetPasswordTokenExpiry = new Date(Date.now() + 3600000); // Token valide pendant 1 heure
+      await this.repository.save(user);
+    }
+  }
+
+  // Nouvelle méthode pour mettre à jour le mot de passe de l'utilisateur
+  async updateUserPassword(userId: number, newPassword: string): Promise<void> {
+    const user = await this.repository.findOne({ where: { id: userId } });
+    
+    if (user) {
+      user.password_hash = await PasswordUtil.hashPassword(newPassword); // Hacher le mot de passe avant de l'enregistrer
+      await this.repository.save(user);
+    }
+  }
+  
 }

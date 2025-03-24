@@ -12,6 +12,9 @@ export class User {
   @Column({ unique: true, nullable: false })
   username!: string;
 
+  @Column({ nullable: false })
+  lastName!: string;
+
   @Column({ unique: true, nullable: false })
   email!: string;
 
@@ -23,6 +26,15 @@ export class User {
 
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP", nullable: false })
   created_at!: Date;
+
+  @Column({ type: 'timestamp',default: () => "CURRENT_TIMESTAMP", nullable: true })
+  lastLogin?: Date;
+
+  @Column({ type: 'text', nullable: true, default: null  })
+  resetPasswordToken!: string | null;
+
+  @Column({ type: 'timestamp', nullable: true, default: null  })
+  resetPasswordTokenExpiry!: Date | null;
 
   @OneToMany(() => Entities.UserSession, (userSession) => userSession.user)
   sessions!: Entities.UserSession[];

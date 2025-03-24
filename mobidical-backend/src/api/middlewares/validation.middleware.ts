@@ -9,6 +9,7 @@ declare global {
         id: number;
         email: string;
         username: string;
+        lastName: string;
       };
     }
   }
