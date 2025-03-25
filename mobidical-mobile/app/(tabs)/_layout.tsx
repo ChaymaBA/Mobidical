@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { MessageCircle, Telescope, Gamepad2 as Gamepad, BrainCircuit, Settings, User } from 'lucide-react-native';
-import { TouchableOpacity, ImageBackground, StyleSheet } from 'react-native';
+import { TouchableOpacity, ImageBackground, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router'; // Importer router pour la navigation
 
 export default function TabLayout() {
@@ -24,21 +24,21 @@ export default function TabLayout() {
       <Tabs
         screenOptions={{
           headerShown: true,
-          tabBarActiveTintColor: '#434344FF',
-          headerStyle: { backgroundColor: 'transparent' }, // En-tête transparent
+          tabBarActiveTintColor: '#222223FF',
+          headerStyle: { backgroundColor: 'transparent' },
           tabBarStyle: {
-            backgroundColor: 'rgba(0, 0, 0, 0.5)', // Barre d'onglets semi-transparente
+            backgroundColor: '#fff',
             borderTopWidth: 0,
           },
-          headerLeft: () => (
-            <TouchableOpacity onPress={handleProfilePress} style={{ marginLeft: 15 }}>
-              <User size={24} color="#434344FF" />
-            </TouchableOpacity>
-          ),
           headerRight: () => (
-            <TouchableOpacity onPress={handleSettingsPress} style={{ marginRight: 15 }}>
-              <Settings size={24} color="#007AFF" />
-            </TouchableOpacity>
+            <View style={{ flexDirection: 'row', marginRight: 15 }}>
+              <TouchableOpacity onPress={handleProfilePress} style={{ marginRight: 20 }}>
+                <User size={24} color="#1F1F1FFF" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleSettingsPress}>
+                <Settings size={24} color="#1F1F1FFF" />
+              </TouchableOpacity>
+            </View>
           ),
         }}
       >

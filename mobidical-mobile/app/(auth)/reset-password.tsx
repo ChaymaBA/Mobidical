@@ -21,10 +21,9 @@ export default function ResetPasswordScreen() {
 
   return (
     <ImageBackground
-      source={require('@/assets/images/home.png')} // Image de fond
+      source={require('@/assets/images/home.png')}
       style={styles.background}
     >
-      {/* En-tête avec le logo et le titre de l'application */}
       <View style={styles.header}>
         <Text style={styles.appName}>MOBIDICAL</Text>
         <Image source={require('@/assets/images/app_logo.png')} style={styles.logo} />
@@ -35,14 +34,24 @@ export default function ResetPasswordScreen() {
         <Text style={styles.description}>
           Enter your email address and we'll send you instructions to reset your password.
         </Text>
-        <TextInput
-          label="Email"
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-          keyboardType="email-address"
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            style={styles.input}
+          />
+        </View>
+
+        <Button
+          title="Reset Password"
+          onPress={handleResetPassword}
+          style={styles.button}
         />
-        <Button title="Reset Password" onPress={handleResetPassword} style={styles.button} />
+
         <Link href="/login" style={styles.link}>
           <Text>Back to Sign In</Text>
         </Link>
@@ -85,8 +94,7 @@ const styles = StyleSheet.create({
     width: '90%',
     padding: 20,
     borderRadius: 10,
-  
-    marginTop: 150, 
+    marginTop: 150,
   },
   title: {
     fontSize: 24,
@@ -100,9 +108,30 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     color: '#666',
   },
+  inputContainer: {
+    width: '100%',
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 5,
+    color: '#000000',
+  },
+  input: {
+    width: '100%',
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#000000', // Bordure noire
+    borderRadius: 8,
+    paddingHorizontal: 15,
+  },
   button: {
     marginTop: 20,
     width: '100%',
+    backgroundColor: '#000000', // Bouton noir
+    borderRadius: 8,
+    paddingVertical: 15,
   },
   link: {
     marginTop: 20,

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert, ImageBackground, Image, SafeAreaView } from 'react-native';
+import { View, StyleSheet, ImageBackground, Image, SafeAreaView, TouchableOpacity } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useAuth } from '@/navigation/AuthContext';
 import { TextInput } from '@/components/TextInput';
 import { Button } from '@/components/Button';
 import { Text } from '@/components/CustomText';
+import { Eye, EyeOff } from 'lucide-react-native';
 
 export default function RegisterScreen() {
   const [firstName, setFirstName] = useState('');
@@ -12,41 +13,91 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
 
-  const validateInputs = () => {
-    if (!firstName || !lastName || !email || !password || !confirmPassword) {
-      setError('All fields are required');
-      return false;
-    }
-    if (!email.includes('@') || !email.includes('.') || email.includes(' ')) {
-      setError('Please enter a valid email address');
-      return false;
-    }
+  const validateEmail = (email: string) => {
+    if (!email) return 'Email is required';
+    if (email.includes(' ')) return 'Remove spaces from email';
+    if (!email.includes('@')) return 'Email must include @';
+
+    const atIndex = email.indexOf('@');
+    const dotIndex = email.indexOf('.', atIndex);
+    if (dotIndex === -1) return 'Add a period (.) after domain';
+
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!re.test(email)) return 'Enter a valid email address';
+
+    return '';
+  };
+
+  const validatePassword = (password: string) => {
+    const errors = [];
+    if (password.length < 8) errors.push('At least 8 characters');
+    if (!/[a-z]/.test(password)) errors.push('1 lowercase letter');
+    if (!/[A-Z]/.test(password)) errors.push('1 uppercase letter');
+    if (!/\d/.test(password)) errors.push('1 number');
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) errors.push('1 special character');
+
+    return errors.length > 0 ? errors.join(', ') : '';
+  };
+
+  const validateConfirmPassword = (confirmPassword: string) => {
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return false;
+      return 'Passwords do not match';
     }
-    const hasUppercase = /[A-Z]/.test(password);
-    const hasLowercase = /[a-z]/.test(password);
-    const hasNumber = /[0-9]/.test(password);
-    if (!hasUppercase || !hasLowercase || !hasNumber) {
-      setError('Password must contain at least one uppercase letter, one lowercase letter, and one number');
-      return false;
-    }
-    return true;
+    return '';
+  };
+
+  const handleFirstNameChange = (text: string) => {
+    setFirstName(text);
+    setError('');
+  };
+
+  const handleLastNameChange = (text: string) => {
+    setLastName(text);
+    setError('');
+  };
+
+  const handleEmailChange = (text: string) => {
+    setEmail(text);
+    setEmailError(validateEmail(text));
+    setError('');
+  };
+
+  const handlePasswordChange = (text: string) => {
+    setPassword(text);
+    setPasswordError(validatePassword(text));
+    setError('');
+  };
+
+  const handleConfirmPasswordChange = (text: string) => {
+    setConfirmPassword(text);
+    setConfirmPasswordError(validateConfirmPassword(text));
+    setError('');
   };
 
   const handleRegister = async () => {
+    const emailValidation = validateEmail(email);
+    const passwordValidation = validatePassword(password);
+    const confirmPasswordValidation = validateConfirmPassword(confirmPassword);
+
+    setEmailError(emailValidation);
+    setPasswordError(passwordValidation);
+    setConfirmPasswordError(confirmPasswordValidation);
+
+    if (emailValidation || passwordValidation || confirmPasswordValidation || !firstName || !lastName) {
+      return;
+    }
+
+    setLoading(true);
     try {
-      setError('');
-      setLoading(true);
-      if (!validateInputs()) {
-        setLoading(false);
-        return;
-      }
       await signUp(email, password);
       router.replace('/(tabs)');
     } catch (error) {
@@ -63,11 +114,10 @@ export default function RegisterScreen() {
       style={styles.backgroundImage}
     >
       <SafeAreaView style={styles.safeArea}>
-        {/* Header avec logo et nom de l'application */}
         <View style={styles.header}>
           <Text style={styles.appName}>MOBIDICAL</Text>
           <Image
-            source={require('../../assets/images/app_logo.png')} 
+            source={require('../../assets/images/app_logo.png')}
             style={styles.logo}
           />
         </View>
@@ -77,56 +127,71 @@ export default function RegisterScreen() {
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-          <TextInput
-            label="First Name"
-            value={firstName}
-            onChangeText={(text) => {
-              setFirstName(text);
-              setError('');
-            }}
-            autoCapitalize="words"
-          />
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>First Name</Text>
+            <TextInput
+              value={firstName}
+              onChangeText={handleFirstNameChange}
+              autoCapitalize="words"
+              style={styles.inputField}
+            />
+          </View>
 
-          <TextInput
-            label="Last Name"
-            value={lastName}
-            onChangeText={(text) => {
-              setLastName(text);
-              setError('');
-            }}
-            autoCapitalize="words"
-          />
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Last Name</Text>
+            <TextInput
+              value={lastName}
+              onChangeText={handleLastNameChange}
+              autoCapitalize="words"
+              style={styles.inputField}
+            />
+          </View>
 
-          <TextInput
-            label="Email"
-            value={email}
-            onChangeText={(text) => {
-              setEmail(text);
-              setError('');
-            }}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Email</Text>
+            <TextInput
+              value={email}
+              onChangeText={handleEmailChange}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              style={styles.inputField}
+            />
+            {emailError ? <Text style={styles.validationError}>{emailError}</Text> : null}
+          </View>
 
-          <TextInput
-            label="Password"
-            value={password}
-            onChangeText={(text) => {
-              setPassword(text);
-              setError('');
-            }}
-            secureTextEntry
-          />
+          <View style={styles.passwordContainer}>
+            <Text style={styles.inputLabel}>Password</Text>
+            <TextInput
+              value={password}
+              onChangeText={handlePasswordChange}
+              secureTextEntry={!showPassword}
+              style={styles.inputField}
+            />
+            <TouchableOpacity
+              style={styles.eyeIcon}
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <EyeOff size={20} color="#666" /> : <Eye size={20} color="#666" />}
+            </TouchableOpacity>
+            {passwordError ? <Text style={styles.validationError}>Password needs: {passwordError}</Text> : null}
+          </View>
 
-          <TextInput
-            label="Confirm Password"
-            value={confirmPassword}
-            onChangeText={(text) => {
-              setConfirmPassword(text);
-              setError('');
-            }}
-            secureTextEntry
-          />
+          <View style={styles.passwordContainer}>
+            <Text style={styles.inputLabel}>Confirm Password</Text>
+            <TextInput
+              value={confirmPassword}
+              onChangeText={handleConfirmPasswordChange}
+              secureTextEntry={!showConfirmPassword}
+              style={styles.inputField}
+            />
+            <TouchableOpacity
+              style={styles.eyeIcon}
+              onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+            >
+              {showConfirmPassword ? <EyeOff size={20} color="#666" /> : <Eye size={20} color="#666" />}
+            </TouchableOpacity>
+            {confirmPasswordError ? <Text style={styles.validationError}>{confirmPasswordError}</Text> : null}
+          </View>
 
           <Button
             title={loading ? "Creating Account..." : "Sign Up"}
@@ -159,13 +224,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 10,
-  
   },
   appName: {
     fontSize: 20,
     fontWeight: 'bold',
     flex: 1,
     textAlign: 'center',
+    color: '#000',
   },
   logo: {
     width: 40,
@@ -176,28 +241,63 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'center',
-  
     margin: 20,
     borderRadius: 10,
+
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#000000',
+    color: '#000',
     textAlign: 'center',
     marginBottom: 30,
   },
+  inputContainer: {
+    marginBottom: 15,
+    width: '100%',
+  },
+  inputLabel: {
+    marginBottom: 5,
+    fontSize: 16,
+    color: '#000', // Couleur du texte du label
+    fontWeight: '500',
+  },
+  inputField: {
+    borderWidth: 1,
+    borderColor: '#000', // Bordure noire
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+  },
+  passwordContainer: {
+    position: 'relative',
+    marginBottom: 15,
+    width: '100%',
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 15,
+    top: 40,
+  },
   button: {
     marginTop: 20,
+    backgroundColor: '#000', // Bouton noir
+    paddingVertical: 15,
+    borderRadius: 8,
   },
   link: {
     alignItems: 'center',
-    color:'#000000'
-  
+    marginTop: 20,
   },
   errorText: {
     color: 'red',
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 15,
+    fontSize: 14,
+  },
+  validationError: {
+    color: 'red',
+    fontSize: 12,
+    marginTop: 5,
   },
 });

@@ -6,9 +6,8 @@ const palette = {
     // coleur premieur 
     owl100: "#D29A61",    // Brun clair
     owl200: "#8B5A2B",    // Brun foncé
-    owlBeak: "#F4B400",   // Jaune bec
-    owlEye: "#FFD700",    // Jaune œil
     owlBook: "#357ABD",   // Bleu livre
+    owlBeak: "#FFCC00",   // Jaune bec
 
     // Couleurs secondaire 
     lion100: "#FFA726",   // Orange clair
@@ -55,13 +54,7 @@ export const colors = {
      * Couleur de la bordure par défaut.
      */
     border: palette.border,
-    /**
-     * Couleur principale utilisée pour les éléments interactifs.
-     */
-    primary: palette.owl200,
-    /**
-     * Couleur secondaire.
-     */
+ 
     secondary: palette.lion100,
     /**
      * Couleur d'accentuation.
