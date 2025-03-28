@@ -1,5 +1,6 @@
 import { TokenUtil } from '@/core/utils/jwt.utils';
 import { Request, Response, NextFunction } from 'express';
+import { UserRole } from '@/types/enum.type';
 
 // Extend Request type to include user property (same as in validation middleware)
 declare global {
@@ -10,6 +11,7 @@ declare global {
         email: string;
         username: string;
         lastName: string;
+        UserRole: UserRole;
       };
     }
   }
@@ -43,7 +45,8 @@ export class AuthMiddleware {
       id: decoded.id,
       email: decoded.email,
       username: decoded.username,
-      lastName: decoded.lastName
+      lastName: decoded.lastName,
+      UserRole: decoded.role
     };
     next();
   }

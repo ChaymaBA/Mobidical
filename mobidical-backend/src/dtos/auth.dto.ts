@@ -1,11 +1,12 @@
 import * as zod from 'zod';
-import { passwordRegex, usernameRegex} from '@/constants/regex';
+import { PASSWORD_REGEX, USER_NAME_REGEX} from '@/constants/regex.constants';
+import { UserRole } from '@/types/enum.type';
 export const UserRegistrationDto = zod.object({
   username: zod
     .string()
     .min(3, 'Username must be at least 3 characters')
     .max(50, 'Username must be less than 50 characters')
-    .regex(usernameRegex, 'Username can only contain letters, numbers, and underscores'),
+    .regex(USER_NAME_REGEX, 'Username can only contain letters, numbers, and underscores'),
 
   lastName: zod
     .string()
@@ -19,7 +20,12 @@ export const UserRegistrationDto = zod.object({
   password: zod
     .string()
     .min(8, 'Password must be at least 8 characters')
-    .regex(passwordRegex, 'Password must include uppercase, lowercase, number, and special character'),
+    .regex(PASSWORD_REGEX, 'Password must include uppercase, lowercase, number, and special character'),
+
+  role: zod.string()
+    .pipe(zod.nativeEnum(UserRole))
+    .optional()
+    .default(UserRole.USER),
   
   organizationId: zod.number().optional()
 });
@@ -32,7 +38,7 @@ export const ForgotPasswordDto = zod.object({
 export const ResetPasswordDto = zod.object({
   resetToken: zod.string().min(1, 'Reset token is required'),
   newPassword: zod.string().min(8, 'Password must be at least 8 characters')
-  .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, 
+  .regex(PASSWORD_REGEX, 
     'Password must include uppercase, lowercase, number, and special character')
 });
 

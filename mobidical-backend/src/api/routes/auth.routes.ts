@@ -4,6 +4,7 @@ import { AuthController } from '../controllers/auth.controller';
 import { AuthMiddleware } from '../middlewares/auth.middleware';
 import { ValidationMiddleware } from '../middlewares/validation.middleware';
 import { AUTH_ROUTES } from '@/constants/routes.constants';
+import { UserRole } from '@/types/enum.type';
 
 export const authRoutes = express.Router();
 
@@ -33,7 +34,9 @@ export function initAuthRoutes(authController: AuthController) {
   authRoutes.get(
     AUTH_ROUTES.PROFILE,
     AuthMiddleware.authenticate,
+    AuthMiddleware.requireRole([UserRole.ADMIN]),
     authController.getProfile.bind(authController)
+    
   );
 
   // Update profile route

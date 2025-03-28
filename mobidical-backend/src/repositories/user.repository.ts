@@ -2,7 +2,7 @@ import { PasswordUtil } from '@/core/utils/password.utils';
 import { UserRegistration } from '@/dtos/auth.dto';
 import { User } from '@/entities';
 import { Repository, DataSource } from 'typeorm';
-
+import { UserRole } from '@/types/enum.type';
 
 export class UserRepository {
   private repository: Repository<User>;
@@ -32,7 +32,8 @@ export class UserRepository {
         lastName: userData.lastName,
         email: userData.email,
         password_hash: hashedPassword,
-        is_active: true
+        is_active: true,
+        role: UserRole.USER
       });
 
       return this.repository.save(user);
