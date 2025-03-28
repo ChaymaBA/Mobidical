@@ -1,19 +1,15 @@
 import { AuthProvider, useAuth } from '@/navigation/AuthContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Stack, useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator } from 'react-native';
 import { useEffect, useState } from 'react';
-import { KeyboardProvider } from "react-native-keyboard-controller"
 
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <KeyboardProvider>
       <AuthProvider>
         <RootNavigation />
       </AuthProvider>
-      </KeyboardProvider>
     </GestureHandlerRootView>
   );
 }
