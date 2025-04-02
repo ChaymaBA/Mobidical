@@ -3,6 +3,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Stack, useRouter } from 'expo-router';
 import { View, ActivityIndicator } from 'react-native';
 import { useEffect, useState } from 'react';
+import { colors } from '@/theme/colors';
 
 export default function RootLayout() {
   return (
@@ -45,9 +46,13 @@ function RootNavigation() {
             right: 0,
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: '#fff',
-          }}>
-          <ActivityIndicator size="large" color="#007AFF" />
+            backgroundColor: colors.palette.white 
+          }}
+        >
+          <ActivityIndicator
+            size="large"
+            color={colors.palette.owlBook} 
+          />
         </View>
       )}
     </>

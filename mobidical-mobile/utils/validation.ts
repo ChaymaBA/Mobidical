@@ -1,35 +1,27 @@
-export const loginValidationRules = {
-    email: {
-        required: 'Email is required',
-        pattern: {
-            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-            message: 'Invalid email format',
-        },
-    },
-    password: {
-        required: 'Password is required',
-        minLength: {
-            value: 8,
-            message: 'Password must be at least 8 characters',
-        },
-        validate: {
-            hasNumber: (value: string) => /[0-9]/.test(value) || 'Must contain at least one number',
-            hasUpperCase: (value: string) => /[A-Z]/.test(value) || 'Must contain at least one uppercase letter',
-            hasSpecialChar: (value: string) => /[!@#$%^&*]/.test(value) || 'Must contain at least one special character',
-        },
-    },
+// utils/validationUtils.ts
+
+export const validateEmail = (email: string) => {
+    if (!email) return 'Email is required';
+    if (email.includes(' ')) return 'Remove spaces from email';
+    if (!email.includes('@')) return 'Email must include @';
+
+    const atIndex = email.indexOf('@');
+    const dotIndex = email.indexOf('.', atIndex);
+    if (dotIndex === -1) return 'Add a period (.) after domain';
+
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!re.test(email)) return 'Enter a valid email address';
+
+    return '';
 };
 
-// Option Yup
-import * as yup from 'yup';
+export const validatePassword = (password: string) => {
+    const errors = [];
+    if (password.length < 8) errors.push('At least 8 characters');
+    if (!/[a-z]/.test(password)) errors.push('1 lowercase letter');
+    if (!/[A-Z]/.test(password)) errors.push('1 uppercase letter');
+    if (!/\d/.test(password)) errors.push('1 number');
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) errors.push('1 special character');
 
-export const loginSchema = yup.object().shape({
-    email: yup.string().email('Invalid email format').required('Email is required'),
-    password: yup
-        .string()
-        .min(8, 'Password must be at least 8 characters')
-        .matches(/[0-9]/, 'Password must contain a number')
-        .matches(/[A-Z]/, 'Password must contain an uppercase letter')
-        .matches(/[!@#$%^&*]/, 'Password must contain a special character')
-        .required('Password is required'),
-});
+    return errors.length > 0 ? errors.join(', ') : '';
+};
