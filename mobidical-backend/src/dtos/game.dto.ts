@@ -23,7 +23,18 @@ export const GameCreateDto = zod.object({
     .max(500, 'Description must be less than 500 characters')
     .optional(),  // La description est optionnelle
 
-  userId: zod.number().min(1, 'User ID must be a valid number')  // L'ID de l'utilisateur associé
+  userId: zod.number().min(1, 'User ID must be a valid number'), // L'ID de l'utilisateur associé
+  progressionId: zod.number().min(1, 'Progression ID must be a valid number'), // L'ID de la progression associée
+  pieces: zod
+    .array(
+      zod.object({
+        imageUrl: zod.string(),
+        positionX: zod.number(),
+        positionY: zod.number(),
+      })
+    )
+    .optional(), // Les pièces sont optionnelles
+
 });
 
 // DTO pour la mise à jour d'un jeu

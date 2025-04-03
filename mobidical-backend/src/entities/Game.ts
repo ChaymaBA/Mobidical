@@ -25,6 +25,9 @@ export class Game {
   @ManyToOne(() => Progression, (progression) => progression.game)
   progression!: Progression;
   
+  @Column({ type: "json", nullable: false })
+  pieces!: { imageUrl: string; positionX: number; positionY: number }[];
+
   lancerGame(): void {
     // Implémentation de la logique de lancement du jeu
   }
