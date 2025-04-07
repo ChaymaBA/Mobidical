@@ -6,6 +6,22 @@ import { initializeRoutes } from "./api/routes";
 
 import { AppDataSource } from './core/configuration/data-source';
 import helmet from "helmet";
+
+import { UserRole } from '@/types/enum.type';
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: number;
+        email: string;
+        username: string;
+        lastName: string;
+        role: UserRole;
+      };
+    }
+  }
+}
 // Load environment-specific .env file
 dotenv.config({ path: process.env.ENV_FILE || '.env' });
 

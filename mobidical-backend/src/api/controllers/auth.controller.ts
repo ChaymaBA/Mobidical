@@ -86,7 +86,7 @@ export class AuthController {
         username: user.username,
         lastName: user.lastName,
         email: user.email,
-        role: user.UserRole
+        role: user.role
       });
     } catch (error) {
       handleError(res, error);

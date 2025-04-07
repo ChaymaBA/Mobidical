@@ -11,7 +11,7 @@ declare global {
         email: string;
         username: string;
         lastName: string;
-        UserRole: UserRole;
+        role: UserRole;
       };
     }
   }
@@ -46,22 +46,42 @@ export class AuthMiddleware {
       email: decoded.email,
       username: decoded.username,
       lastName: decoded.lastName,
-      UserRole: decoded.role
+      role: decoded.role
     };
     next();
   }
 
   // Optional: Role-based authorization
-  static requireRole(roles: string[]) {
+  static requireRole(requiredRole: UserRole) {
     return (req: Request, res: Response, next: NextFunction) => {
       if (!req.user) {
         res.status(401).json({ message: 'Unauthorized' });
         return;
       }
 
-      // Future implementation for role-based access
-      // Requires adding roles to your User entity and token payload
+      if (req.user.role !== requiredRole) {
+        res.status(403).json({ 
+          message: `Role ${requiredRole} required` 
+        });
+        return;
+      }
+
       next();
     };
   }
-}
+
+  static isOwnerOrAdmin(paramKey = 'id') {
+    return (req: Request, res: Response, next: NextFunction) => {
+      const resourceId = parseInt(req.params[paramKey]);
+      
+      if (req.user?.role === UserRole.ADMIN) return next();
+      if (req.user?.id === resourceId) return next();
+
+      res.status(403).json({ message: 'Unauthorized operation' });
+    };
+  }
+      // Future implementation for role-based access
+      // Requires adding roles to your User entity and token payload
+      
+    };
+  

@@ -11,7 +11,7 @@ declare global {
         email: string;
         username: string;
         lastName: string;
-        UserRole: UserRole;
+        role: UserRole;
       };
     }
   }

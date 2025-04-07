@@ -1,10 +1,11 @@
 import * as Entities from "@/entities/";
-import { Game } from "@/entities/Game"; // Vérifie l'importation correcte de "Game"
+import { Exercice } from "@/entities/Exercice"; 
 import { Column, Entity, Generated, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Feedback } from "./Feedback";
 import { Activity } from "@/entities/";
-import { UserRole } from "@/types/enum.type"; // Vérifie l'importation correcte de "UserRole"
-
+import { UserRole,  UserRoleType } from "@/types/enum.type"; 
+import { Children } from "@/entities/Children";
+import { ProgressReport } from "@/entities/Progress_Report";
 @Entity("users")
 export class User {
   @PrimaryGeneratedColumn()
@@ -31,6 +32,14 @@ export class User {
   })
   role!: UserRole;
 
+  @Column({
+    type: "enum",
+    enum:  UserRoleType,
+    default:  UserRoleType, // Valeur par défaut
+    nullable: false,
+  })
+  role_type!: UserRoleType;
+
   @Column({ default: false, nullable: false })
   is_active!: boolean;
 
@@ -55,12 +64,18 @@ export class User {
   @OneToMany(() => Entities.LoginAttempt, (loginAttempt) => loginAttempt.user)
   loginAttempts!: Entities.LoginAttempt[];
 
-  @OneToMany(() => Game, (game) => game.user) // Corrigé la relation "games"
-  games!: Game[]; // Corrigé le type ici aussi
+  @OneToMany(() => Exercice, (exercice) => exercice.user)
+  exercices!: Exercice[]; 
 
   @OneToMany(() => Feedback, (feedback) => feedback.user)
   feedbacks!: Feedback[];
 
   @OneToMany(() => Activity, (activity) => activity.Utilisateur)
   activities!: Activity[];
+
+  @OneToMany(() => Children, (children) => children.parent)
+  children!: Children[];
+
+  @OneToMany(() => ProgressReport, (progressReport) => progressReport.user)
+  progressReports!: ProgressReport[];
 }
