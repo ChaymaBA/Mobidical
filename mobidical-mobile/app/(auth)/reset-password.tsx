@@ -6,6 +6,7 @@ import { TextInput } from '@/components/TextInput';
 import { Button } from '@/components/Button';
 import { Text } from '@/components/CustomText';
 import { passwordScreenStyles } from '@/utils/styles';
+import { images } from '@/theme';
 
 export default function ResetPasswordScreen() {
   const [email, setEmail] = useState('');
@@ -22,13 +23,13 @@ export default function ResetPasswordScreen() {
 
   return (
     <ImageBackground
-      source={require('@/assets/images/home.png')}
+      source={images.home}
       style={passwordScreenStyles.background}
     >
       <View style={passwordScreenStyles.header}>
         <Text style={passwordScreenStyles.appName}>MOBIDICAL</Text>
         <Image
-          source={require('@/assets/images/app_logo.png')}
+          source={images.a}
           style={passwordScreenStyles.logo}
         />
       </View>
