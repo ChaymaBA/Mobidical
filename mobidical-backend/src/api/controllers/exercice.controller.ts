@@ -9,6 +9,7 @@ export class ExerciceController {
   // Créer un nouvel exercice
   async createExercice(req: Request, res: Response): Promise<void> {
     try {
+     
       const validationResult = ExerciceCreateDto.safeParse(req.body);
       if (!validationResult.success) {
         res.status(400).json({
@@ -55,6 +56,7 @@ export class ExerciceController {
   // Mettre à jour un exercice
   async updateExercice(req: Request, res: Response): Promise<void> {
     try {
+    
       const validationResult = ExerciceUpdateDto.safeParse(req.body);
       if (!validationResult.success) {
         res.status(400).json({
@@ -85,6 +87,7 @@ export class ExerciceController {
   // Supprimer un exercice
   async deleteExercice(req: Request, res: Response): Promise<void> {
     try {
+
       const exerciceId = parseInt(req.params.id);
       const isDeleted = await this.exerciceService.deleteExercice(exerciceId);
 
@@ -98,4 +101,5 @@ export class ExerciceController {
       handleError(res, error);
     }
   }
+
 }

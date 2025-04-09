@@ -6,7 +6,7 @@ import { Children } from "./Children";
 import { ExerciseAssignment } from "./Exercise_assignment"; 
 import { Difficulty } from "@/types/enum.type";
 
-@Entity("exercices")  // Table renommée
+@Entity("exercices")  
 export class Exercice {
   @PrimaryGeneratedColumn()
   id!: number;
@@ -14,7 +14,6 @@ export class Exercice {
   @Column({ 
     type: "enum",   
     enum:  Difficulty,
-    default:  Difficulty, // Valeur par défaut
     nullable: false,
     })
   difficulty!: Difficulty;

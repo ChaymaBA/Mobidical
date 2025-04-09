@@ -14,7 +14,8 @@ export const ExerciceCreateDto = zod.object({
     .optional(),
 
   userId: zod.number().min(1, 'User ID must be a valid number'),
-  progressionId: zod.number().min(1, 'Progression ID must be a valid number'),
+  progressReportId: zod.number().min(1, 'Progression ID must be a valid number'),
+  
 
   pieces: zod
     .array(

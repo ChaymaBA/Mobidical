@@ -26,3 +26,9 @@ export enum Difficulty {
   MEDIUM = "medium",
   HARD = "hard",
 }
+
+export enum RecommendationType {
+  ACTIVITY = "activity",
+  DIFFICULTY = "difficulty",
+  APPROACH = "approach",
+}

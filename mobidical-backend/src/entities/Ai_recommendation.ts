@@ -1,42 +1,42 @@
 import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
-import { Session } from "@/entities/Session";  // Vérifie l'importation correcte de "Session"
-import { Children } from "@/entities/Children";  // Vérifie l'importation correcte de "Children"
-
+import { Session } from "@/entities/Session";  
+import { Children } from "@/entities/Children";  
+import { RecommendationType } from "@/types/enum.type";
 @Entity("ai_recommendations")
 export class AIRecommendation {
   @PrimaryGeneratedColumn("uuid")
-  id!: string; // UUID comme identifiant primaire
+  id!: string; 
 
   @ManyToOne(() => Session, (session) => session.aiRecommendations)
-  session!: Session; // Relation avec l'entité "Session"
+  session!: Session; 
 
   @ManyToOne(() => Children, (child) => child.aiRecommendations)
-  child!: Children; // Relation avec l'entité "Children"
+  child!: Children; 
 
   @Column({
     type: "enum",
-    enum: ["activity", "difficulty", "approach"],
+    enum: RecommendationType,
     nullable: false,
   })
-  recommendation_type!: "activity" | "difficulty" | "approach"; // Type de recommandation
+  recommendation_type!:RecommendationType; 
 
   @Column({
     type: "json",
     nullable: false,
   })
-  recommendations!: any; // Recommandations au format JSON
+  recommendations!: any; 
 
   @Column({
     type: "varchar",
     length: 255,
     nullable: false,
   })
-  reasoning!: string; // Raisonnement derrière la recommandation
+  reasoning!: string; 
 
   @Column({
     type: "timestamp",
     default: () => "CURRENT_TIMESTAMP",
     nullable: false,
   })
-  created_at!: Date; // Timestamp de création
+  created_at!: Date;
 }

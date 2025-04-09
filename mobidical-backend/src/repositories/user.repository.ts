@@ -33,7 +33,7 @@ export class UserRepository {
         email: userData.email,
         password_hash: hashedPassword,
         is_active: true,
-        role: UserRole.USER
+        role: userData.role as UserRole,
       });
 
       return this.repository.save(user);

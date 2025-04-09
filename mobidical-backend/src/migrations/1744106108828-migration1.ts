@@ -1,10 +1,9 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Migration11744032630758 implements MigrationInterface {
-    name = 'Migration11744032630758'
+export class Migration11744106108828 implements MigrationInterface {
+    name = 'Migration11744106108828'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`ALTER TABLE "exercices" DROP CONSTRAINT "FK_e1edf7c34d39b9231f26c10ce48"`);
         await queryRunner.query(`CREATE TYPE "public"."preferences_audio_sensitivity_enum" AS ENUM('low', 'medium', 'high')`);
         await queryRunner.query(`CREATE TABLE "preferences" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "child_id" uuid NOT NULL, "preferred_colors" character varying(255) NOT NULL, "audio_sensitivity" "public"."preferences_audio_sensitivity_enum" NOT NULL, "prefers_animations" boolean NOT NULL DEFAULT false, "visual_complexity" integer NOT NULL, "favorite_activities" json, "updated_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_17f8855e4145192bbabd91a51be" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "media_assets" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "type" character varying(255) NOT NULL, "url" text NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "childId" uuid, CONSTRAINT "PK_ca47e9f67a5e5d8af1e75d66ee6" PRIMARY KEY ("id"))`);
@@ -17,21 +16,10 @@ export class Migration11744032630758 implements MigrationInterface {
         await queryRunner.query(`CREATE TABLE "progress_reports" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "child_id" uuid NOT NULL, "report_period_start" date NOT NULL, "report_period_end" date NOT NULL, "cognitive_metrics" json, "social_metrics" json, "motor_metrics" json, "communication_metrics" json, "observations" character varying(500) NOT NULL, "generated_at" TIMESTAMP NOT NULL DEFAULT now(), "rewardId" integer, "userId" integer, CONSTRAINT "PK_175179020a43d5ec75ab1d6a04f" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TYPE "public"."categories_name_enum" AS ENUM('communication skills', 'social interaction', 'motor skills', 'cognitive game')`);
         await queryRunner.query(`CREATE TABLE "categories" ("id" SERIAL NOT NULL, "name" "public"."categories_name_enum" NOT NULL, CONSTRAINT "UQ_8b0be371d28245da6e4f4b61878" UNIQUE ("name"), CONSTRAINT "PK_24dbc6126a28ff948da33e97d3b" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`ALTER TABLE "exercices" DROP CONSTRAINT "PK_5f152d67b366f25de30ebcf764e"`);
-        await queryRunner.query(`ALTER TABLE "exercices" DROP COLUMN "Id"`);
-        await queryRunner.query(`ALTER TABLE "exercices" DROP COLUMN "progressionId"`);
-        await queryRunner.query(`ALTER TABLE "exercices" DROP COLUMN "category"`);
-        await queryRunner.query(`ALTER TABLE "exercices" ADD "id" SERIAL NOT NULL`);
-        await queryRunner.query(`ALTER TABLE "exercices" ADD CONSTRAINT "PK_eff59bcb35c452829a0836c1a9e" PRIMARY KEY ("id")`);
-        await queryRunner.query(`ALTER TABLE "exercices" ADD "pieces" json NOT NULL`);
-        await queryRunner.query(`ALTER TABLE "exercices" ADD "progressReportId" uuid`);
-        await queryRunner.query(`ALTER TABLE "exercices" ADD "categoryId" integer`);
-        await queryRunner.query(`ALTER TABLE "exercices" ADD "childId" uuid`);
+        await queryRunner.query(`CREATE TYPE "public"."exercices_difficulty_enum" AS ENUM('easy', 'medium', 'hard')`);
+        await queryRunner.query(`CREATE TABLE "exercices" ("id" SERIAL NOT NULL, "difficulty" "public"."exercices_difficulty_enum" NOT NULL DEFAULT '[object Object]', "description" character varying(500), "name" character varying(255) NOT NULL, "pieces" json NOT NULL, "userId" integer, "progressReportId" uuid, "categoryId" integer, "childId" uuid, CONSTRAINT "PK_eff59bcb35c452829a0836c1a9e" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TYPE "public"."users_role_type_enum" AS ENUM('parent', 'educator', 'therapist')`);
         await queryRunner.query(`ALTER TABLE "users" ADD "role_type" "public"."users_role_type_enum" NOT NULL DEFAULT '[object Object]'`);
-        await queryRunner.query(`ALTER TABLE "exercices" DROP COLUMN "difficulty"`);
-        await queryRunner.query(`CREATE TYPE "public"."exercices_difficulty_enum" AS ENUM('easy', 'medium', 'hard')`);
-        await queryRunner.query(`ALTER TABLE "exercices" ADD "difficulty" "public"."exercices_difficulty_enum" NOT NULL DEFAULT '[object Object]'`);
         await queryRunner.query(`ALTER TABLE "preferences" ADD CONSTRAINT "FK_da0e28a29ec0cc201ac75dbd2c0" FOREIGN KEY ("child_id") REFERENCES "children"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "media_assets" ADD CONSTRAINT "FK_a26265b38b17e763b5d1e07f4db" FOREIGN KEY ("childId") REFERENCES "children"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "ai_recommendations" ADD CONSTRAINT "FK_928f0c3a77755c7372015e775d5" FOREIGN KEY ("sessionId") REFERENCES "sessions"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
@@ -43,6 +31,7 @@ export class Migration11744032630758 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "progress_reports" ADD CONSTRAINT "FK_fbe9ac3c0d7c00bd244d84f5ca7" FOREIGN KEY ("child_id") REFERENCES "children"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "progress_reports" ADD CONSTRAINT "FK_db1a35b4e2e32420437068dfc26" FOREIGN KEY ("rewardId") REFERENCES "reward"("Id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "progress_reports" ADD CONSTRAINT "FK_e9d415c14355b9be8bd52e351ee" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "exercices" ADD CONSTRAINT "FK_bd3ba55f66fe00eef89efaf1309" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "exercices" ADD CONSTRAINT "FK_7f9a938620e035010bf3d0bbce4" FOREIGN KEY ("progressReportId") REFERENCES "progress_reports"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "exercices" ADD CONSTRAINT "FK_8809099214b5605332c548b0526" FOREIGN KEY ("categoryId") REFERENCES "categories"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "exercices" ADD CONSTRAINT "FK_2df823adbe7d18f91fca035075c" FOREIGN KEY ("childId") REFERENCES "children"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
@@ -52,6 +41,7 @@ export class Migration11744032630758 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "exercices" DROP CONSTRAINT "FK_2df823adbe7d18f91fca035075c"`);
         await queryRunner.query(`ALTER TABLE "exercices" DROP CONSTRAINT "FK_8809099214b5605332c548b0526"`);
         await queryRunner.query(`ALTER TABLE "exercices" DROP CONSTRAINT "FK_7f9a938620e035010bf3d0bbce4"`);
+        await queryRunner.query(`ALTER TABLE "exercices" DROP CONSTRAINT "FK_bd3ba55f66fe00eef89efaf1309"`);
         await queryRunner.query(`ALTER TABLE "progress_reports" DROP CONSTRAINT "FK_e9d415c14355b9be8bd52e351ee"`);
         await queryRunner.query(`ALTER TABLE "progress_reports" DROP CONSTRAINT "FK_db1a35b4e2e32420437068dfc26"`);
         await queryRunner.query(`ALTER TABLE "progress_reports" DROP CONSTRAINT "FK_fbe9ac3c0d7c00bd244d84f5ca7"`);
@@ -63,21 +53,10 @@ export class Migration11744032630758 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "ai_recommendations" DROP CONSTRAINT "FK_928f0c3a77755c7372015e775d5"`);
         await queryRunner.query(`ALTER TABLE "media_assets" DROP CONSTRAINT "FK_a26265b38b17e763b5d1e07f4db"`);
         await queryRunner.query(`ALTER TABLE "preferences" DROP CONSTRAINT "FK_da0e28a29ec0cc201ac75dbd2c0"`);
-        await queryRunner.query(`ALTER TABLE "exercices" DROP COLUMN "difficulty"`);
-        await queryRunner.query(`DROP TYPE "public"."exercices_difficulty_enum"`);
-        await queryRunner.query(`ALTER TABLE "exercices" ADD "difficulty" character varying(50) NOT NULL`);
         await queryRunner.query(`ALTER TABLE "users" DROP COLUMN "role_type"`);
         await queryRunner.query(`DROP TYPE "public"."users_role_type_enum"`);
-        await queryRunner.query(`ALTER TABLE "exercices" DROP COLUMN "childId"`);
-        await queryRunner.query(`ALTER TABLE "exercices" DROP COLUMN "categoryId"`);
-        await queryRunner.query(`ALTER TABLE "exercices" DROP COLUMN "progressReportId"`);
-        await queryRunner.query(`ALTER TABLE "exercices" DROP COLUMN "pieces"`);
-        await queryRunner.query(`ALTER TABLE "exercices" DROP CONSTRAINT "PK_eff59bcb35c452829a0836c1a9e"`);
-        await queryRunner.query(`ALTER TABLE "exercices" DROP COLUMN "id"`);
-        await queryRunner.query(`ALTER TABLE "exercices" ADD "category" character varying(255) NOT NULL`);
-        await queryRunner.query(`ALTER TABLE "exercices" ADD "progressionId" integer`);
-        await queryRunner.query(`ALTER TABLE "exercices" ADD "Id" SERIAL NOT NULL`);
-        await queryRunner.query(`ALTER TABLE "exercices" ADD CONSTRAINT "PK_5f152d67b366f25de30ebcf764e" PRIMARY KEY ("Id")`);
+        await queryRunner.query(`DROP TABLE "exercices"`);
+        await queryRunner.query(`DROP TYPE "public"."exercices_difficulty_enum"`);
         await queryRunner.query(`DROP TABLE "categories"`);
         await queryRunner.query(`DROP TYPE "public"."categories_name_enum"`);
         await queryRunner.query(`DROP TABLE "progress_reports"`);
@@ -90,7 +69,6 @@ export class Migration11744032630758 implements MigrationInterface {
         await queryRunner.query(`DROP TABLE "media_assets"`);
         await queryRunner.query(`DROP TABLE "preferences"`);
         await queryRunner.query(`DROP TYPE "public"."preferences_audio_sensitivity_enum"`);
-        await queryRunner.query(`ALTER TABLE "exercices" ADD CONSTRAINT "FK_e1edf7c34d39b9231f26c10ce48" FOREIGN KEY ("progressionId") REFERENCES "progressions"("Id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
     }
 
 }

@@ -36,7 +36,7 @@ export class Children {
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
   updated_at!: Date;
 
-  @Column({ type: "int", nullable: true }) // Durée en minutes (ou autre unité)
+  @Column({ type: "int", nullable: true }) 
   duration?: number;
 
   @ManyToOne(() => User, (user) => user.children)
@@ -52,7 +52,7 @@ export class Children {
   @OneToMany(() => MediaAsset, (mediaAsset) => mediaAsset.child)
   mediaAssets!: MediaAsset[];
 
-  @OneToMany(() => Session, (session) => session.child) // Relation OneToMany avec Session
+  @OneToMany(() => Session, (session) => session.child) 
   sessions!: Session[]; 
 
   @OneToMany(() => AIRecommendation, (aiRecommendation) => aiRecommendation.child)

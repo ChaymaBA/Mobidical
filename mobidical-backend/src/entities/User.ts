@@ -35,7 +35,7 @@ export class User {
   @Column({
     type: "enum",
     enum:  UserRoleType,
-    default:  UserRoleType, // Valeur par défaut
+    default:  UserRoleType.PARENT, // Valeur par défaut
     nullable: false,
   })
   role_type!: UserRoleType;
