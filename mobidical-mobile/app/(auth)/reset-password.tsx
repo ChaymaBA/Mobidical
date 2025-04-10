@@ -1,66 +1,102 @@
 import React, { useState } from 'react';
-import { View, Image, ImageBackground } from 'react-native';
-import { Link, router } from 'expo-router';
+import { View, Image, ImageBackground, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import { router } from 'expo-router';
 import { useAuth } from '@/navigation/AuthContext';
 import { TextInput } from '@/components/TextInput';
 import { Button } from '@/components/Button';
 import { Text } from '@/components/CustomText';
+import { useForm, Controller, FieldValues } from 'react-hook-form';
 import { passwordScreenStyles } from '@/utils/styles';
-import { images } from '@/theme';
+import { images } from '@/theme/images';
+import { colors } from '@/theme/colors';
+import { validateEmail } from '@/utils/validation';
 
-export default function ResetPasswordScreen() {
-  const [email, setEmail] = useState('');
+const ResetPasswordScreen = () => {
+  const [loading, setLoading] = useState(false);
   const { resetPassword } = useAuth();
 
-  const handleResetPassword = async () => {
+  const { control, handleSubmit, reset } = useForm<FieldValues>({
+    defaultValues: {
+      email: '',
+    },
+  });
+
+  const onSubmit = async (data: FieldValues) => {
+    setLoading(true);
     try {
-      await resetPassword(email);
+      await resetPassword(data.email);
       router.replace('/login');
-    } catch (error) {
-      console.error(error);
+    } catch (err: any) {
+      console.error('Reset password error:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <ImageBackground
       source={images.home}
-      style={passwordScreenStyles.background}
+      style={passwordScreenStyles.backgroundImage}
+      resizeMode="cover"
     >
-      <View style={passwordScreenStyles.header}>
-        <Text style={passwordScreenStyles.appName}>MOBIDICAL</Text>
-        <Image
-          source={images.a}
-          style={passwordScreenStyles.logo}
-        />
-      </View>
+      <SafeAreaView style={passwordScreenStyles.safeArea}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Header with app name and logo */}
+          <View style={passwordScreenStyles.header}>
+            <Text style={passwordScreenStyles.appName}>MOBIDICAL</Text>
+            <Image source={images.app_logo} style={passwordScreenStyles.logo} />
+          </View>
 
-      <View style={passwordScreenStyles.container}>
-        <Text variant="h1" style={passwordScreenStyles.title}>Reset Password</Text>
-        <Text style={passwordScreenStyles.description}>
-          Enter your email address and we'll send you instructions to reset your password.
-        </Text>
+          <View style={passwordScreenStyles.container}>
+            <Text variant="h1" style={passwordScreenStyles.title}>Reset Password</Text>
 
-        <View style={passwordScreenStyles.inputContainer}>
-          <Text style={passwordScreenStyles.label}>Email</Text>
-          <TextInput
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            style={passwordScreenStyles.input}
-          />
-        </View>
+            <Text style={passwordScreenStyles.description}>
+              Enter your email address and we'll send you instructions to reset your password.
+            </Text>
 
-        <Button
-          title="Reset Password"
-          onPress={handleResetPassword}
-          style={passwordScreenStyles.button}
-        />
+            {/* Email Field */}
+            <View style={passwordScreenStyles.inputContainer}>
+              <Text style={passwordScreenStyles.label}>Email</Text>
+              <TextInput
+                name="email"
+                returnKeyType="done"
+                autoCapitalize="none"
+                keyboardType="email-address"
+                style={passwordScreenStyles.input}
+                control={control}
+                rules={{
+                  required: 'Email is required',
+                  validate: validateEmail
+                }}
+                leftIcon="mail"
+                placeholder="Enter your email"
+                placeholderTextColor={colors.palette.text100}
+                onSubmitEditing={handleSubmit(onSubmit)}
+              />
+            </View>
 
-        <Link href="/login" style={passwordScreenStyles.link}> 
-          <Text>Back to Sign In</Text>
-        </Link>
-      </View>
+            <Button
+              title={loading ? 'Sending...' : 'Reset Password'}
+              onPress={handleSubmit(onSubmit)}
+              disabled={loading}
+              style={passwordScreenStyles.button}
+            />
+
+            <TouchableOpacity
+              onPress={() => router.push('/login')}
+              accessibilityLabel="Back to Sign In"
+              style={{ marginTop: 20, alignItems: 'center' }}
+            >
+              <Text style={passwordScreenStyles.link}>Back to Sign In</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     </ImageBackground>
   );
-}
+};
+
+export default ResetPasswordScreen;

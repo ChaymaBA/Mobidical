@@ -1,27 +1,49 @@
-// utils/validationUtils.ts
+// utils/validation.ts
 
-export const validateEmail = (email: string) => {
-    if (!email) return 'Email is required';
-    if (email.includes(' ')) return 'Remove spaces from email';
-    if (!email.includes('@')) return 'Email must include @';
+export const validateEmail = (value: string) => {
+    if (!value) return "Email is required";
 
-    const atIndex = email.indexOf('@');
-    const dotIndex = email.indexOf('.', atIndex);
-    if (dotIndex === -1) return 'Add a period (.) after domain';
+    const atIndex = value.indexOf('@');
+    const dotAfterAt = value.indexOf('.', atIndex);
 
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!re.test(email)) return 'Enter a valid email address';
+    if (!value.includes('@') && !value.includes('.')) {
+        return "Email must contain '@' and '.' (in that order)";
+    }
 
-    return '';
+    if (!value.includes('@')) {
+        return "Email must contain '@'";
+    }
+
+    if (dotAfterAt === -1) {
+        return "Email must contain '.' after '@'";
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) {
+        return "Email format is invalid (check for spaces or invalid characters)";
+    }
+
+    return true;
 };
 
-export const validatePassword = (password: string) => {
-    const errors = [];
-    if (password.length < 8) errors.push('At least 8 characters');
-    if (!/[a-z]/.test(password)) errors.push('1 lowercase letter');
-    if (!/[A-Z]/.test(password)) errors.push('1 uppercase letter');
-    if (!/\d/.test(password)) errors.push('1 number');
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) errors.push('1 special character');
+export const validatePassword = (value: string) => {
+    if (!value) return "Password is required";
+    if (value.length < 8) return "Password must be at least 8 characters";
 
-    return errors.length > 0 ? errors.join(', ') : '';
+    const hasUpperCase = /[A-Z]/.test(value);
+    const hasLowerCase = /[a-z]/.test(value);
+    const hasDigit = /\d/.test(value);
+    const hasSpecialChar = /[@$!%*?&]/.test(value);
+
+    const errors = [];
+    if (!hasUpperCase) errors.push("one uppercase letter");
+    if (!hasLowerCase) errors.push("one lowercase letter");
+    if (!hasDigit) errors.push("one number");
+    if (!hasSpecialChar) errors.push("one special character (@$!%*?&)");
+
+    if (errors.length > 0) {
+        return `Password must include ${errors.join(", ")}`;
+    }
+
+    return true;
 };

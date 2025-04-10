@@ -1,4 +1,6 @@
 import React from 'react';
+import { colors } from '@/theme';
+
 import { View, StyleSheet } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -53,17 +55,17 @@ const styles = StyleSheet.create({
   },
   track: {
     height: 4,
-    backgroundColor: '#E5E5EA',
+    backgroundColor: colors.palette.white,
     borderRadius: 2,
   },
   thumb: {
     position: 'absolute',
     width: 20,
     height: 20,
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.palette.lionBook,
     borderRadius: 10,
     elevation: 3,
-    shadowColor: '#000',
+    shadowColor: colors.palette.black,
     shadowOffset: {
       width: 0,
       height: 2,

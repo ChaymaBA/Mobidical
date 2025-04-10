@@ -1,175 +1,134 @@
-import React, { useState } from 'react';
-import { View, Image, ImageBackground, TouchableOpacity } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View, Image, ImageBackground, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '@/navigation/AuthContext';
 import { TextInput } from '@/components/TextInput';
 import { Button } from '@/components/Button';
 import { Text } from '@/components/CustomText';
-import { Eye, EyeOff } from 'lucide-react-native';
-import { Screen } from '@/components/Screen';
+import { useForm } from 'react-hook-form';
+import { LoginFormInputs } from '@/constants/formTypes';
+import { loginScreenStyles } from '@/utils/styles';
+import { images } from '@/theme/images'; 
+import { colors } from '@/theme/colors';
 import { validateEmail, validatePassword } from '@/utils/validation';
-import { loginScreenStyles } from '@/utils/styles'; // Importer les styles
 
-export default function LoginScreen() {
-  // États pour gérer le formulaire de connexion
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const LoginScreen = () => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-
-  // Hook d'authentification
+  const passwordInputRef = useRef<any>(null);
   const { signIn } = useAuth();
 
-  // Gestion des changements d'email
-  const handleEmailChange = (text: string) => {
-    setEmail(text);
-    setEmailError(validateEmail(text));
-    setError('');
-  };
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
 
-  // Gestion des changements de mot de passe
-  const handlePasswordChange = (text: string) => {
-    setPassword(text);
-    setPasswordError(validatePassword(text));
-    setError('');
-  };
-
-  // Gestion de la connexion
-  const handleLogin = async () => {
-    // Validation avant la tentative de connexion
-    const emailErr = validateEmail(email);
-    const passwordErr = validatePassword(password);
-
-    setEmailError(emailErr);
-    setPasswordError(passwordErr);
-
-    // Arrêter si des erreurs de validation existent
-    if (emailErr || passwordErr) return;
-
+  const onSubmit = async (data: any) => {
     setLoading(true);
     try {
-      // Tentative de connexion
-      await signIn(email, password);
-      // Redirection après connexion réussie
+      await signIn(data.email, data.password);
       router.replace('/(tabs)');
-    } catch (err) {
-      // Gestion des erreurs de connexion
-      setError('Invalid email or password');
+    } catch (err: any) {
+      console.error('Login error:', err);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Screen
-      preset="scroll"
-      safeAreaEdges={["top"]}
+    <ImageBackground
+      source={images.home}
+      style={loginScreenStyles.backgroundImage}
+      resizeMode="cover"
     >
-      <ImageBackground
-        source={require('@/assets/images/home.png')}
-        style={loginScreenStyles.background}
-      >
-        {/* En-tête de l'application */}
-        <View style={loginScreenStyles.header}>
-          <Text style={loginScreenStyles.appName}>MOBIDICAL</Text>
-        </View>
-
-        {/* Conteneur principal du formulaire */}
-        <View style={loginScreenStyles.container}>
-          {/* Logo de l'application */}
-          <Image
-            source={require('@/assets/images/app_logo.png')}
-            style={loginScreenStyles.centeredLogo}
-          />
-
-          {/* Titre de bienvenue */}
-          <Text variant="h1" style={loginScreenStyles.title}>Welcome Back</Text>
-
-          {/* Affichage des erreurs générales */}
-          {error && <Text style={loginScreenStyles.errorText}>{error}</Text>}
-
-          {/* Champ de saisie Email */}
-          <View style={loginScreenStyles.inputContainer}>
-            <Text style={loginScreenStyles.label}>Email</Text>
-            <TextInput
-              value={email}
-              onChangeText={handleEmailChange}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              style={[
-                loginScreenStyles.input,
-                emailError ? loginScreenStyles.inputError : {}
-              ]}
-            />
-            {/* Messages de validation d'email */}
-            {emailError ? (
-              <Text style={loginScreenStyles.validationError}>{emailError}</Text>
-            ) : email && !emailError && (
-              <Text style={loginScreenStyles.validationSuccess}>Email is valid</Text>
-            )}
+      <SafeAreaView style={loginScreenStyles.safeArea}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={loginScreenStyles.header}>
+            <Text style={loginScreenStyles.appName}>MOBIDICAL</Text>
           </View>
 
-          {/* Champ de saisie Mot de passe */}
-          <View style={loginScreenStyles.inputContainer}>
-            <Text style={loginScreenStyles.label}>Password</Text>
-            <View style={loginScreenStyles.passwordInputContainer}>
+          <View style={loginScreenStyles.container}>
+            <Image
+              source={images.app_logo}
+              style={loginScreenStyles.centeredLogo}
+              resizeMode="contain"
+            />
+            <Text variant="h1" style={loginScreenStyles.title}>Welcome Back</Text>
+
+            {/* Email Field */}
+            <View style={loginScreenStyles.inputContainer}>
+              <Text style={loginScreenStyles.label}>Email</Text>
               <TextInput
-                value={password}
-                onChangeText={handlePasswordChange}
-                secureTextEntry={!showPassword}
-                style={[
-                  loginScreenStyles.input,
-                  passwordError ? loginScreenStyles.inputError : {}
-                ]}
+                name='email'
+                control={control}
+                leftIcon='mail'
+                returnKeyType="next"
+                autoCapitalize="none"
+                keyboardType="email-address"
+                placeholder="Enter your email"
+                placeholderTextColor={colors.palette.text100}
+                rules={{
+                  required: 'Email is required',
+                  validate: validateEmail
+                }}
+                onSubmitEditing={() => passwordInputRef.current?.focus()}
+              // Ne pas transmettre le style loginScreenStyles.input ici
               />
-              {/* Bouton de toggle pour afficher/masquer le mot de passe */}
+            </View>
+
+            {/* Password Field */}
+            <View style={loginScreenStyles.inputContainer}>
+              <Text style={loginScreenStyles.label}>Password</Text>
+              <TextInput
+                name='password'
+                ref={passwordInputRef}
+                control={control}
+                leftIcon='lock-closed'
+                isPassword={true}
+                returnKeyType="done"
+                placeholder="Enter your password"
+                placeholderTextColor={colors.palette.text100}
+                rules={{
+                  required: 'Password is required',
+                  validate: validatePassword
+                }}
+                onSubmitEditing={handleSubmit(onSubmit)}
+              // Ne pas transmettre le style loginScreenStyles.input ici
+              />
+            </View>
+
+            <Button
+              title={loading ? 'Signing In...' : 'Sign In'}
+              onPress={handleSubmit(onSubmit)}
+              disabled={loading}
+              style={loginScreenStyles.button}
+            />
+
+            <View style={loginScreenStyles.linksContainer}>
               <TouchableOpacity
-                onPress={() => setShowPassword(!showPassword)}
-                style={loginScreenStyles.eyeIcon}
+                onPress={() => router.push('/register')}
+                style={loginScreenStyles.link}
+                accessibilityLabel="Create an account"
               >
-                {showPassword ? (
-                  <EyeOff size={24} color="#666" />
-                ) : (
-                  <Eye size={24} color="#666" />
-                )}
+                <Text style={loginScreenStyles.link}>Create an account</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => router.push('/reset-password')}
+                accessibilityLabel="Reset Password"
+              >
+                <Text style={loginScreenStyles.link}>Forgot password?</Text>
               </TouchableOpacity>
             </View>
-            {/* Messages de validation de mot de passe */}
-            {passwordError ? (
-              <Text style={loginScreenStyles.validationError}>
-                Password needs: {passwordError}
-              </Text>
-            ) : password && !passwordError && (
-              <Text style={loginScreenStyles.validationSuccess}>Password is strong</Text>
-            )}
           </View>
-
-          {/* Bouton de connexion */}
-          <Button
-            title={loading ? "Signing In..." : "Sign In"}
-            onPress={handleLogin}
-            disabled={loading}
-            style={loginScreenStyles.button}
-          />
-
-          {/* Liens supplémentaires */}
-          <View style={loginScreenStyles.linksContainer}>
-            <TouchableOpacity
-              onPress={() => router.push('/register')}
-              style={loginScreenStyles.link}
-            >
-              <Text>Create an account</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => router.push('/reset-password')}>
-              <Text>Forgot password?</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </ImageBackground>
-    </Screen>
+        </ScrollView>
+      </SafeAreaView>
+    </ImageBackground>
   );
-}
+};
+
+export default LoginScreen;

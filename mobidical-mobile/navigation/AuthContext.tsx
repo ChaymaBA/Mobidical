@@ -1,10 +1,17 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
-type AuthContextType = {
+// Définir le type pour l'utilisateur avec tous les champs nécessaires
+export type AuthContextType = {
   isAuthenticated: boolean;
+  user?: {
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    userType?: string;
+  };
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => void;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, firstName: string, lastName: string, userType: string) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
 };
 
@@ -12,28 +19,39 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<{ email?: string; firstName?: string; lastName?: string; userType?: string } | undefined>(undefined);
 
   const signIn = async (email: string, password: string) => {
-    // Implement your sign in logic here
+    // Implémenter la logique de connexion ici
+    setUser({ email });
     setIsAuthenticated(true);
   };
 
   const signOut = () => {
+    setUser(undefined);
     setIsAuthenticated(false);
   };
 
-  const signUp = async (email: string, password: string) => {
-    // Implement your sign up logic here
+  const signUp = async (
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+    userType: string
+  ) => {
+    // Implémenter la logique d'enregistrement ici
+    setUser({ email, firstName, lastName, userType });
     setIsAuthenticated(true);
   };
 
   const resetPassword = async (email: string) => {
-    // Implement your password reset logic here
+    // Implémenter la logique de réinitialisation du mot de passe ici
   };
 
   return (
     <AuthContext.Provider value={{
       isAuthenticated,
+      user,
       signIn,
       signOut,
       signUp,

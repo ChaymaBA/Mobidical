@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { ChevronDown, ChevronUp } from 'lucide-react-native';
-
+import {colors } from'@/theme/colors';
 interface DropdownProps {
   options: string[];
   value: string;
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 12,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: colors.palette.white ,
     borderRadius: 8,
     backgroundColor: 'white',
   },
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: 'white',
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: colors.palette.white,
     borderRadius: 8,
     marginTop: 4,
     maxHeight: 200,
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   selectedOption: {
-    color: '#007AFF',
+    color: colors.palette.lionBook,
     fontWeight: 'bold',
   },
 });

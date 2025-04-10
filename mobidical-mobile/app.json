@@ -12,11 +12,10 @@
       "image": "./assets/images/splash.png",
       "resizeMode": "contain"
     },
-  "ios": {
-    "supportsTablet": true,
-    "icon": "./assets/images/icon.png"
-   
-  },
+    "ios": {
+      "supportsTablet": true,
+      "icon": "./assets/images/icon.png"
+    },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",

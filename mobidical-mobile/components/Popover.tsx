@@ -1,6 +1,6 @@
 import React, { ReactNode, useState } from 'react';
 import { View, Modal, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-
+import {colors} from '@/theme/colors';
 interface PopoverProps {
   trigger: ReactNode;
   content: ReactNode;
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 16,
     borderRadius: 8,
-    shadowColor: '#000',
+    shadowColor: colors.palette.black,
     shadowOffset: {
       width: 0,
       height: 2,

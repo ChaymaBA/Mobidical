@@ -66,10 +66,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   disabled: {
-    borderColor: '#999',
+    borderColor: 'colors.palette.text200,',
     backgroundColor: '#f5f5f5',
   },
   disabledText: {
-    color: '#999',
+    color: 'colors.palette.text200,',
   },
 });

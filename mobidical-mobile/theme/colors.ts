@@ -1,25 +1,24 @@
-const palette = {
-    // Couleurs du fond adaptées à l'image
-    background100: "#F5E1A6",  // Beige clair (couleur dominante de l'image)
-    background200: "#DCC48E",  // Beige plus foncé pour la variation
+
+export const palette = {
 
     // coleur premieur 
-    owl100: "#D29A61",    // Brun clair
-    owl200: "#8B5A2B",    // Brun foncé
-    owlBook: "#357ABD",   // Bleu livre
-    owlBeak: "#FFCC00",   // Jaune bec
+    owl100: "#EDC8A3FF",   
+    owl200: "#8B5A2B",    
+    owlBook: "#357ABD",  
+    owlBeak: "#FFCC00",   
 
     // Couleurs secondaire 
-    lion100: "#FFA726",   // Orange clair
-    lion200: "#D84315",   // Orange foncé
-    lionMane: "#A52A2A",  // Brun foncé crinière
-    lionBook: "#3388C9FF",  // Bleu livre
-    lionTongue: "#E57373", // Rose langue
+    lion100: "#FFA726",   
+    liongreen: "#34C759",   
+    lionRed: "##FF3B30",  
+    lionBook: "#007AFF",  
+    lionTongue: "#E57373",
+    
 
-    // Autres couleurs utiles
-    text100: "#3C3836",   // Texte principal
-    text200: "#564E4A",   // Texte secondaire
-    border: "#B6ACA6",    // Bordure neutre
+    text200:"#999",
+    text100: "#666",  
+
+    background100: "#F5F5F5", 
 
     // Overlays
     overlay20: "rgba(25, 16, 21, 0.2)",
@@ -45,7 +44,7 @@ export const colors = {
     /**
      * Texte secondaire.
      */
-    textDim: palette.text200,
+    textDim: palette.text100,
     /**
      * Couleur de fond principale.
      */
@@ -53,7 +52,7 @@ export const colors = {
     /**
      * Couleur de la bordure par défaut.
      */
-    border: palette.border,
+    border: palette.black,
  
     secondary: palette.lion100,
     /**
@@ -63,7 +62,7 @@ export const colors = {
     /**
      * Séparateur pour diviser les éléments visuellement.
      */
-    separator: palette.border,
+    separator: palette.black,
     /**
      * Couleur pour les erreurs.
      */

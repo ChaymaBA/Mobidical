@@ -1,3 +1,4 @@
+import { colors } from '@/theme';
 import React from 'react';
 import { Pressable, StyleSheet, Animated } from 'react-native';
 
@@ -31,7 +32,7 @@ export const Switch = ({
       style={[
         styles.track,
         {
-          backgroundColor: value ? '#34C759' : '#E5E5EA',
+          backgroundColor: value ? colors.palette.liongreen :colors.palette.white
         },
         disabled && styles.disabled,
       ]}
@@ -59,9 +60,9 @@ const styles = StyleSheet.create({
   thumb: {
     width: 24,
     height: 24,
-    backgroundColor: 'white',
+    backgroundColor: colors.palette.white,
     borderRadius: 12,
-    shadowColor: '#000',
+    shadowColor: colors.palette.black,
     shadowOffset: {
       width: 0,
       height: 2,

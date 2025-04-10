@@ -1,83 +1,61 @@
-import React, { useState } from 'react';
-import { View, ImageBackground, Image, SafeAreaView, TouchableOpacity } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View, ImageBackground, Image, SafeAreaView, TouchableOpacity, ScrollView } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useAuth } from '@/navigation/AuthContext';
 import { TextInput } from '@/components/TextInput';
 import { Button } from '@/components/Button';
 import { Text } from '@/components/CustomText';
 import { Eye, EyeOff } from 'lucide-react-native';
-import { validateEmail, validatePassword } from '@/utils/validation';
+import { useForm, Controller } from 'react-hook-form';
 import { registerScreenStyles } from '@/utils/styles';
+import { images } from '@/theme/images';
+import { palette, colors } from '@/theme/colors';
+import { RadioButton } from '@/components/RadioButton';
+import { validateEmail, validatePassword } from '@/utils/validation';
+
+// Define form input types
+type RegisterFormInputs = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  userType: string;
+};
 
 export default function RegisterScreen() {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [loading, setLoading] = useState(false);
+  const passwordInputRef = useRef<any>(null);
+
   const { signUp } = useAuth();
 
-  const validateConfirmPassword = (confirmPassword: string) => {
-    if (password !== confirmPassword) {
-      return 'Passwords do not match';
+  // Options pour le bouton radio
+  const userTypeOptions = ['Educator', 'Parent', 'Therapist'];
+
+  // Set up React Hook Form
+  const { control, handleSubmit, watch, formState: { errors } } = useForm<RegisterFormInputs>({
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      userType: ''
     }
-    return '';
-  };
+  });
 
-  const handleFirstNameChange = (text: string) => {
-    setFirstName(text);
-    setError('');
-  };
+  // Watch the password field value for confirm password validation
+  const watchPassword = watch('password');
 
-  const handleLastNameChange = (text: string) => {
-    setLastName(text);
-    setError('');
-  };
-
-  const handleEmailChange = (text: string) => {
-    setEmail(text);
-    setEmailError(validateEmail(text));
-    setError('');
-  };
-
-  const handlePasswordChange = (text: string) => {
-    setPassword(text);
-    setPasswordError(validatePassword(text));
-    setError('');
-  };
-
-  const handleConfirmPasswordChange = (text: string) => {
-    setConfirmPassword(text);
-    setConfirmPasswordError(validateConfirmPassword(text));
-    setError('');
-  };
-
-  const handleRegister = async () => {
-    const emailValidation = validateEmail(email);
-    const passwordValidation = validatePassword(password);
-    const confirmPasswordValidation = validateConfirmPassword(confirmPassword);
-
-    setEmailError(emailValidation);
-    setPasswordError(passwordValidation);
-    setConfirmPasswordError(confirmPasswordValidation);
-
-    if (emailValidation || passwordValidation || confirmPasswordValidation || !firstName || !lastName) {
-      return;
-    }
-
+  const onSubmit = async (data: RegisterFormInputs) => {
     setLoading(true);
     try {
-      await signUp(email, password);
-      router.replace('/(tabs)');
-    } catch (error) {
-      console.error(error);
+      // SignUp logic, en incluant le type d'utilisateur et autres informations
+      await signUp(data.email, data.password, data.firstName, data.lastName, data.userType);
+      router.replace('/(tabs)'); // Redirige vers la page après inscription réussie
+    } catch (err) {
+      console.error(err);
       setError('Registration failed. Please try again.');
     } finally {
       setLoading(false);
@@ -85,101 +63,127 @@ export default function RegisterScreen() {
   };
 
   return (
-    <ImageBackground
-      source={require('../../assets/images/home.png')}
-      style={registerScreenStyles.backgroundImage}
-    >
+    <ImageBackground source={images.home} style={registerScreenStyles.backgroundImage}>
       <SafeAreaView style={registerScreenStyles.safeArea}>
-        <View style={registerScreenStyles.header}>
-          <Text style={registerScreenStyles.appName}>MOBIDICAL</Text>
-          <Image
-            source={require('../../assets/images/app_logo.png')}
-            style={registerScreenStyles.logo}
-          />
-        </View>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+          <View style={registerScreenStyles.header}>
+            <Text style={registerScreenStyles.appName}>MOBIDICAL</Text>
+            <Image source={images.app_logo} style={registerScreenStyles.logo} />
+          </View>
 
-        <View style={registerScreenStyles.container}>
           <Text variant="h1" style={registerScreenStyles.title}>Create Account</Text>
 
           {error ? <Text style={registerScreenStyles.errorText}>{error}</Text> : null}
 
+          {/* First Name */}
           <View style={registerScreenStyles.inputContainer}>
             <Text style={registerScreenStyles.inputLabel}>First Name</Text>
             <TextInput
-              value={firstName}
-              onChangeText={handleFirstNameChange}
-              autoCapitalize="words"
+              name="firstName"
+              control={control}
+              rules={{ required: 'First name is required' }}
               style={registerScreenStyles.inputField}
+              placeholder="Enter your first name"
+              placeholderTextColor={colors.palette.text100}
             />
           </View>
 
+          {/* Last Name */}
           <View style={registerScreenStyles.inputContainer}>
             <Text style={registerScreenStyles.inputLabel}>Last Name</Text>
             <TextInput
-              value={lastName}
-              onChangeText={handleLastNameChange}
-              autoCapitalize="words"
+              name="lastName"
+              control={control}
+              rules={{ required: 'Last name is required' }}
               style={registerScreenStyles.inputField}
+              placeholder="Enter your last name"
+              placeholderTextColor={colors.palette.text100}
             />
           </View>
 
+          {/* Email */}
           <View style={registerScreenStyles.inputContainer}>
             <Text style={registerScreenStyles.inputLabel}>Email</Text>
             <TextInput
-              value={email}
-              onChangeText={handleEmailChange}
+              name='email'
+              control={control}
+              leftIcon='mail'
+              returnKeyType="next"
               autoCapitalize="none"
               keyboardType="email-address"
-              style={registerScreenStyles.inputField}
+              placeholder="Enter your email"
+              placeholderTextColor={colors.palette.text100}
+              rules={{
+                required: 'Email is required',
+                validate: validateEmail
+              }}
+              onSubmitEditing={() => passwordInputRef.current?.focus()}
             />
-            {emailError ? <Text style={registerScreenStyles.validationError}>{emailError}</Text> : null}
           </View>
 
-          <View style={registerScreenStyles.passwordContainer}>
+          {/* Password */}
+          <View style={registerScreenStyles.inputContainer}>
             <Text style={registerScreenStyles.inputLabel}>Password</Text>
             <TextInput
-              value={password}
-              onChangeText={handlePasswordChange}
-              secureTextEntry={!showPassword}
-              style={registerScreenStyles.inputField}
+              name='password'
+              ref={passwordInputRef}
+              control={control}
+              leftIcon='lock-closed'
+              isPassword={true}
+              returnKeyType="done"
+              placeholder="Enter your password"
+              placeholderTextColor={colors.palette.text100}
+              rules={{
+                required: 'Password is required',
+                validate: validatePassword
+              }}
             />
-            <TouchableOpacity
-              style={registerScreenStyles.eyeIcon}
-              onPress={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? <EyeOff size={20} color="#666" /> : <Eye size={20} color="#666" />}
-            </TouchableOpacity>
-            {passwordError ? <Text style={registerScreenStyles.validationError}>Password needs: {passwordError}</Text> : null}
           </View>
 
-          <View style={registerScreenStyles.passwordContainer}>
+          {/* Confirm Password */}
+          <View style={registerScreenStyles.inputContainer}>
             <Text style={registerScreenStyles.inputLabel}>Confirm Password</Text>
             <TextInput
-              value={confirmPassword}
-              onChangeText={handleConfirmPasswordChange}
-              secureTextEntry={!showConfirmPassword}
-              style={registerScreenStyles.inputField}
+              name="confirmPassword"
+              control={control}
+              rules={{
+                required: 'Please confirm your password',
+                validate: (value: string) =>
+                  value === watchPassword || 'Passwords do not match',
+              }}
+              isPassword={true}
+              placeholder="Confirm your password"
+              placeholderTextColor={colors.palette.text100}
+              leftIcon="lock-closed"
             />
-            <TouchableOpacity
-              style={registerScreenStyles.eyeIcon}
-              onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
-              {showConfirmPassword ? <EyeOff size={20} color="#666" /> : <Eye size={20} color="#666" />}
-            </TouchableOpacity>
-            {confirmPasswordError ? <Text style={registerScreenStyles.validationError}>{confirmPasswordError}</Text> : null}
+          </View>
+
+          {/* User Type Selection */}
+          <View style={registerScreenStyles.inputContainer}>
+            <Text style={registerScreenStyles.inputLabel}>Select User Type</Text>
+            <Controller
+              control={control}
+              name="userType"
+              rules={{ required: 'Please select a user type' }}
+              render={({ field: { onChange, value } }) => (
+                <RadioButton options={userTypeOptions} value={value} onChange={onChange} disabled={loading} />
+              )}
+            />
+            {errors.userType && <Text style={registerScreenStyles.errorText}>{errors.userType.message}</Text>}
           </View>
 
           <Button
             title={loading ? "Creating Account..." : "Sign Up"}
-            onPress={handleRegister}
+            onPress={handleSubmit(onSubmit)}
             style={registerScreenStyles.button}
             disabled={loading}
           />
 
+          {/* Maintenu le composant Link pour redirection vers login */}
           <Link href="/login" style={registerScreenStyles.link}>
             <Text>Already have an account? Sign In</Text>
           </Link>
-        </View>
+        </ScrollView>
       </SafeAreaView>
     </ImageBackground>
   );

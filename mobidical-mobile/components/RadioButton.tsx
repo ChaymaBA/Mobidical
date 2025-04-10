@@ -1,3 +1,4 @@
+import { colors } from '@/theme';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
@@ -56,27 +57,27 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#007AFF',
+    borderColor: colors.palette.lionBook,
     alignItems: 'center',
     justifyContent: 'center',
   },
   selected: {
-    borderColor: '#007AFF',
+    borderColor: colors.palette.lionBook
   },
   dot: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.palette.lionBook,
   },
   label: {
     fontSize: 16,
   },
   disabled: {
-    borderColor: '#999',
-    backgroundColor: '#f5f5f5',
+    borderColor: 'colors.palette.text200,',
+    backgroundColor: colors.palette.white,
   },
   disabledText: {
-    color: '#999',
+    color: 'colors.palette.text200,',
   },
 });

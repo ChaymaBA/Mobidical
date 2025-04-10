@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import {colors} from '@/theme/colors'
 
 interface ProgressProps {
   progress: number; // 0 to 100
@@ -9,7 +10,7 @@ interface ProgressProps {
 
 export const Progress = ({
   progress,
-  color = '#007AFF',
+  color = colors.palette.lionBook,
   height = 8,
 }: ProgressProps) => {
   const clampedProgress = Math.min(Math.max(progress, 0), 100);
@@ -31,7 +32,7 @@ export const Progress = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#E5E5EA',
+    backgroundColor: colors.palette.white,
     borderRadius: 4,
     overflow: 'hidden',
   },
