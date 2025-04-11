@@ -1,17 +1,39 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "target": "es5",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "strict": true,
     "paths": {
-      "@/*": [
-        "./*"
-      ]
-    }
+      "@/*": ["./*"]
+    },
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-native"
   },
+  "exclude": [
+    "node_modules/expo/node_modules",
+    "node_modules/expo/babel.config.js",
+    "node_modules/expo/metro.config.js",
+    "node_modules/expo/jest.config.js"
+  ],
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-  ]
+, "core/services", "hooks", "theme", "core/config", "i18n", "core/store", "constants/types", "core/utils", "core/models"  ]
 }
