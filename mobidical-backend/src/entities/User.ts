@@ -73,7 +73,7 @@ export class User {
   @OneToMany(() => Activity, (activity) => activity.Utilisateur)
   activities!: Activity[];
 
-  @OneToMany(() => Children, (children) => children.parent)
+  @OneToMany(() => Children, (children) => children.User)
   children!: Children[];
 
   @OneToMany(() => ProgressReport, (progressReport) => progressReport.user)

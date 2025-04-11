@@ -7,13 +7,14 @@ import { Session } from './Session';
 import { AIRecommendation } from './Ai_recommendation';
 import { Exercice } from './Exercice';
 import { ExerciseAssignment } from './Exercise_assignment';
+
 @Entity("children")
 export class Children {
-  @PrimaryGeneratedColumn("uuid")
-  id!: string; 
+  @PrimaryGeneratedColumn()
+  id!: number; 
 
-  @Column({ type: "uuid" })
-  parent_id!: string; 
+  @Column({ type: "int" })
+  user_id!: number; 
 
   @Column({ type: "varchar", length: 100 })
   first_name!: string;
@@ -36,12 +37,10 @@ export class Children {
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
   updated_at!: Date;
 
-  @Column({ type: "int", nullable: true }) 
-  duration?: number;
 
   @ManyToOne(() => User, (user) => user.children)
-  @JoinColumn({ name: "parent_id" })
-  parent!: User; 
+  @JoinColumn({ name: "user_id" })
+  User!: User; 
 
   @OneToMany(() => ProgressReport, (progressReport) => progressReport.child)
   progressReports!: ProgressReport[];

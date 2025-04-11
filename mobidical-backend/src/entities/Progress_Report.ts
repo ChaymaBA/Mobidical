@@ -6,11 +6,11 @@ import { Reward } from './Reward';
 
 @Entity("progress_reports")
 export class ProgressReport {
-  @PrimaryGeneratedColumn("uuid")
-  id!: string; 
+  @PrimaryGeneratedColumn()
+  id!: number; 
 
-  @Column({ type: "uuid" })
-  child_id!: string; 
+  @Column({ type: "int" })
+  child_id!: number; 
 
   @Column({ type: "date" })
   report_period_start!: Date;

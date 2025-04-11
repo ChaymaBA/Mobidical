@@ -1,13 +1,14 @@
 import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Children } from './Children'; 
 import { AudioSensitivity } from '@/types/enum.type';
+import { number } from 'zod';
 @Entity("preferences")
 export class Preference {
-  @PrimaryGeneratedColumn("uuid")
-  id!: string; 
+  @PrimaryGeneratedColumn()
+  id!: number; 
 
-  @Column({ type: "uuid" })
-  child_id!: string; 
+  @Column({ type: "int" })
+  child_id!: number; 
 
   @Column({ type: "varchar", length: 255 })
   preferred_colors!: string;

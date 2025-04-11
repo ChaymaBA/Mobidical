@@ -17,3 +17,42 @@ export const EXERCICE_ROUTES = {
   UPDATE: "/exercices/:id",
   DELETE: "/exercices/:id"
 };
+
+export const FEEDBACK_ROUTES = {
+  GET_ALL: '/',
+  GET_BY_ID: '/:id',
+  GET_BY_USER: '/user/:userId',
+  CREATE: '/',
+  UPDATE: '/:id',
+  DELETE: '/:id'
+};
+
+export const CHILDREN_ROUTES = {
+  GET_ALL: '/',
+  GET_BY_ID: '/:id',
+  GET_BY_USER: '/user/:userId',
+  CREATE: '/',
+  UPDATE: '/:id',
+  DELETE: '/:id'
+};
+
+export const PROGRESS_REPORT_ROUTES = {
+  GET_ALL: '/',
+  GET_BY_ID: '/:id',
+  GET_BY_CHILD: '/child/:childId',
+  CREATE: '/',
+  UPDATE: '/:id',
+  DELETE: '/:id',
+};
+
+// src/constants/routes.constants.ts
+// (Ajoutez ceci à votre fichier de constantes de routes existant)
+
+export const PREFERENCE_ROUTES = {
+  GET_ALL: '/',
+  GET_BY_ID: '/:id',
+  GET_BY_CHILD: '/child/:childId',
+  CREATE: '/',
+  UPDATE: '/:id',
+  DELETE: '/:id'
+};

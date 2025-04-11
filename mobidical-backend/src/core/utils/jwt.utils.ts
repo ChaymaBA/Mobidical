@@ -18,7 +18,7 @@ export class TokenUtil {
     };
 
     return jwt.sign(payload, this.JWT_SECRET, { 
-      expiresIn: '15m',  // Short-lived access token
+      expiresIn: '7d',  // Short-lived access token
       algorithm: 'HS256'
     });
   }
