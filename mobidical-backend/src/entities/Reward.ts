@@ -1,8 +1,8 @@
 import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from "typeorm";
-import { Progression } from "./Progression";
+import { ProgressReport } from "./Progress_Report";
 
-@Entity("recompenses")
-export class Recompense {
+@Entity("reward")
+export class Reward {
   @PrimaryGeneratedColumn()
   Id!: number; 
 
@@ -12,8 +12,8 @@ export class Recompense {
   @Column({ type: "int", nullable: false })
   pointsNecessaires!: number; 
 
-  @OneToMany(() => Progression, (progression) => progression.recompense)
-  progression!: Progression[]; 
+  @OneToMany(() => ProgressReport, (progressReport) => progressReport.reward)
+  progressReport!: ProgressReport[];
 
   attribuerRecompense(): void {
     

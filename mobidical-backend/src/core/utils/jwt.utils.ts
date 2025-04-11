@@ -2,7 +2,7 @@ import * as jwt from 'jsonwebtoken';
 import { TokenPayload } from '@/types';
 import { User } from '@/entities';
 import { ResetPasswordTokenPayload } from '@/types/token-payload.interface';
-
+import { UserRole } from '@/types/enum.type';
 export class TokenUtil {
   private static JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_CHANGE_IN_PRODUCTION';
   private static JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'refresh_secret_CHANGE_IN_PRODUCTION';
@@ -13,7 +13,8 @@ export class TokenUtil {
       id: user.id,
       email: user.email,
       username: user.username,
-      lastName: user.lastName
+      lastName: user.lastName,
+      role: user.role
     };
 
     return jwt.sign(payload, this.JWT_SECRET, { 
@@ -27,7 +28,8 @@ export class TokenUtil {
       id: user.id,
       email: user.email,
       username: user.username,
-      lastName: user.lastName
+      lastName: user.lastName,
+      role: user.role
     };
 
     return jwt.sign(payload, this.JWT_REFRESH_SECRET, { 
@@ -59,7 +61,7 @@ static generateResetPasswordToken(user: User): string {
   };
 
   return jwt.sign(payload, this.JWT_RESET_PASSWORD_SECRET, {
-    expiresIn: '1h',  // Expiration après 1 heure
+    expiresIn: '7d',  // Expiration après 1 heure
     algorithm: 'HS256',
   });
 }

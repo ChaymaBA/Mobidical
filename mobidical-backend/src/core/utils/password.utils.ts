@@ -1,11 +1,11 @@
 import * as bcrypt from 'bcryptjs';
 import * as zod from 'zod';
-import { passwordRegex} from '@/constants/regex'; 
+import { PASSWORD_REGEX} from '@/constants/regex.constants'; 
 export class PasswordUtil {
   // Minimum 8 characters, at least one uppercase, one lowercase, one number, and one special character
   private static passwordSchema = zod.string()
     .min(8, 'Password must be at least 8 characters')
-    .regex(passwordRegex, 'Password must include uppercase, lowercase, number, and special character');
+    .regex(PASSWORD_REGEX, 'Password must include uppercase, lowercase, number, and special character');
 
   // Hash password with salt rounds
   static async hashPassword(password: string): Promise<string> {

@@ -1,7 +1,7 @@
 import { UserRegistrationDto, UserLoginDto } from '@/dtos/auth.dto';
 import { AuthService } from '@/services/auth.service';
 import { Request, Response } from 'express';
-import { handleError } from '@/core/helpers/errorHandler';
+import { handleError } from '@/core/errors/errorHandler';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
@@ -17,7 +17,8 @@ export class AuthController {
           id: result.user.id,
           username: result.user.username,
           lastName: result.user.lastName,
-          email: result.user.email
+          email: result.user.email,
+          role: result.user.role
         },
         tokens: {
           accessToken: result.accessToken,
@@ -40,7 +41,8 @@ export class AuthController {
           id: result.user.id,
           username: result.user.username,
           lastName: result.user.lastName, 
-          email: result.user.email
+          email: result.user.email,
+          role: result.user.role
         },
         tokens: {
           accessToken: result.accessToken,
@@ -83,7 +85,8 @@ export class AuthController {
         id: user.id,
         username: user.username,
         lastName: user.lastName,
-        email: user.email
+        email: user.email,
+        role: user.role
       });
     } catch (error) {
       handleError(res, error);

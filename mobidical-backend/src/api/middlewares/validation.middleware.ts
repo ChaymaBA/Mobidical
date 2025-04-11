@@ -1,3 +1,4 @@
+import { UserRole } from '@/types/enum.type';
 import { Request, Response, NextFunction } from 'express';
 import { ZodSchema } from 'zod';
 
@@ -10,6 +11,7 @@ declare global {
         email: string;
         username: string;
         lastName: string;
+        role: UserRole;
       };
     }
   }
