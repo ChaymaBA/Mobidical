@@ -4,8 +4,8 @@ import { Children } from "@/entities/Children";
 import { RecommendationType } from "@/types/enum.type";
 @Entity("ai_recommendations")
 export class AIRecommendation {
-  @PrimaryGeneratedColumn("uuid")
-  id!: string; 
+  @PrimaryGeneratedColumn()
+  id!: number; 
 
   @ManyToOne(() => Session, (session) => session.aiRecommendations)
   session!: Session; 

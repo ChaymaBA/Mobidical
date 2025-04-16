@@ -2,14 +2,29 @@ import { UserRegistrationDto, UserLoginDto } from '@/dtos/auth.dto';
 import { AuthService } from '@/services/auth.service';
 import { Request, Response } from 'express';
 import { handleError } from '@/core/errors/errorHandler';
-export class AuthController {
-  constructor(private authService: AuthService) {}
 
+export class AuthController {
+  constructor(private authService: AuthService) {
+    // Bind all methods to keep 'this' context
+    this.register = this.register.bind(this);
+    this.login = this.login.bind(this);
+    this.refreshToken = this.refreshToken.bind(this);
+    this.getProfile = this.getProfile.bind(this);
+    this.updateProfile = this.updateProfile.bind(this);
+    this.deleteUser = this.deleteUser.bind(this);
+    this.forgotPassword = this.forgotPassword.bind(this);
+    this.resetPassword = this.resetPassword.bind(this);
+  }
 
   async register(req: Request, res: Response): Promise<void> {
     try {
       const userData = UserRegistrationDto.parse(req.body);
       const result = await this.authService.register(userData);
+      
+      // Récupérer l'ID de l'enfant par défaut s'il existe
+      const defaultChildId = result.user.children && result.user.children.length > 0 
+        ? result.user.children[0].id 
+        : null;
       
       res.status(201).json({
         message: 'User registered successfully',
@@ -18,7 +33,8 @@ export class AuthController {
           username: result.user.username,
           lastName: result.user.lastName,
           email: result.user.email,
-          role: result.user.role
+          role: result.user.role,
+          child_id: defaultChildId
         },
         tokens: {
           accessToken: result.accessToken,
@@ -26,14 +42,31 @@ export class AuthController {
         }
       });
     } catch (error) {
+      console.log("Registration error:", error);
       handleError(res, error);
     }
   }
 
   async login(req: Request, res: Response): Promise<void> {
     try {
-      const loginData = UserLoginDto.parse(req.body);
-      const result = await this.authService.login(loginData);
+      const { email, password, child_id } = req.body;
+      const loginData = UserLoginDto.parse({ email, password });
+      
+      // Convertir child_id en nombre si c'est une chaîne
+      const childId = child_id ? (typeof child_id === 'string' ? parseInt(child_id, 10) : child_id) : undefined;
+      
+      console.log("Login attempt:", { email, childId });
+      
+      // Appel à la méthode login unifiée avec childId en paramètre optionnel
+      const result = await this.authService.login(loginData, childId);
+      
+      // Obtenir l'ID de l'enfant sélectionné à partir du résultat
+      const selectedChildId = result.user.children && result.user.children.length > 0 
+        ? (childId || result.user.children[0].id) 
+        : null;
+      
+      console.log("Login successful for user:", result.user.id);
+      console.log("Selected child ID:", selectedChildId);
       
       res.json({
         message: 'Login successful',
@@ -42,7 +75,8 @@ export class AuthController {
           username: result.user.username,
           lastName: result.user.lastName, 
           email: result.user.email,
-          role: result.user.role
+          role: result.user.role,
+          child_id: selectedChildId
         },
         tokens: {
           accessToken: result.accessToken,
@@ -54,7 +88,6 @@ export class AuthController {
       handleError(res, error);
     }
   }
-  
 
   async refreshToken(req: Request, res: Response): Promise<void> {
     try {
@@ -86,7 +119,8 @@ export class AuthController {
         username: user.username,
         lastName: user.lastName,
         email: user.email,
-        role: user.role
+        role: user.role,
+        child_id: user.child_id // Inclure l'ID de l'enfant du token
       });
     } catch (error) {
       handleError(res, error);
@@ -95,39 +129,42 @@ export class AuthController {
 
   async updateProfile(req: Request, res: Response): Promise<void> {
     try {
-      const user = req.user; // Assurez-vous que l'utilisateur est authentifié
+      const user = req.user;
       if (!user) {
         res.status(401).json({ message: 'Unauthorized' });
         return;
       }
   
-      // Récupérer les données envoyées dans la requête (par exemple, nom, email, etc.)
       const { username, email, lastName } = req.body;
   
-      // Vérifier si de nouvelles données ont été fournies et mettre à jour l'utilisateur
       const updatedUser = await this.authService.updateUserProfile(user.id, {
         username, email, lastName
       });
   
       res.json({
         message: 'Profile updated successfully',
-        user: updatedUser
+        user: {
+          id: updatedUser.id,
+          username: updatedUser.username,
+          lastName: updatedUser.lastName,
+          email: updatedUser.email,
+          role: updatedUser.role,
+          child_id: user.child_id // Préserver le child_id du token
+        }
       });
     } catch (error) {
       handleError(res, error);
     }
   }
-
   
   async deleteUser(req: Request, res: Response): Promise<void> {
     try {
-      const user = req.user; // Assurez-vous que l'utilisateur est authentifié
+      const user = req.user;
       if (!user) {
         res.status(401).json({ message: 'Unauthorized' });
         return;
       }
   
-      // Appeler le service pour supprimer l'utilisateur
       await this.authService.deleteUser(user.id);
   
       res.json({
@@ -138,7 +175,6 @@ export class AuthController {
     }
   }
   
-
   async forgotPassword(req: Request, res: Response): Promise<void> {
     try {
       const { email } = req.body;
@@ -165,8 +201,4 @@ export class AuthController {
       handleError(res, error);
     }
   }
-
 }
-
-
-

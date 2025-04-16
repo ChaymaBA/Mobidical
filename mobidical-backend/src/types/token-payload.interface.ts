@@ -6,6 +6,7 @@ export interface TokenPayload {
     email: string;
     username: string;
     role: UserRole;
+    child_id?: number;
   }
 
   // src/types/token-payload.interface.ts

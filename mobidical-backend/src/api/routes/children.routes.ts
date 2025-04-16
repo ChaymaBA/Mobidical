@@ -4,6 +4,7 @@ import { ChildrenCreateDto, ChildrenUpdateDto } from '@/dtos/children.dto';
 import { ValidationMiddleware } from '@/api/middlewares/validation.middleware';
 import { AuthMiddleware } from '@/api/middlewares/auth.middleware';
 import { CHILDREN_ROUTES } from '@/constants/routes.constants';
+import { UserRole } from '@/types/enum.type';
 
 export default function (controllers: { childrenController: ChildrenController }): Router {
   const router = Router();
@@ -15,6 +16,7 @@ export default function (controllers: { childrenController: ChildrenController }
   router.get(
     CHILDREN_ROUTES.GET_ALL,
     AuthMiddleware.authenticate,
+     AuthMiddleware.requireRole(UserRole.ADMIN),
     childrenController.getAllChildren.bind(childrenController)
   );
 

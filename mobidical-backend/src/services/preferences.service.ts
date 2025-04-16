@@ -48,12 +48,17 @@ export class PreferenceService {
   async checkUserAccessToChild(userId: number | undefined, childId: number): Promise<boolean> {
     if (!userId) return false;
     
-    // This would normally be async, but we're following the feedback service pattern
     const child = await this.childrenRepository.findById(childId);
     if (!child) {
       return false;
     }
     
     return child.user_id === userId;
+  }
+
+  // Méthode ajoutée pour récupérer l'enfant associé à un utilisateur
+  async getChildByUserId(userId: number): Promise<{ id: number } | null> {
+    const children = await this.childrenRepository.findByUserId(userId);
+    return children.length ? children[0] : null;
   }
 }

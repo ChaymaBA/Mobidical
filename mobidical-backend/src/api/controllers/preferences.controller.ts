@@ -1,4 +1,3 @@
-// src/api/controllers/preference.controller.ts
 import { Request, Response } from 'express';
 import { PreferenceService } from '@/services/preferences.service';
 import { handleError } from '@/core/errors/errorHandler';
@@ -15,35 +14,40 @@ export class PreferenceController {
 
   async createPreference(req: Request, res: Response): Promise<void> {
     try {
+      const userId = req.user?.id;
+      if (!userId) {
+        res.status(401).json({ message: 'Utilisateur non authentifié' });
+        return;
+      }
+
+      // Récupération de l'enfant associé à cet utilisateur
+      const child = await this.preferenceService.getChildByUserId(userId);
+      if (!child) {
+        res.status(404).json({ message: 'Aucun enfant trouvé pour cet utilisateur' });
+        return;
+      }
+
+      // Validation des données du corps sans child_id
       const validationResult = PreferenceCreateDto.safeParse(req.body);
       if (!validationResult.success) {
         res.status(400).json({
-          message: 'Validation failed',
+          message: 'Échec de la validation',
           errors: validationResult.error.errors,
         });
         return;
       }
 
-      const preferenceData = validationResult.data;
-      
-      // Vérifier que l'utilisateur a le droit de créer une préférence pour cet enfant
-      // Seul le parent de l'enfant ou un admin peut créer des préférences
-      if (req.user?.role !== UserRole.ADMIN) {
-        const hasAccess = await this.preferenceService.checkUserAccessToChild(req.user?.id, preferenceData.child_id);
-        if (!hasAccess) {
-          res.status(403).json({
-            message: 'You can only create preferences for children you are responsible for'
-          });
-          return;
-        }
-      }
+      // Combinaison des données validées avec l'ID de l'enfant
+      const preferenceData = {
+        ...validationResult.data,
+        child_id: child.id,
+      };
 
       const preference = await this.preferenceService.createPreference(preferenceData);
-      
       const responseData = transformPreferenceToResponse(preference, req.user?.role as UserRole);
 
       res.status(201).json({
-        message: 'Preference created successfully',
+        message: 'Préférence créée avec succès',
         preference: responseData,
       });
     } catch (error) {
@@ -53,19 +57,20 @@ export class PreferenceController {
 
   async getAllPreferences(req: Request, res: Response): Promise<void> {
     try {
-      // Si c'est un admin, renvoyer toutes les préférences
-      // Si c'est un utilisateur normal, filtrer pour ne montrer que les préférences des enfants dont il est responsable
-      if (req.user?.role === UserRole.ADMIN) {
-        const preferences = await this.preferenceService.getAllPreferences();
-        const responseData = transformPreferencesToResponse(preferences, UserRole.ADMIN);
-        res.json(responseData);
-      } else if (req.user) {
-        const userPreferences = await this.preferenceService.getPreferencesByUserId(req.user.id);
-        const responseData = transformPreferencesToResponse(userPreferences, UserRole.USER);
-        res.json(responseData);
-      } else {
-        res.status(403).json({ message: 'Unauthorized access' });
-      }
+      const preferences = await this.preferenceService.getAllPreferences();
+      const responseData = transformPreferencesToResponse(preferences, req.user?.role as UserRole);
+      res.json(responseData);
+    } catch (error) {
+      handleError(res, error);
+    }
+  }
+
+  async getPreferencesByUser(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = parseInt(req.params.userId);
+      const userPreferences = await this.preferenceService.getPreferencesByUserId(userId);
+      const responseData = transformPreferencesToResponse(userPreferences, req.user?.role as UserRole);
+      res.json(responseData);
     } catch (error) {
       handleError(res, error);
     }
@@ -77,25 +82,12 @@ export class PreferenceController {
       const preference = await this.preferenceService.getPreferenceById(preferenceId);
 
       if (!preference) {
-        res.status(404).json({ message: 'Preference not found' });
+        res.status(404).json({ message: 'Préférence non trouvée' });
         return;
       }
 
-      // Vérifier que l'utilisateur est autorisé à voir cette préférence
-      if (req.user?.role === UserRole.ADMIN) {
-        const responseData = transformPreferenceToResponse(preference, UserRole.ADMIN);
-        res.json(responseData);
-      } else if (req.user) {
-        const hasAccess = await this.preferenceService.checkUserAccessToChild(req.user.id, preference.child_id);
-        if (hasAccess) {
-          const responseData = transformPreferenceToResponse(preference, UserRole.USER);
-          res.json(responseData);
-        } else {
-          res.status(403).json({ message: 'You are not authorized to view this preference' });
-        }
-      } else {
-        res.status(403).json({ message: 'Unauthorized access' });
-      }
+      const responseData = transformPreferenceToResponse(preference, req.user?.role as UserRole);
+      res.json(responseData);
     } catch (error) {
       handleError(res, error);
     }
@@ -104,17 +96,8 @@ export class PreferenceController {
   async getPreferencesByChild(req: Request, res: Response): Promise<void> {
     try {
       const childId = parseInt(req.params.childId);
-      
-      // Vérifier que l'utilisateur a le droit de voir les préférences de cet enfant
-      if (req.user?.role !== UserRole.ADMIN) {
-        const hasAccess = await this.preferenceService.checkUserAccessToChild(req.user?.id, childId);
-        if (!hasAccess) {
-          res.status(403).json({ message: 'You can only view preferences for children you are responsible for' });
-          return;
-        }
-      }
-      
       const preferences = await this.preferenceService.getPreferencesByChild(childId);
+      
       const responseData = transformPreferencesToResponse(
         preferences, 
         req.user?.role as UserRole
@@ -130,7 +113,7 @@ export class PreferenceController {
       const validationResult = PreferenceUpdateDto.safeParse(req.body);
       if (!validationResult.success) {
         res.status(400).json({
-          message: 'Validation failed',
+          message: 'Échec de la validation',
           errors: validationResult.error.errors,
         });
         return;
@@ -139,26 +122,16 @@ export class PreferenceController {
       const updateData = validationResult.data;
       const preferenceId = parseInt(req.params.id);
       
-      // Vérifier d'abord si la préférence existe
       const existingPreference = await this.preferenceService.getPreferenceById(preferenceId);
       if (!existingPreference) {
-        res.status(404).json({ message: 'Preference not found' });
+        res.status(404).json({ message: 'Préférence non trouvée' });
         return;
-      }
-      
-      // Vérifier les autorisations
-      if (req.user?.role !== UserRole.ADMIN) {
-        const hasAccess = await this.preferenceService.checkUserAccessToChild(req.user?.id, existingPreference.child_id);
-        if (!hasAccess) {
-          res.status(403).json({ message: 'You can only update preferences for children you are responsible for' });
-          return;
-        }
       }
       
       const updatedPreference = await this.preferenceService.updatePreference(preferenceId, updateData);
       
       if (!updatedPreference) {
-        res.status(500).json({ message: 'Failed to update preference' });
+        res.status(500).json({ message: 'Échec de la mise à jour de la préférence' });
         return;
       }
 
@@ -168,7 +141,7 @@ export class PreferenceController {
       );
 
       res.json({
-        message: 'Preference updated successfully',
+        message: 'Préférence mise à jour avec succès',
         preference: responseData,
       });
     } catch (error) {
@@ -180,25 +153,15 @@ export class PreferenceController {
     try {
       const preferenceId = parseInt(req.params.id);
       
-      // Vérifier d'abord si la préférence existe
       const existingPreference = await this.preferenceService.getPreferenceById(preferenceId);
       if (!existingPreference) {
-        res.status(404).json({ message: 'Preference not found' });
+        res.status(404).json({ message: 'Préférence non trouvée' });
         return;
-      }
-      
-      // Vérifier les autorisations
-      if (req.user?.role !== UserRole.ADMIN) {
-        const hasAccess = await this.preferenceService.checkUserAccessToChild(req.user?.id, existingPreference.child_id);
-        if (!hasAccess) {
-          res.status(403).json({ message: 'You can only delete preferences for children you are responsible for' });
-          return;
-        }
       }
       
       await this.preferenceService.deletePreference(preferenceId);
 
-      res.json({ message: 'Preference deleted successfully' });
+      res.json({ message: 'Préférence supprimée avec succès' });
     } catch (error) {
       handleError(res, error);
     }

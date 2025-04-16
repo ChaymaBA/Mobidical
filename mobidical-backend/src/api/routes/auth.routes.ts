@@ -67,5 +67,6 @@ export default function (controllers: { authController: AuthController }): Route
     authController.resetPassword.bind(authController)
   );
 
+
   return router;
 }

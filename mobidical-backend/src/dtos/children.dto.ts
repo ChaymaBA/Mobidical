@@ -4,7 +4,6 @@ import { UserRole } from '@/types/enum.type';
 
 // Schéma de validation pour la création d'un enfant
 export const ChildrenCreateDto = z.object({
-  user_id: z.number(),
   first_name: z.string().min(1).max(100),
   last_name: z.string().min(1).max(100),
   birth_date: z.coerce.date(),

@@ -18,8 +18,8 @@ export class ChildrenService {
     return await this.childrenRepository.findByUserId(userId);
   }
 
-  async createChild(childData: ChildrenCreateDto): Promise<Children> {
-    return await this.childrenRepository.create(childData);
+  async createChild( childData: ChildrenCreateDto, userId: number): Promise<Children> {
+    return await this.childrenRepository.create(childData, userId);
   }
 
   async updateChild(id: number, childData: ChildrenUpdateDto): Promise<Children | null> {

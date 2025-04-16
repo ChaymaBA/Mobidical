@@ -4,8 +4,8 @@ import { Exercice } from "./Exercice"; // Vérifie l'importation correcte de "Ex
 
 @Entity("exercise_assignments") // Table pour les assignations d'exercices
 export class ExerciseAssignment {
-  @PrimaryGeneratedColumn("uuid")
-  id!: string; // UUID comme identifiant primaire
+  @PrimaryGeneratedColumn()
+  id!: number; // UUID comme identifiant primaire
 
   @ManyToOne(() => Children, (child) => child.exerciseAssignments)
   child!: Children; // Relation avec l'entité "Children"

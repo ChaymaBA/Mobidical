@@ -1,3 +1,4 @@
+
 // src/repositories/feedback.repository.ts
 import { Repository, DataSource } from 'typeorm';
 import { Feedback } from '@/entities/Feedback';
@@ -33,8 +34,8 @@ export class FeedbackRepository {
     });
   }
 
-  async create(feedbackData: FeedbackCreateDtoType): Promise<Feedback> {
-    const user = await this.userRepository.findOneBy({ id: feedbackData.userId });
+  async create(userId: number, feedbackData: FeedbackCreateDtoType): Promise<Feedback> {
+    const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) {
       throw new Error('User not found');
     }
@@ -56,7 +57,7 @@ export class FeedbackRepository {
     if (feedbackData.commentaire !== undefined) {
       feedback.commentaire = feedbackData.commentaire;
     }
-    
+
     if (feedbackData.note !== undefined) {
       feedback.note = feedbackData.note;
     }

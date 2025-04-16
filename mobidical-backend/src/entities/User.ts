@@ -6,6 +6,7 @@ import { Activity } from "@/entities/";
 import { UserRole,  UserRoleType } from "@/types/enum.type"; 
 import { Children } from "@/entities/Children";
 import { ProgressReport } from "@/entities/Progress_Report";
+import { MediaAsset } from "@/entities/Media_assets";
 @Entity("users")
 export class User {
   @PrimaryGeneratedColumn()
@@ -78,4 +79,7 @@ export class User {
 
   @OneToMany(() => ProgressReport, (progressReport) => progressReport.user)
   progressReports!: ProgressReport[];
+
+  @OneToMany(() => MediaAsset, (mediaAsset) => mediaAsset.user)
+  mediaAssets!: MediaAsset[];
 }

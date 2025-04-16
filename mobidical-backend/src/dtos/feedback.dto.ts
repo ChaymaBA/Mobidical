@@ -1,10 +1,8 @@
-// src/dtos/feedback.dto.ts
 import { z } from 'zod';
 import { UserRole } from '@/types/enum.type';
 
 // DTOs d'entrée pour la validation
 export const FeedbackCreateDto = z.object({
-  userId: z.number().int().positive(),
   commentaire: z.string().min(3).max(1000),
   note: z.number().int().min(1).max(5)
 });
@@ -18,14 +16,13 @@ export const FeedbackUpdateDto = z.object({
 export type FeedbackCreateDtoType = z.infer<typeof FeedbackCreateDto>;
 export type FeedbackUpdateDtoType = z.infer<typeof FeedbackUpdateDto>;
 
-// DTOs de réponse pour présenter différentes informations selon le rôle
+// DTOs de réponse
 export interface FeedbackBaseResponseDto {
   Id: number;
   commentaire: string;
   note: number;
 }
 
-// DTO de réponse pour les administrateurs (informations complètes)
 export interface FeedbackAdminResponseDto extends FeedbackBaseResponseDto {
   user: {
     id: number;
@@ -37,12 +34,9 @@ export interface FeedbackAdminResponseDto extends FeedbackBaseResponseDto {
   created_at?: Date;
 }
 
-// DTO de réponse pour les utilisateurs standards (informations limitées)
-export interface FeedbackUserResponseDto extends FeedbackBaseResponseDto {
-  // Les utilisateurs standards ne voient que les informations basiques
-}
+export interface FeedbackUserResponseDto extends FeedbackBaseResponseDto {}
 
-// Fonction utilitaire pour transformer un feedback en DTO de réponse approprié
+// Utility functions
 export const transformFeedbackToResponse = (
   feedback: any, 
   userRole: UserRole
@@ -70,7 +64,6 @@ export const transformFeedbackToResponse = (
   }
 };
 
-// Fonction pour transformer un tableau de feedbacks
 export const transformFeedbacksToResponse = (
   feedbacks: any[], 
   userRole: UserRole

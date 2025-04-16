@@ -1,4 +1,3 @@
-// src/services/feedback.service.ts
 import { FeedbackRepository } from '@/repositories/feedback.repository';
 import { Feedback } from '@/entities/Feedback';
 import { FeedbackCreateDtoType, FeedbackUpdateDtoType } from '@/dtos/feedback.dto';
@@ -19,8 +18,8 @@ export class FeedbackService {
     return await this.feedbackRepository.findByUserId(userId);
   }
 
-  async createFeedback(feedbackData: FeedbackCreateDtoType): Promise<Feedback> {
-    return await this.feedbackRepository.create(feedbackData);
+  async createFeedback(userId: number, feedbackData: FeedbackCreateDtoType): Promise<Feedback> {
+    return await this.feedbackRepository.create(userId, feedbackData);
   }
 
   async updateFeedback(id: number, feedbackData: FeedbackUpdateDtoType): Promise<Feedback | null> {
@@ -37,7 +36,7 @@ export class FeedbackService {
     if (userRole === UserRole.ADMIN) {
       return true;
     }
-    
+
     // Les utilisateurs normaux n'ont accès qu'à leurs propres feedbacks
     return feedback.user.id === userId;
   }

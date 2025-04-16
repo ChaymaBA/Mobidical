@@ -1,31 +1,37 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
-import { Children } from "@/entities/Children";  // Assurez-vous que l'importation de "Children" est correcte
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from "typeorm";
+import { Children } from "@/entities/Children";
+import { User } from "@/entities/User";  // Assurez-vous d'importer l'entité User correctement
 
 @Entity("media_assets")
 export class MediaAsset {
-  @PrimaryGeneratedColumn("uuid")
-  id!: string; // UUID comme identifiant primaire
+  @PrimaryGeneratedColumn()
+  id!: number;
 
   @Column({
     type: "varchar",
     length: 255,
     nullable: false,
   })
-  type!: string; // Type de média (par exemple "image", "video", etc.)
+  type!: string;
 
   @Column({
     type: "text",
     nullable: false,
   })
-  url!: string; // URL où le média est stocké
+  url!: string;
 
   @ManyToOne(() => Children, (children) => children.mediaAssets)
-  child!: Children; // Relation ManyToOne avec l'entité "Children" (enfant auquel appartient le média)
+  @JoinColumn({ name: "child_id" })
+  child!: Children;
+
+  @ManyToOne(() => User, (user) => user.mediaAssets)
+  @JoinColumn({ name: "user_id" })
+  user!: User;  // Ajout de la relation avec l'entité User
 
   @Column({
     type: "timestamp",
     default: () => "CURRENT_TIMESTAMP",
     nullable: false,
   })
-  created_at!: Date; // Timestamp de la création du média
+  created_at!: Date;
 }

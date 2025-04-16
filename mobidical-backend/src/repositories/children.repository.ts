@@ -27,25 +27,24 @@ export class ChildrenRepository {
 
   async findByUserId(userId: number): Promise<Children[]> {
     return await this.childrenRepository.find({
-      where: { User: { id: userId } },
+      where: { user_id: userId }, // Searching by user_id directly
       relations: ['User']
     });
   }
 
-  async create(childData: ChildrenCreateDto): Promise<Children> {
-    const user = await this.userRepository.findOneBy({ id: childData.user_id });
+  async create(childData: ChildrenCreateDto, userId: number): Promise<Children> {
+    const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) {
       throw new Error('User not found');
     }
 
     const child = this.childrenRepository.create({
-      user_id: childData.user_id,
+      user_id: userId, // Now taking userId from the token
       first_name: childData.first_name,
       last_name: childData.last_name,
       birth_date: childData.birth_date,
       gender: childData.gender,
       diagnosis_details: childData.diagnosis_details,
-      User: user
     });
 
     return await this.childrenRepository.save(child);

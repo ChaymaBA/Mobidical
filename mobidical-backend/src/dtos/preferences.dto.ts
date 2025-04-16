@@ -5,10 +5,7 @@ import { UserRole, AudioSensitivity } from '@/types/enum.type';
 
 // DTO pour la création d'une préférence
 export const PreferenceCreateDto = z.object({
-  child_id: z.number({
-    required_error: "Child ID is required",
-    invalid_type_error: "Child ID must be a number"
-  }),
+  
   preferred_colors: z.string({
     required_error: "Preferred colors is required"
   }),

@@ -5,7 +5,7 @@ import { UserRole } from '@/types/enum.type';
 
 // Schéma de validation pour la création d'un rapport de progrès
 export const ProgressReportCreateDto = z.object({
-  child_id: z.number(),
+  child_id: z.number().optional(),
   report_period_start: z.coerce.date(),
   report_period_end: z.coerce.date(),
   cognitive_metrics: z.any().optional(),
@@ -13,8 +13,6 @@ export const ProgressReportCreateDto = z.object({
   motor_metrics: z.any().optional(),
   communication_metrics: z.any().optional(),
   observations: z.string().max(500),
-  user_id: z.number().optional(), // ID de l'utilisateur qui génère le rapport
-  reward_id: z.number().optional() // ID de la récompense associée
 });
 
 // Type pour la création d'un rapport de progrès
@@ -29,8 +27,6 @@ export const ProgressReportUpdateDto = z.object({
   motor_metrics: z.any().optional(),
   communication_metrics: z.any().optional(),
   observations: z.string().max(500).optional(),
-  user_id: z.number().optional(),
-  reward_id: z.number().optional()
 });
 
 // Type pour la mise à jour d'un rapport de progrès

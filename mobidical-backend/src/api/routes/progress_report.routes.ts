@@ -4,6 +4,7 @@ import { ProgressReportCreateDto, ProgressReportUpdateDto } from '@/dtos/progres
 import { AuthMiddleware } from '@/api/middlewares/auth.middleware';
 import { ValidationMiddleware } from '@/api/middlewares/validation.middleware';
 import { PROGRESS_REPORT_ROUTES } from '@/constants/routes.constants';
+import { UserRole } from '@/types/enum.type';
 
 export default function (controllers: { progressReportController: ProgressReportController }): Router {
   const router = Router();
@@ -13,6 +14,7 @@ export default function (controllers: { progressReportController: ProgressReport
   router.get(
     PROGRESS_REPORT_ROUTES.GET_ALL,
     AuthMiddleware.authenticate,
+     AuthMiddleware.requireRole(UserRole.ADMIN),
     progressReportController.getAllProgressReports.bind(progressReportController)
   );
 
@@ -23,16 +25,14 @@ export default function (controllers: { progressReportController: ProgressReport
     progressReportController.getProgressReportById.bind(progressReportController)
   );
 
-  // Obtenir les rapports d’un enfant
+  // Obtenir les rapports d'un enfant
   router.get(
     PROGRESS_REPORT_ROUTES.GET_BY_CHILD,
     AuthMiddleware.authenticate,
     progressReportController.getProgressReportsByChild.bind(progressReportController)
   );
 
-
-
-  // Créer un rapport
+  // Créer un rapport (avec child_id dans le body)
   router.post(
     PROGRESS_REPORT_ROUTES.CREATE,
     AuthMiddleware.authenticate,

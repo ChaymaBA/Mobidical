@@ -18,6 +18,7 @@ declare global {
         username: string;
         lastName: string;
         role: UserRole;
+        child_id?: number; // Optional child ID
       };
     }
   }
