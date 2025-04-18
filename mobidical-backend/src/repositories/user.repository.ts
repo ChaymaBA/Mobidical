@@ -12,55 +12,68 @@ export class UserRepository {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return this.repository.findOne({ where: { email } });
+    // Assurez-vous que la relation children est toujours chargée
+    return this.repository.findOne({ 
+      where: { email },
+      relations: ['children']
+    });
+  }
+
+  async findById(id: number): Promise<User | null> {
+    // Assurez-vous que la relation children est toujours chargée
+    return this.repository.findOne({ 
+      where: { id },
+      relations: ['children']
+    });
   }
 
   async findByUsername(username: string): Promise<User | null> {
-    return this.repository.findOne({ where: { username } });
+    return this.repository.findOne({ 
+      where: { username },
+      relations: ['children'] 
+    });
   }
 
   async createUser(userData: UserRegistration): Promise<User> {
-      const existingUser = await this.findByEmail(userData.email);
-      if (existingUser) {
-        throw new Error('Email already exists');
-      }
-  
-      const hashedPassword = await PasswordUtil.hashPassword(userData.password);
-  
-      const user = this.repository.create({
-        username: userData.username,
-        lastName: userData.lastName,
-        email: userData.email,
-        password_hash: hashedPassword,
-        is_active: true,
-        role: userData.role as UserRole,
-      });
+    const existingUser = await this.findByEmail(userData.email);
+    if (existingUser) {
+      throw new Error('Email already exists');
+    }
 
-      return this.repository.save(user);
+    const hashedPassword = await PasswordUtil.hashPassword(userData.password);
+
+    const user = this.repository.create({
+      username: userData.username,
+      lastName: userData.lastName,
+      email: userData.email,
+      password_hash: hashedPassword,
+      is_active: true,
+      role: userData.role as UserRole,
+    });
+
+    return this.repository.save(user);
   }
 
   async updateLastLogin(userId: number): Promise<void> {
     await this.repository.update(userId, { 
       lastLogin: new Date() 
-      // You could add a last_login_at column to track this
     });
   }
 
   async updateUser(userId: number, updateData: Partial<UserRegistration>): Promise<User> {
-    // Trouver l'utilisateur
-    const user = await this.repository.findOne({ where: { id: userId } });
+    const user = await this.repository.findOne({ 
+      where: { id: userId },
+      relations: ['children']
+    });
   
     if (!user) {
       throw new Error('User not found');
     }
   
-    // Appliquer les nouvelles valeurs à l'objet `user`
     Object.assign(user, updateData);
   
-    // Sauvegarder les modifications
     return this.repository.save(user);
   }
-  
   
   async deleteUser(userId: number): Promise<void> {
     const result = await this.repository.delete(userId);
@@ -70,7 +83,6 @@ export class UserRepository {
     }
   }
 
-  // Nouvelle méthode pour enregistrer un token de réinitialisation du mot de passe
   async saveResetPasswordToken(userId: number, token: string): Promise<void> {
     const user = await this.repository.findOne({ where: { id: userId } });
     
@@ -81,14 +93,14 @@ export class UserRepository {
     }
   }
 
-  // Nouvelle méthode pour mettre à jour le mot de passe de l'utilisateur
   async updateUserPassword(userId: number, newPassword: string): Promise<void> {
     const user = await this.repository.findOne({ where: { id: userId } });
     
     if (user) {
-      user.password_hash = await PasswordUtil.hashPassword(newPassword); // Hacher le mot de passe avant de l'enregistrer
+      user.password_hash = newPassword; // Le mot de passe est déjà haché par le service
+      user.resetPasswordToken = null; // Réinitialiser le token après le changement de mot de passe
+      user.resetPasswordTokenExpiry = null;
       await this.repository.save(user);
     }
   }
-  
 }

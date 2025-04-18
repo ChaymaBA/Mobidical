@@ -1,15 +1,13 @@
 import { Request, Response } from 'express';
 import { ExerciceService } from '@/services/exercice.service';
 import { handleError } from '@/core/errors/errorHandler';
-import { ExerciceCreateDto, ExerciceUpdateDto } from '@/dtos/exercice.dto'; // Importation des DTOs
-
+import { ExerciceCreateDto, ExerciceUpdateDto, ExerciceCreate,ExerciceUpdate } from '@/dtos/exercice.dto';
+import  { Difficulty} from '@/types/enum.type';
 export class ExerciceController {
   constructor(private exerciceService: ExerciceService) {}
 
-  // Créer un nouvel exercice
   async createExercice(req: Request, res: Response): Promise<void> {
     try {
-     
       const validationResult = ExerciceCreateDto.safeParse(req.body);
       if (!validationResult.success) {
         res.status(400).json({
@@ -19,7 +17,12 @@ export class ExerciceController {
         return;
       }
 
-      const exerciceData = validationResult.data;
+      // Cast enum fields to correct types
+      const exerciceData: ExerciceCreate = {
+        ...validationResult.data,
+        difficulty: validationResult.data.difficulty as Difficulty,
+      };
+
       const exercice = await this.exerciceService.createExercice(exerciceData);
 
       res.status(201).json({
@@ -31,7 +34,7 @@ export class ExerciceController {
     }
   }
 
-  // Récupérer tous les exercices
+
   async getAllExercices(req: Request, res: Response): Promise<void> {
     try {
       const exercices = await this.exerciceService.getAllExercices();
@@ -41,22 +44,18 @@ export class ExerciceController {
     }
   }
 
-  // Récupérer les exercices d'un utilisateur spécifique
   async getExercicesByUser(req: Request, res: Response): Promise<void> {
     try {
       const userId = parseInt(req.params.userId);
       const exercices = await this.exerciceService.getExercicesByUser(userId);
-
       res.json(exercices);
     } catch (error) {
       handleError(res, error);
     }
   }
 
-  // Mettre à jour un exercice
   async updateExercice(req: Request, res: Response): Promise<void> {
     try {
-    
       const validationResult = ExerciceUpdateDto.safeParse(req.body);
       if (!validationResult.success) {
         res.status(400).json({
@@ -66,7 +65,7 @@ export class ExerciceController {
         return;
       }
 
-      const updateData = validationResult.data;
+      const updateData: ExerciceUpdate = validationResult.data;
       const exerciceId = parseInt(req.params.id);
       const updatedExercice = await this.exerciceService.updateExercice(exerciceId, updateData);
 
@@ -84,10 +83,8 @@ export class ExerciceController {
     }
   }
 
-  // Supprimer un exercice
   async deleteExercice(req: Request, res: Response): Promise<void> {
     try {
-
       const exerciceId = parseInt(req.params.id);
       const isDeleted = await this.exerciceService.deleteExercice(exerciceId);
 
@@ -101,5 +98,4 @@ export class ExerciceController {
       handleError(res, error);
     }
   }
-
 }

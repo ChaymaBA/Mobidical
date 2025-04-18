@@ -4,8 +4,8 @@ import { AIRecommendation } from "./Ai_recommendation"; // Importation de l'enti
 
 @Entity("sessions")
 export class Session {
-  @PrimaryGeneratedColumn("uuid")
-  id!: string; // Utilisation de UUID pour l'id
+  @PrimaryGeneratedColumn()
+  id!: number; // Utilisation de UUID pour l'id
 
   @ManyToOne(() => Children, (child) => child.sessions) // Relation ManyToOne avec l'entité Children
   child!: Children;
