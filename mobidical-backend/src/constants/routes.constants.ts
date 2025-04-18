@@ -57,3 +57,23 @@ export const PREFERENCE_ROUTES = {
   UPDATE: '/:id',
   DELETE: '/:id'
 };
+
+export const MEDIA_ASSET_ROUTES = {
+  GET_ALL: '/',
+  GET_BY_ID: '/:id',
+  GET_BY_USER: '/user/:userId',
+  GET_BY_CHILD: '/child/:childId', // Changé pour refléter que l'ID est pris du token
+  GET_TYPES: '/types',
+  CREATE: '/',
+  UPDATE: '/:id',
+  DELETE: '/:id'
+};
+
+export const EXERCISE_ASSIGNMENT_ROUTES = {
+  GET_ALL: '/',
+  GET_BY_ID: '/:id',
+  GET_BY_CHILD: '/child/:childId',
+  CREATE: '/',
+  UPDATE: '/:id',
+  DELETE: '/:id',
+};
