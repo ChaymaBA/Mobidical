@@ -1,99 +1,75 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { ChevronDown, ChevronUp } from 'lucide-react-native';
-import {colors } from'@/theme/colors';
-interface DropdownProps {
-  options: string[];
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-}
+import React from 'react';
+import DropDownPicker, { DropDownPickerProps } from 'react-native-dropdown-picker';
+import { StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import useTheme from '@/theme/useTheme';
 
-export const Dropdown = ({
-  options,
-  value,
-  onChange,
-  placeholder = 'Select an option',
-}: DropdownProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.header}
-        onPress={() => setIsOpen(!isOpen)}
-      >
-        <Text style={styles.headerText}>
-          {value || placeholder}
-        </Text>
-        {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-      </TouchableOpacity>
-      
-      {isOpen && (
-        <View style={styles.optionsContainer}>
-          {options.map((option) => (
-            <TouchableOpacity
-              key={option}
-              style={styles.option}
-              onPress={() => {
-                onChange(option);
-                setIsOpen(false);
-              }}
-            >
-              <Text style={[
-                styles.optionText,
-                option === value && styles.selectedOption
-              ]}>
-                {option}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
-    </View>
-  );
+type CustomDropDownProps<T = any> = {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  value: T;
+  setValue: React.Dispatch<React.SetStateAction<T>>;
+  items: DropDownPickerProps<T>['items'];
+  placeholderKey: string;
+  zIndex?: number;
+  zIndexInverse?: number;
+  name?: string;
 };
 
+export function CustomDropDown<T = any>({
+  open,
+  setOpen,
+  value,
+  setValue,
+  items,
+  placeholderKey,
+  zIndex = 1000,
+  zIndexInverse = 1000,
+  name,
+}: CustomDropDownProps<T>) {
+  const { t } = useTranslation();
+  const {theme} = useTheme();
+
+  return (
+    <DropDownPicker
+      open={open}
+      setOpen={setOpen}
+      value={value}
+      setValue={setValue}
+      items={items}
+      placeholder={t(placeholderKey)}
+      style={[
+        styles.dropdown,
+        {
+          backgroundColor: theme.background,
+          borderWidth: 0,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 3,
+          elevation: 2,
+        },
+      ]}
+      listMode="SCROLLVIEW"
+      scrollViewProps={{ nestedScrollEnabled: true }}
+      zIndex={zIndex}
+      zIndexInverse={zIndexInverse}
+      dropDownContainerStyle={styles.dropdownContainer}
+      containerStyle={{ marginBottom: 15 }}
+      textStyle={{ color: theme.textPrimary }}
+    />
+  );
+}
+
 const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-    zIndex: 1,
+  dropdown: {
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    height: 50,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 12,
-    borderWidth: 1,
-    borderColor: colors.palette.white ,
-    borderRadius: 8,
-    backgroundColor: 'white',
-  },
-  headerText: {
-    fontSize: 16,
-  },
-  optionsContainer: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: colors.palette.white,
-    borderRadius: 8,
+  dropdownContainer: {
+    borderWidth: 0,
+    elevation: 3,
+    borderRadius: 12,
     marginTop: 4,
-    maxHeight: 200,
-  },
-  option: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
-  optionText: {
-    fontSize: 16,
-  },
-  selectedOption: {
-    color: colors.palette.lionBook,
-    fontWeight: 'bold',
   },
 });

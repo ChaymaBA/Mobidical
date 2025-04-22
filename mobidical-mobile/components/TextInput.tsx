@@ -1,5 +1,5 @@
 import React, { useState, forwardRef } from 'react';
-import { TextInput as RNTextInput, View, Text, StyleSheet, TextInputProps, TouchableOpacity, ReturnKeyTypeOptions, KeyboardTypeOptions } from 'react-native';
+import { TextInput as RNTextInput, View, Text, StyleSheet, TextInputProps, TouchableOpacity, ReturnKeyTypeOptions, KeyboardTypeOptions, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Controller, Control, FieldValues } from 'react-hook-form';
 import { colors } from '@/theme/colors';
@@ -17,6 +17,7 @@ interface CustomTextInputProps extends TextInputProps {
   keyboardType?: KeyboardTypeOptions;
   placeholder?: string;
   placeholderTextColor?: string;
+  iconbackgroundColor?: ViewStyle;
   onSubmitEditing?: () => void;
 }
 
@@ -44,6 +45,7 @@ export const TextInput = forwardRef<RNTextInput, CustomTextInputProps>(
                   name={leftIcon}
                   size={20}
                   color="#333"
+                  backgroundColor={colors.palette.white}
                 />
               </View>
             )}
@@ -101,6 +103,7 @@ export const TextInput = forwardRef<RNTextInput, CustomTextInputProps>(
                       name={leftIcon}
                       size={20}
                       color="#333"
+         
                     />
                   </View>
                 )}
@@ -212,19 +215,19 @@ const stylesRegister = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.palette.white,
     borderRadius: 8,
     paddingHorizontal: 10,
-    backgroundColor: '#fff',
+    backgroundColor: colors.palette.white,
   },
   icon: {
     marginRight: 8,
-    color: '#999',
+    color: colors.palette.text100,
   },
   input: {
     flex: 1,
     height: 45,
-    color: '#000',
+    color: colors.palette.black ,
   },
   eyeIconWrapper: {
     marginLeft: 8,
@@ -244,14 +247,14 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 8,
-    color: '#333',
+    color: colors.palette.overlay50,
     width: '100%',
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: colors.palette.text100,
     borderRadius: 8,
     width: '100%',
   },
@@ -286,9 +289,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.palette.white,
     borderRadius: 8,
     paddingHorizontal: 10,
-    backgroundColor: '#fff',
+    backgroundColor: colors.palette.white,
   },
 });

@@ -1,51 +1,67 @@
-import React, { ReactNode } from 'react';
-import { Modal as RNModal, View, TouchableOpacity, StyleSheet } from 'react-native';
-import { X } from 'lucide-react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
+import { useTheme } from '@/theme/themeProvider'; 
+// import { i18n } from '@/i18n/i18n';
+import {colors} from '@/theme/colors';
 
-interface ModalProps {
+type LanguageModalProps = {
   visible: boolean;
   onClose: () => void;
-  children: ReactNode;
-}
+};
 
-export const Modal = ({ visible, onClose, children }: ModalProps) => {
+const LanguageModal: React.FC<LanguageModalProps> = ({ visible, onClose }) => {
+  const { theme } = useTheme();
+
+  const languages = [
+    { code: 'en', name: 'English' },
+    { code: 'fr', name: 'Français' },
+    { code: 'ar', name: 'العربية' },
+  ];
+
   return (
-    <RNModal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
-      <View style={styles.overlay}>
-        <View style={styles.content}>
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <X size={24} color="#333" />
-          </TouchableOpacity>
-          {children}
+    <Modal visible={visible} transparent animationType="slide">
+      <View style={[styles.modalOverlay, { backgroundColor: colors.palette.overlay20}]}>
+        <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
+          {languages.map((lang) => (
+            <TouchableOpacity
+              key={lang.code}
+              style={styles.languageItem}
+              onPress={() => {
+                // i18n.changeLanguage(lang.code);
+                onClose();
+              }}
+            >
+              <Text style={[styles.languageText, { color: theme.textPrimary }]}>
+                {lang.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </View>
       </View>
-    </RNModal>
+    </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  overlay: {
+  modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  content: {
-    backgroundColor: 'white',
-    borderRadius: 12,
+  modalContent: {
+    width: '80%',
+    borderRadius: 10,
     padding: 20,
-    width: '90%',
-    maxWidth: 400,
   },
-  closeButton: {
-    position: 'absolute',
-    right: 12,
-    top: 12,
-    zIndex: 1,
+  languageItem: {
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor:colors.palette.white ,
+  },
+  languageText: {
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
+
+export default LanguageModal;

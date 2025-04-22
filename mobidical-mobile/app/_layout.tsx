@@ -1,13 +1,14 @@
 import { AuthProvider, useAuth } from '@/navigation/AuthContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Stack, useRouter } from 'expo-router';
-import { View, ActivityIndicator } from 'react-native';
-import { useEffect, useState } from 'react';
-import { colors } from '@/theme/colors';
+import { useEffect } from 'react';
+import useTheme from '@/theme/useTheme';
+import '@/i18n';
+import { $styles } from '@/theme/styles';
 
 export default function RootLayout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={$styles.flex1}>
       <AuthProvider>
         <RootNavigation />
       </AuthProvider>
@@ -17,44 +18,32 @@ export default function RootLayout() {
 
 function RootNavigation() {
   const { isAuthenticated } = useAuth();
+  const { theme } = useTheme();
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
 
+  // Handle navigation based on authentication and kids info status
   useEffect(() => {
-    if (isAuthenticated !== undefined) {
-      setTimeout(() => {
         if (isAuthenticated) {
-          router.replace('/(tabs)');
+          console.log(isAuthenticated)
+          // User is authenticated
+            router.replace('/(tabs)');
         } else {
+          // User is not authenticated, show login first
           router.replace('/(auth)/login');
-        }
-        setLoading(false);
-      }, 100);
-    }
+        }    
   }, [isAuthenticated]);
 
   return (
     <>
-      <Stack screenOptions={{ gestureEnabled: true, headerShown: false }} />
-      {loading && (
-        <View
-          style={{
-            position: 'absolute',
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: colors.palette.white 
-          }}
-        >
-          <ActivityIndicator
-            size="large"
-            color={colors.palette.owlBook} 
-          />
-        </View>
-      )}
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: {
+            backgroundColor: theme.background
+          }
+        }}
+      />
+
     </>
   );
 }

@@ -29,17 +29,11 @@ export const darkColors = {
      * La palette complète des couleurs.
      */
     palette: Darkpalette,
-    /**
-     * Couleur transparente.
-     */
+        
     transparent: "rgba(0, 0, 0, 0)",
-    /**
-     * Couleur principale de texte.
-     */
+   
     text: Darkpalette.text100,
-    /**
-     * Texte secondaire.
-     */
+   
     textDim: Darkpalette.text200,
     /**
      * Couleur de fond principale.

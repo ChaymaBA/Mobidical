@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, SafeAreaView, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Image, SafeAreaView, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '@/navigation/AuthContext';
 import { TextInput } from '@/components/TextInput';
@@ -7,14 +7,15 @@ import { Button } from '@/components/Button';
 import { Text } from '@/components/CustomText';
 import { useForm, Controller } from 'react-hook-form';
 import { images } from '@/theme/images';
-import { colors } from '@/theme/colors';
-import { RadioButton } from '@/components/RadioButton';
-import { validateEmail } from '@/utils/validation';
 import * as ImagePicker from 'expo-image-picker';
-import { Camera, User } from 'lucide-react-native';
+import { Camera, User, ArrowLeft } from 'lucide-react-native';
 import { editProfilestyles } from '@/utils/styles';
+import useTheme from '@/theme/useTheme';
+import { colors } from '@/theme';
+import DropDownPicker from 'react-native-dropdown-picker';
+import UserStore from '@/src/stores/UserStores';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-// Define the form input types
 type EditProfileFormInputs = {
     firstName: string;
     lastName: string;
@@ -25,22 +26,34 @@ type EditProfileFormInputs = {
 };
 
 export default function EditProfileScreen() {
+    const { theme } = useTheme();
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [profileImage, setProfileImage] = useState<string | null>(null);
-    const { user, updateUserProfile } = useAuth() as { user: { firstName?: string; lastName?: string; email?: string; userType?: string; profileImage?: string }; updateUserProfile?: (data: EditProfileFormInputs) => Promise<void> };
+    const { user, updateUserProfile } = useAuth() as {
+        user: {
+            firstName?: string;
+            lastName?: string;
+            email?: string;
+            userType?: string;
+            profileImage?: string;
+        };
+        updateUserProfile?: (data: EditProfileFormInputs) => Promise<void>;
+    };
 
-    const userTypeOptions = ['Educator', 'Parent', 'Therapist'];
-
-    // Set up React Hook Form
-    const { control, handleSubmit, formState: { errors }, setValue } = useForm<EditProfileFormInputs>({
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+        setValue,
+    } = useForm<EditProfileFormInputs>({
         defaultValues: {
             firstName: user?.firstName || '',
             lastName: user?.lastName || '',
             email: user?.email || '',
             userType: user?.userType || '',
             profileImage: user?.profileImage || '',
-        }
+        },
     });
 
     useEffect(() => {
@@ -55,7 +68,6 @@ export default function EditProfileScreen() {
         }
     }, [user, setValue]);
 
-    // Image picking functionality
     const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
@@ -68,9 +80,12 @@ export default function EditProfileScreen() {
             aspect: [1, 1],
             quality: 0.7,
         });
-        if (!result.canceled && result.assets && result.assets.length > 0) {
+        if (!result.canceled && result.assets?.length > 0) {
             setProfileImage(result.assets[0].uri);
             setValue('profileImage', result.assets[0].uri);
+
+            // Mettre à jour l'image de profil dans le store MobX
+            UserStore.setProfileImage(result.assets[0].uri);
         }
     };
 
@@ -85,22 +100,21 @@ export default function EditProfileScreen() {
             aspect: [1, 1],
             quality: 0.7,
         });
-        if (!result.canceled && result.assets && result.assets.length > 0) {
+        if (!result.canceled && result.assets?.length > 0) {
             setProfileImage(result.assets[0].uri);
             setValue('profileImage', result.assets[0].uri);
+
+            // Mettre à jour l'image de profil dans le store MobX
+            UserStore.setProfileImage(result.assets[0].uri);
         }
     };
 
     const showImageOptions = () => {
-        Alert.alert(
-            'Profile Picture',
-            'Choose an option',
-            [
-                { text: 'Take Photo', onPress: takePhoto },
-                { text: 'Choose from Gallery', onPress: pickImage },
-                { text: 'Cancel', style: 'cancel' },
-            ]
-        );
+        Alert.alert('Profile Picture', 'Choose an option', [
+            { text: 'Take Photo', onPress: takePhoto },
+            { text: 'Choose from Gallery', onPress: pickImage },
+            { text: 'Cancel', style: 'cancel' },
+        ]);
     };
 
     const onSubmit = async (data: EditProfileFormInputs) => {
@@ -116,7 +130,6 @@ export default function EditProfileScreen() {
                 Alert.alert('Success', 'Profile updated successfully!');
                 router.back();
             } else {
-                console.error('updateUserProfile is undefined');
                 Alert.alert('Error', 'Unable to update profile at this time.');
             }
         } catch (err) {
@@ -127,21 +140,27 @@ export default function EditProfileScreen() {
         }
     };
 
+    const [open, setOpen] = useState(false);
+    const [items, setItems] = useState([
+        { label: 'Educator', value: 'Educator' },
+        { label: 'Parent', value: 'Parent' },
+        { label: 'Therapist', value: 'Therapist' },
+    ]);
+
     return (
-        <SafeAreaView style={editProfilestyles.safeArea}>
-            <View style={editProfilestyles.container}>
+        <SafeAreaView style={[editProfilestyles.safeArea, { backgroundColor: theme.background }]}>
+            <View style={[editProfilestyles.container, { backgroundColor: theme.background }]}>
                 <View style={editProfilestyles.headerContainer}>
                     <TouchableOpacity style={editProfilestyles.backButton} onPress={() => router.back()}>
-                        <Text style={editProfilestyles.backButtonText}>Back</Text>
+                        <ArrowLeft color={theme.primary} size={24} />
                     </TouchableOpacity>
-                    <Text style={editProfilestyles.appName}>MOBIDICAL</Text>
+                    <Text style={StyleSheet.flatten([editProfilestyles.appName, { color: theme.primary }])}>MOBIDICAL</Text>
                     <Image source={images.app_logo} style={editProfilestyles.logo} />
                 </View>
 
-                <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-                    <Text style={editProfilestyles.pageTitle}>Edit Profile</Text>
-
-                    {error ? <Text style={editProfilestyles.errorText}>{error}</Text> : null}
+                <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+                    <Text style={StyleSheet.flatten([editProfilestyles.pageTitle, { color: theme.textPrimary }])}>Edit Profile</Text>
+                    {error ? <Text style={StyleSheet.flatten([editProfilestyles.errorText, { color: theme.error }])}>{error}</Text> : null}
 
                     {/* Profile Image */}
                     <View style={editProfilestyles.profileImageContainer}>
@@ -149,45 +168,47 @@ export default function EditProfileScreen() {
                             {profileImage ? (
                                 <Image source={{ uri: profileImage }} style={editProfilestyles.userImage} />
                             ) : (
-                                <User size={60} color={colors.palette.text200} style={editProfilestyles.userIcon} />
+                                <User size={60} color={theme.textSecondary} style={editProfilestyles.userIcon} />
                             )}
                             <View style={editProfilestyles.imageActionButton}>
-                                <Camera size={20} color="white" />
+                                <Camera size={20} color={colors.palette.text200} />
                             </View>
                         </TouchableOpacity>
                     </View>
 
                     {/* First Name */}
                     <View style={editProfilestyles.inputContainer}>
-                        <Text style={editProfilestyles.inputLabel}>First Name</Text>
+                        <Text style={StyleSheet.flatten([editProfilestyles.inputLabel, { color: theme.textPrimary }])}>First Name</Text>
                         <TextInput
                             name="firstName"
+                            leftIcon="person"
                             control={control}
                             rules={{ required: 'First name is required' }}
                             style={editProfilestyles.inputField}
                             placeholder="Enter your first name"
-                            placeholderTextColor={colors.palette.text100}
+                            placeholderTextColor={theme.textSecondary}
                         />
-                        {errors.firstName && <Text style={editProfilestyles.errorText}>{errors.firstName.message}</Text>}
+                        {errors.firstName && <Text style={StyleSheet.flatten([editProfilestyles.errorText, { color: theme.error }])}>{errors.firstName.message}</Text>}
                     </View>
 
                     {/* Last Name */}
                     <View style={editProfilestyles.inputContainer}>
-                        <Text style={editProfilestyles.inputLabel}>Last Name</Text>
+                        <Text style={StyleSheet.flatten([editProfilestyles.inputLabel, { color: theme.textPrimary }])}>Last Name</Text>
                         <TextInput
                             name="lastName"
+                            leftIcon="person"
                             control={control}
                             rules={{ required: 'Last name is required' }}
                             style={editProfilestyles.inputField}
                             placeholder="Enter your last name"
-                            placeholderTextColor={colors.palette.text100}
+                            placeholderTextColor={theme.textSecondary}
                         />
-                        {errors.lastName && <Text style={editProfilestyles.errorText}>{errors.lastName.message}</Text>}
+                        {errors.lastName && <Text style={StyleSheet.flatten([editProfilestyles.errorText, { color: theme.error }])}>{errors.lastName.message}</Text>}
                     </View>
 
                     {/* Email */}
                     <View style={editProfilestyles.inputContainer}>
-                        <Text style={editProfilestyles.inputLabel}>Email</Text>
+                        <Text style={StyleSheet.flatten([editProfilestyles.inputLabel, { color: theme.textPrimary }])}>Email</Text>
                         <TextInput
                             name="email"
                             control={control}
@@ -195,29 +216,42 @@ export default function EditProfileScreen() {
                             autoCapitalize="none"
                             keyboardType="email-address"
                             placeholder="Enter your email"
-                            placeholderTextColor={colors.palette.text100}
-                            rules={{
-                                required: 'Email is required',
-                                validate: validateEmail,
-                            }}
-                            editable={false}
+                            placeholderTextColor={theme.textSecondary}
+                            rules={{ required: 'Email is required' }}
                             style={{ ...editProfilestyles.inputField, opacity: 0.7 }}
                         />
-                        <Text style={editProfilestyles.noteText}>Email cannot be changed</Text>
+                        <Text style={StyleSheet.flatten([editProfilestyles.noteText, { color: theme.textSecondary }])}>Email cannot be changed</Text>
                     </View>
 
-                    {/* User Type */}
-                    <View style={editProfilestyles.inputContainer}>
-                        <Text style={editProfilestyles.inputLabel}>User Type</Text>
+                    {/* User Type Dropdown */}
+                    <View style={[editProfilestyles.inputContainer, { zIndex: 1000 }]}>
+                        <Text style={StyleSheet.flatten([editProfilestyles.inputLabel, { color: theme.textPrimary }])}>User Type</Text>
                         <Controller
                             control={control}
                             name="userType"
                             rules={{ required: 'Please select a user type' }}
                             render={({ field: { onChange, value } }) => (
-                                <RadioButton options={userTypeOptions} value={value} onChange={onChange} disabled={loading} />
+                                <DropDownPicker
+                                    open={open}
+                                    setOpen={setOpen}
+                                    items={items}
+                                    setItems={setItems}
+                                    value={value}
+                                    setValue={onChange}
+                                    placeholder="Select user type"
+                                    disabled={loading}
+                                    style={{ backgroundColor: theme.background, borderColor: theme.border }}
+                                    dropDownContainerStyle={{ backgroundColor: theme.card, borderColor: theme.border }}
+                                    textStyle={{ color: theme.textPrimary }}
+                                    placeholderStyle={{ color: theme.textSecondary }}
+                                />
                             )}
                         />
-                        {errors.userType && <Text style={editProfilestyles.errorText}>{errors.userType.message}</Text>}
+                        {errors.userType && (
+                            <Text style={StyleSheet.flatten([editProfilestyles.errorText, { color: theme.error }])}>
+                                {errors.userType.message}
+                            </Text>
+                        )}
                     </View>
 
                     <Button
@@ -226,7 +260,7 @@ export default function EditProfileScreen() {
                         style={editProfilestyles.button}
                         disabled={loading}
                     />
-                </ScrollView>
+                </KeyboardAwareScrollView>
             </View>
         </SafeAreaView>
     );

@@ -35,7 +35,7 @@ const ResetPasswordScreen = () => {
 
   return (
     <ImageBackground
-      source={images.home}
+      source={images.forg}
       style={passwordScreenStyles.backgroundImage}
       resizeMode="cover"
     >
@@ -51,7 +51,7 @@ const ResetPasswordScreen = () => {
           </View>
 
           <View style={passwordScreenStyles.container}>
-            <Text variant="h1" style={passwordScreenStyles.title}>Reset Password</Text>
+            <Text variant="h1" style={passwordScreenStyles.titleP}>Reset Password</Text>
 
             <Text style={passwordScreenStyles.description}>
               Enter your email address and we'll send you instructions to reset your password.

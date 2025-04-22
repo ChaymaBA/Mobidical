@@ -1,11 +1,16 @@
+import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from '@/components/CustomText';
+import useTheme from '@/theme/useTheme';
 
 export default function HomeScreen() {
+  // Récupération du thème actuel
+  const { theme } = useTheme();
+
   return (
-    <View style={styles.container}>
-      <Text variant="h1">Home</Text>
-      <Text>Welcome to the home screen!</Text>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <Text variant="h1" style={{ color: theme.textPrimary }}>Home</Text>
+      <Text style={{ color: theme.textSecondary }}>Welcome to the home screen!</Text>
     </View>
   );
 }

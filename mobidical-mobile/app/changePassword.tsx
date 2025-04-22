@@ -10,7 +10,7 @@ import {
     Image,
 } from 'react-native';
 import { colors } from '@/theme/colors';
-import ChangePasswordstyles from '@/utils/styles'
+import { ChangePasswordstyles } from '@/utils/styles';
 import { useAuth } from '@/navigation/AuthContext';
 import { images } from '@/theme/images';
 
@@ -103,7 +103,7 @@ const ChangePassword = () => {
                 />
             </View>
 
-            <Text style={ChangePasswordstyles.title}>Changer le mot de passe</Text>
+            <Text style={ChangePasswordstyles.titleCHP}>Changer le mot de passe</Text>
 
             <View style={ChangePasswordstyles.inputContainer}>
                 <Text style={ChangePasswordstyles.label}>Mot de passe actuel</Text>

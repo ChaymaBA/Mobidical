@@ -1,4 +1,4 @@
-// utils/validation.ts
+import { colors } from "@/theme";
 
 export const validateEmail = (value: string) => {
     if (!value) return "Email is required";
@@ -20,15 +20,15 @@ export const validateEmail = (value: string) => {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(value)) {
-        return "Email format is invalid (check for spaces or invalid characters)";
+        return { message: "Email format is invalid (check for spaces or invalid characters",colors:colors.palette.lionRed}
     }
 
     return true;
 };
 
 export const validatePassword = (value: string) => {
-    if (!value) return "Password is required";
-    if (value.length < 8) return "Password must be at least 8 characters";
+    if (!value) return {message:"Password is required", colors:colors.palette.liongreen};
+    if (value.length < 8) return {message:"Password must be at least 8 characters", colors:colors.palette.lionRed};
 
     const hasUpperCase = /[A-Z]/.test(value);
     const hasLowerCase = /[a-z]/.test(value);

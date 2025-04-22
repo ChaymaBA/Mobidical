@@ -12,5 +12,7 @@ export const images = {
     setting: require("../assets/images/setting.png"),
     tor: require("../assets/images/tor.png"),
     rob: require("../assets/images/rob.png"),
-    home :require("../assets/images/home.png"),
+    home :require("../assets/images/home .png"),
+    forg: require("../assets/images/forg.png"),
+
 };
