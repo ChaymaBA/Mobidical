@@ -1,5 +1,6 @@
 import React from 'react';
-import { Image as RNImage, ImageProps, StyleSheet } from 'react-native';
+import { Image as RNImage, ImageProps} from 'react-native';
+import { imagestyles } from './stylesComponents'
 
 interface CustomImageProps extends ImageProps {
   rounded?: boolean;
@@ -9,8 +10,8 @@ export const Image = ({ rounded, style, ...props }: CustomImageProps) => {
   return (
     <RNImage
       style={[
-        styles.image,
-        rounded && styles.rounded,
+        imagestyles.image,
+        rounded && imagestyles.rounded,
         style,
       ]}
       {...props}
@@ -18,12 +19,3 @@ export const Image = ({ rounded, style, ...props }: CustomImageProps) => {
   );
 };
 
-const styles = StyleSheet.create({
-  image: {
-    width: '100%',
-    height: 200,
-  },
-  rounded: {
-    borderRadius: 12,
-  },
-});

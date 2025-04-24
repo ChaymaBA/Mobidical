@@ -5,7 +5,6 @@ import {
     SafeAreaView,
     ScrollView,
     Image,
-    TouchableOpacity,
     Alert,
     Platform,
     KeyboardAvoidingView,
@@ -15,19 +14,21 @@ import {
 import { router } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Custom components
 import { TextInput } from '@/components/TextInput';
 import { Button } from '@/components/Button';
 import { Text } from '@/components/CustomText';
 import { RadioButton } from '@/components/RadioButton';
-import { DatePicker } from '@/components/PikeDate'; 
+import { DatePicker } from '@/components/PikeDate';
+
+// Theme, images, and styles
 import { images } from '@/theme/images';
 import useTheme from '@/theme/useTheme';
 import { useTranslation } from 'react-i18next';
 import { registerScreenStyles } from '@/utils/styles';
 import { colors } from '@/theme/colors';
 import { useAuth } from '@/navigation/AuthContext';
-
-
 
 type KidsInfoFormInputs = {
     first_name: string;
@@ -37,31 +38,19 @@ type KidsInfoFormInputs = {
     diagnosis: string;
 };
 
+const genderOptions = ['Male', 'Female'];
+
 export default function KidsInfoScreen() {
-    const { theme } = useTheme();
     const { t } = useTranslation();
     const { user } = useAuth();
+    const { theme } = useTheme();
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [keyboardVisible, setKeyboardVisible] = useState(false);
     const isWeb = Platform.OS === 'web';
 
-    useEffect(() => {
-        const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
-            setKeyboardVisible(true);
-        });
-        const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-            setKeyboardVisible(false);
-        });
-
-        return () => {
-            keyboardDidShowListener.remove();
-            keyboardDidHideListener.remove();
-        };
-    }, []);
-
-    const genderOptions = ['Male', 'Female'];
-
+    // react-hook-form setup
     const {
         control,
         handleSubmit,
@@ -76,36 +65,84 @@ export default function KidsInfoScreen() {
         },
     });
 
+    // Handle keyboard visibility for layout spacing
+    useEffect(() => {
+        const showSub = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
+        const hideSub = Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(false));
+        return () => {
+            showSub.remove();
+            hideSub.remove();
+        };
+    }, []);
+
+    // Handle form submission
     const onSubmit = async (data: KidsInfoFormInputs) => {
         setLoading(true);
         try {
-      
-            const formattedData = { ...data };
-            if (data.birth_date && data.birth_date.includes('/')) {
-                const [day, month, year] = data.birth_date.split('/');
-                formattedData.birth_date = `${year}-${month}-${day}`;
+            const formatted = { ...data };
+
+            // Format birth_date to YYYY-MM-DD
+            if (formatted.birth_date.includes('/')) {
+                const [day, month, year] = formatted.birth_date.split('/');
+                formatted.birth_date = `${year}-${month}-${day}`;
             }
 
             const userId = user?.uid || 'anonymous';
-            await AsyncStorage.setItem(`kidsInfo_${userId}`, JSON.stringify(formattedData));
+
+            // Save to AsyncStorage
+            await AsyncStorage.setItem(`kidsInfo_${userId}`, JSON.stringify(formatted));
             await AsyncStorage.setItem(`kidsInfoCompleted_${userId}`, 'true');
+
+            // Navigate to home tabs
             router.replace('/(tabs)');
         } catch (err) {
             console.error(err);
             setError(t('errorSavingKidsInfo'));
-            Alert.alert('Error', 'Failed to save kids information. Please try again.');
+            Alert.alert('Error', t('errorSavingKidsInfo'));
         } finally {
             setLoading(false);
         }
     };
 
-    const ScrollContent = (
+    // Reusable UI rendering helpers
+    const renderLabel = (label: string) => (
+        <Text style={registerScreenStyles.inputLabel}>{label}</Text>
+    );
+
+    const renderError = (fieldError?: { message?: string }) =>
+        fieldError?.message ? <Text style={registerScreenStyles.errorText}>{fieldError.message}</Text> : null;
+
+    const renderInput = (
+        name: keyof KidsInfoFormInputs,
+        label: string,
+        placeholder: string,
+        icon: string,
+        multiline = false,
+        height = undefined
+    ) => (
+        <View style={registerScreenStyles.inputContainer}>
+            {renderLabel(label)}
+            <TextInput
+                name={name}
+                control={control}
+                rules={{ required: `${label} is required` }}
+                placeholder={placeholder}
+                placeholderTextColor={colors.palette.text100}
+                multiline={multiline}
+                style={height ? [{ height, textAlignVertical: 'top' }] : undefined}
+            />
+            {renderError(errors[name])}
+        </View>
+    );
+
+    // Main form layout
+    const form = (
         <ScrollView
             contentContainerStyle={{ flexGrow: 1, paddingBottom: keyboardVisible ? 120 : 20 }}
             keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={true}
-            bounces={true}
+            showsVerticalScrollIndicator
         >
+            {/* Header with app name and logo */}
             <View style={registerScreenStyles.header}>
                 <Text style={registerScreenStyles.appName}>MOBIDICAL</Text>
                 <Image source={images.app_logo} style={registerScreenStyles.logo} />
@@ -114,64 +151,32 @@ export default function KidsInfoScreen() {
             <Text variant="h1" style={registerScreenStyles.titleR}>{t('kid Information')}</Text>
             {error ? <Text style={registerScreenStyles.errorText}>{error}</Text> : null}
 
-          <View style={registerScreenStyles.inputContainer}>
-            <Text style={registerScreenStyles.inputLabel}>First Name</Text>
-            <TextInput
-              name="first_name"
-              control={control}
-              leftIcon='person'
-              rules={{ required: 'First name is required' }}
-              placeholder="Enter your first name"
-              placeholderTextColor={colors.palette.text100}
-            />
-                {errors.first_name && (
-                    <Text style={registerScreenStyles.errorText}>{errors.first_name.message}</Text>
-                )}
-            </View>
+            {renderInput('first_name', t('firstName'), t('enterFirstName'), 'person')}
+            {renderInput('last_name', t('lastName'), t('enterLastName'), 'person')}
 
-          {/* Last Name */}
-          <View style={registerScreenStyles.inputContainer}>
-            <Text style={registerScreenStyles.inputLabel}>Last Name</Text>
-            <TextInput
-              name="last_name"
-              leftIcon='person'
-              control={control}
-              rules={{ required: 'Last name is required' }}
-              placeholder="Enter your last name"
-              placeholderTextColor={colors.palette.text100}
-            />
-      
-
-                {errors.last_name && (
-                    <Text style={registerScreenStyles.errorText}>{errors.last_name.message}</Text>
-                )}
-            </View>
-
-            {/* Birth Date with enhanced DatePicker component */}
+            {/* Date Picker for birth date */}
             <View style={registerScreenStyles.inputContainer}>
-                <Text style={registerScreenStyles.inputLabel}>{t('birthDate')}</Text>
+                {renderLabel(t('birthDate'))}
                 <DatePicker
                     name="birth_date"
-                    leftIcon='calendar'
+                    leftIcon="calendar"
                     control={control}
                     rules={{ required: t('birthDateRequired') }}
-                    placeholder={t('Définir la date')}           
+                    placeholder={t('Définir la date')}
                     disabled={loading}
                     maximumDate={new Date()}
                 />
-                {errors.birth_date && (
-                    <Text style={registerScreenStyles.errorText}>{errors.birth_date.message}</Text>
-                )}
+                {renderError(errors.birth_date)}
             </View>
 
-            {/* Gender */}
+            {/* Radio buttons for gender */}
             <View style={registerScreenStyles.inputContainer}>
-                <Text style={registerScreenStyles.inputLabel}>{t('gender')}</Text>
+                {renderLabel(t('gender'))}
                 <Controller
                     control={control}
                     name="gender"
                     rules={{ required: t('genderRequired') }}
-                    render={({ field: { onChange, value } }: { field: { onChange: (value: string) => void, value: string } }) => (
+                    render={({ field: { onChange, value } }) => (
                         <RadioButton
                             options={genderOptions}
                             value={value}
@@ -180,32 +185,13 @@ export default function KidsInfoScreen() {
                         />
                     )}
                 />
-                {errors.gender && (
-                    <Text style={registerScreenStyles.errorText}>{errors.gender.message}</Text>
-                )}
+                {renderError(errors.gender)}
             </View>
 
-            {/* Diagnosis */}
-            <View style={registerScreenStyles.inputContainer}>
-                <Text style={registerScreenStyles.inputLabel}>{t('diagnosis')}</Text>
-                <TextInput
-                    name="diagnosis"
-                    control={control}
-                    leftIcon="medical"
-                    rules={{ required: t('diagnosisRequired') }}
-                    style={[ { height: 100, textAlignVertical: 'top' }]}
-                    placeholder={t('enterDiagnosis')}
-                    placeholderTextColor={colors.palette.text100}
-                    multiline
-                    numberOfLines={3}
-                />
+            {/* Diagnosis multiline input */}
+            {renderInput('diagnosis', t('diagnosis'), t('enterDiagnosis'), 'medical', true)}
 
-            
-                {errors.diagnosis && (
-                    <Text style={registerScreenStyles.errorText}>{errors.diagnosis.message}</Text>
-                )}
-            </View>
-
+            {/* Submit button */}
             <Button
                 title={loading ? t('saving') : t('continueToApp')}
                 onPress={handleSubmit(onSubmit)}
@@ -219,13 +205,14 @@ export default function KidsInfoScreen() {
         <ImageBackground source={images.home} style={registerScreenStyles.backgroundImage}>
             <SafeAreaView style={registerScreenStyles.safeArea}>
                 <KeyboardAvoidingView
-                    behavior={Platform.OS === "ios" ? "padding" : "height"}
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     style={{ flex: 1 }}
-                    keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+                    keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
                 >
-                    {isWeb ? ScrollContent : (
+                    {/* Dismiss keyboard on tap outside (except for web) */}
+                    {isWeb ? form : (
                         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-                            {ScrollContent}
+                            {form}
                         </TouchableWithoutFeedback>
                     )}
                 </KeyboardAvoidingView>

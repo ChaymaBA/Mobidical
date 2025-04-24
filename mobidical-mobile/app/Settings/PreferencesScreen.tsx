@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
     View,
     Text,
@@ -10,21 +10,22 @@ import {
     KeyboardAvoidingView,
     Platform,
 } from 'react-native';
-
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import Slider from '@react-native-community/slider';
-import { TextInput } from '@/components/TextInput';
-import { RadioButton } from '@/components/RadioButton';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { TextInput } from '@/components/TextInput';
+import { RadioButton } from '@/components/RadioButton';
 import useTheme from '@/theme/useTheme';
 import { images } from '@/theme/images';
-import { getPreferencesScreenStyles } from './stylesS';
 import { colors } from '@/theme/colors';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
+import { getPreferencesScreenStyles } from './stylesS';
 
+// Types
 type PreferencesFormValues = {
     preferred_colors: string;
     audio_sensitivity: 'low' | 'medium' | 'high';
@@ -34,21 +35,35 @@ type PreferencesFormValues = {
     language: string;
 };
 
-interface CheckboxGroupProps {
+// Storage keys for AsyncStorage
+const STORAGE_KEYS = {
+    COLOR: 'userColor',
+    AUDIO_SENSITIVITY: 'audioSensitivity',
+    ANIMATIONS: 'prefersAnimations',
+    VISUAL_COMPLEXITY: 'visualComplexity',
+    ACTIVITIES: 'favoriteActivities',
+    LANGUAGE: 'language',
+};
+
+// Default form values
+const DEFAULT_FORM_VALUES: PreferencesFormValues = {
+    preferred_colors: colors.palette.owl200,
+    audio_sensitivity: 'medium',
+    prefers_animations: true,
+    visual_complexity: 3,
+    favorite_activities: [],
+    language: 'en',
+};
+
+// Components
+const CheckboxGroup: React.FC<{
     label: string;
     options: string[];
     selected: string[];
     onChange: (selected: string[]) => void;
-}
-
-const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
-    label,
-    options,
-    selected,
-    onChange,
-}) => {
+}> = ({ label, options, selected, onChange }) => {
     const { theme } = useTheme();
-    const styles = useMemo(() => getPreferencesScreenStyles(theme), [theme]);
+    const styles = getPreferencesScreenStyles(theme);
 
     const toggleOption = (option: string) => {
         if (selected.includes(option)) {
@@ -77,29 +92,21 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
     );
 };
 
-interface ColorSelectorProps {
+const ColorSelector: React.FC<{
     color: string;
     onChange: (color: string) => void;
     label: string;
-}
-
-const ColorSelector: React.FC<ColorSelectorProps> = ({
-    color,
-    onChange,
-    label,
-}) => {
+}> = ({ color, onChange, label }) => {
     const router = useRouter();
     const { theme } = useTheme();
     const { t } = useTranslation();
-    const styles = useMemo(() => getPreferencesScreenStyles(theme), [theme]);
+    const styles = getPreferencesScreenStyles(theme);
 
     const navigateToColorPicker = () => {
         const currentColor = color || '#3498db';
         router.push({
             pathname: '/Settings/Color-Picker',
-            params: {
-                initialColor: currentColor,
-            },
+            params: { initialColor: currentColor },
         });
     };
 
@@ -120,87 +127,81 @@ const ColorSelector: React.FC<ColorSelectorProps> = ({
     );
 };
 
+const Header: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+    const { theme } = useTheme();
+    const styles = getPreferencesScreenStyles(theme);
+
+    return (
+        <View style={styles.headerContainer}>
+            <TouchableOpacity style={styles.backButton} onPress={onBack}>
+                <Ionicons name="arrow-back" size={24} color={theme.primary} />
+            </TouchableOpacity>
+            <Text style={styles.appName}>MOBIDICAL</Text>
+            <Image source={images.app_logo} style={styles.logo} />
+        </View>
+    );
+};
+
+// Main component
 const PreferencesScreen = () => {
     const { theme } = useTheme();
-    const styles = useMemo(() => getPreferencesScreenStyles(theme), [theme]);
+    const styles = getPreferencesScreenStyles(theme);
     const { t } = useTranslation();
     const router = useRouter();
 
-    const [savedColor, setSavedColor] = useState<string>(colors.palette.owl200);
-
+    // Form setup
     const { control, handleSubmit, setValue } = useForm<PreferencesFormValues>({
-        defaultValues: {
-            preferred_colors: colors.palette.owl200,
-            audio_sensitivity: 'medium',
-            prefers_animations: true,
-            visual_complexity: 3,
-            favorite_activities: [],
-            language: 'en',
-        },
+        defaultValues: DEFAULT_FORM_VALUES,
     });
 
-    // Charger les préférences sauvegardées au montage initial
-    useEffect(() => {
-        const loadSavedPreferences = async () => {
-            try {
-                const color = await AsyncStorage.getItem('userColor');
-                const audioSensitivity = await AsyncStorage.getItem('audioSensitivity');
-                const prefersAnimations = await AsyncStorage.getItem('prefersAnimations');
-                const visualComplexity = await AsyncStorage.getItem('visualComplexity');
-                const favoriteActivities = await AsyncStorage.getItem('favoriteActivities');
-                const language = await AsyncStorage.getItem('language');
+    // Load preferences from storage
+    const loadPreferences = useCallback(async () => {
+        try {
+            const color = await AsyncStorage.getItem(STORAGE_KEYS.COLOR);
+            const audioSensitivity = await AsyncStorage.getItem(STORAGE_KEYS.AUDIO_SENSITIVITY);
+            const prefersAnimations = await AsyncStorage.getItem(STORAGE_KEYS.ANIMATIONS);
+            const visualComplexity = await AsyncStorage.getItem(STORAGE_KEYS.VISUAL_COMPLEXITY);
+            const favoriteActivities = await AsyncStorage.getItem(STORAGE_KEYS.ACTIVITIES);
+            const language = await AsyncStorage.getItem(STORAGE_KEYS.LANGUAGE);
 
-                if (color) {
-                    setSavedColor(color);
-                    setValue('preferred_colors', color);
-                }
-                if (audioSensitivity) setValue('audio_sensitivity', audioSensitivity as 'low' | 'medium' | 'high');
-                if (prefersAnimations) setValue('prefers_animations', JSON.parse(prefersAnimations));
-                if (visualComplexity) setValue('visual_complexity', Number(visualComplexity));
-                if (favoriteActivities) setValue('favorite_activities', JSON.parse(favoriteActivities));
-                if (language) setValue('language', language);
-            } catch (error) {
-                console.error('Failed to load preferences:', error);
-            }
-        };
-        loadSavedPreferences();
+            if (color) setValue('preferred_colors', color);
+            if (audioSensitivity) setValue('audio_sensitivity', audioSensitivity as 'low' | 'medium' | 'high');
+            if (prefersAnimations) setValue('prefers_animations', JSON.parse(prefersAnimations));
+            if (visualComplexity) setValue('visual_complexity', Number(visualComplexity));
+            if (favoriteActivities) setValue('favorite_activities', JSON.parse(favoriteActivities));
+            if (language) setValue('language', language);
+        } catch (error) {
+            console.error('Failed to load preferences:', error);
+        }
     }, [setValue]);
 
-    // Mettre à jour la couleur quand l'écran revient en focus
+    // Load preferences on mount
+    React.useEffect(() => {
+        loadPreferences();
+    }, [loadPreferences]);
+
+    // Update when coming back to screen
     useFocusEffect(
-        React.useCallback(() => {
-            const updateColorFromStorage = async () => {
-                try {
-                    const color = await AsyncStorage.getItem('userColor');
-                    if (color) {
-                        setSavedColor(color);
-                        setValue('preferred_colors', color);
-                    }
-                } catch (error) {
-                    console.error('Failed to update color:', error);
-                }
-            };
-
-            updateColorFromStorage();
-
-            return () => {
-                // Cleanup si nécessaire
-            };
-        }, [setValue])
+        useCallback(() => {
+            loadPreferences();
+            return () => { }; // Cleanup if needed
+        }, [loadPreferences])
     );
 
-    const onSubmit = async (data: PreferencesFormValues) => {
-        console.log('Preferences:', data);
-
+    // Save preferences
+    const savePreferences = async (data: PreferencesFormValues) => {
         try {
-            await AsyncStorage.setItem('userColor', data.preferred_colors);
-            await AsyncStorage.setItem('audioSensitivity', data.audio_sensitivity);
-            await AsyncStorage.setItem('prefersAnimations', JSON.stringify(data.prefers_animations));
-            await AsyncStorage.setItem('visualComplexity', data.visual_complexity.toString());
-            await AsyncStorage.setItem('favoriteActivities', JSON.stringify(data.favorite_activities));
-            await AsyncStorage.setItem('language', data.language);
+            const savePromises = [
+                AsyncStorage.setItem(STORAGE_KEYS.COLOR, data.preferred_colors),
+                AsyncStorage.setItem(STORAGE_KEYS.AUDIO_SENSITIVITY, data.audio_sensitivity),
+                AsyncStorage.setItem(STORAGE_KEYS.ANIMATIONS, JSON.stringify(data.prefers_animations)),
+                AsyncStorage.setItem(STORAGE_KEYS.VISUAL_COMPLEXITY, data.visual_complexity.toString()),
+                AsyncStorage.setItem(STORAGE_KEYS.ACTIVITIES, JSON.stringify(data.favorite_activities)),
+                AsyncStorage.setItem(STORAGE_KEYS.LANGUAGE, data.language),
+            ];
 
-            router.back(); // Retourne à l'écran précédent
+            await Promise.all(savePromises);
+            router.back();
         } catch (error) {
             console.error('Failed to save preferences:', error);
         }
@@ -209,13 +210,7 @@ const PreferencesScreen = () => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                <View style={styles.headerContainer}>
-                    <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-                        <Ionicons name="arrow-back" size={24} color={theme.primary} />
-                    </TouchableOpacity>
-                    <Text style={styles.appName}>MOBIDICAL</Text>
-                    <Image source={images.app_logo} style={styles.logo} />
-                </View>
+                <Header onBack={() => router.back()} />
 
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -248,7 +243,7 @@ const PreferencesScreen = () => {
                                     <Text style={styles.label}>{t('preferences audio sensitivity')}</Text>
                                     <RadioButton
                                         options={['low', 'medium', 'high']}
-                                        value={value as 'low' | 'medium' | 'high'}  // Cast explicite
+                                        value={value}
                                         onChange={onChange}
                                         optionColor={colors.palette.text200}
                                     />
@@ -320,7 +315,10 @@ const PreferencesScreen = () => {
                         />
 
                         {/* Save Button */}
-                        <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={handleSubmit(savePreferences)}
+                        >
                             <Text style={styles.buttonText}>{t('preferences.save')}</Text>
                         </TouchableOpacity>
                     </ScrollView>

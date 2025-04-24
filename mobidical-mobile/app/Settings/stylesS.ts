@@ -538,11 +538,6 @@ export const ProfressionChildScreenStyles = (theme: ThemeType) => StyleSheet.cre
         color: theme.primary,
     },
 });
-// stylesS.js
-
-
-// stylesS.ts
-
 
 
 export const makeStyles = (theme:ThemeType) =>
@@ -772,5 +767,44 @@ export const FeedBackScreenstyles = (theme: ThemeType) => StyleSheet.create({
         color: theme.background,
         fontSize: 16,
         fontWeight: 'bold',
+    },
+});
+ export const LanguageSelectionScreenstyles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 20,
+        justifyContent: 'flex-start',
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
+    option: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 16,
+        borderRadius: 12,
+        marginBottom: 12,
+    },
+    label: {
+        fontSize: 16,
+    },
+});
+ export const Not_foundstyles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 20,
+    },
+    text: {
+        fontSize: 20,
+        fontWeight: 600,
+    },
+    link: {
+        marginTop: 15,
+        paddingVertical: 15,
     },
 });

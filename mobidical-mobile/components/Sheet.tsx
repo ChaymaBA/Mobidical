@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
+import { Sheetstyles } from './stylesComponents'
 
 interface SheetProps {
   children: React.ReactNode;
@@ -25,16 +26,10 @@ export const Sheet = ({
       onChange={handleSheetChanges}
       enablePanDownToClose
     >
-      <View style={styles.contentContainer}>
+      <View style={Sheetstyles.contentContainer}>
         {children}
       </View>
     </BottomSheet>
   );
 };
 
-const styles = StyleSheet.create({
-  contentContainer: {
-    flex: 1,
-    padding: 16,
-  },
-});

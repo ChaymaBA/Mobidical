@@ -1,31 +1,36 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
-import { Bone as LucideIcon, Barcode as IconNode } from 'lucide-react-native';
+import { TouchableOpacity, ViewStyle } from 'react-native';
+import { LucideProps } from 'lucide-react-native';
+import { colors } from '@/theme';
+import {iconstyle} from './stylesComponents'
 
 interface IconProps {
-  icon: IconNode;
+  icon: React.ComponentType<LucideProps>; // Composant d'icône Lucide (ex: Bone, Barcode, etc.)
   size?: number;
   color?: string;
   onPress?: () => void;
   style?: ViewStyle;
 }
 
-export const Icon = ({ icon, size = 24, color = '#333', onPress, style }: IconProps) => {
+export const Icon = ({
+  icon: IconComponent,
+  size = 24,
+  color = colors.palette.text100,
+  onPress,
+  style,
+}: IconProps) => {
+  const iconElement = (
+    <IconComponent size={size} color={color} style={style} />
+  );
+
   if (onPress) {
     return (
-      <TouchableOpacity onPress={onPress} style={[styles.container, style]}>
-        <LucideIcon iconNode={icon} size={size} color={color} />
+      <TouchableOpacity onPress={onPress} style={[iconstyle.container, style]}>
+        {iconElement}
       </TouchableOpacity>
     );
   }
 
-  return (
-    <LucideIcon iconNode={icon} size={size} color={color} style={style} />
-  );
+  return iconElement;
 };
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 8,
-  },
-});

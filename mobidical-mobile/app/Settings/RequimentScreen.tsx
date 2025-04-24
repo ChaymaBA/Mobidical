@@ -1,75 +1,68 @@
 import React from 'react';
-import { SafeAreaView, ScrollView, Text, View, TouchableOpacity, Image, StyleSheet } from 'react-native';  // Import necessary components
+import {
+  SafeAreaView,
+  ScrollView,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Ionicons } from '@expo/vector-icons';  
-import useTheme from '@/theme/useTheme';
-import { RequimentScreenstyles } from './stylesS'; 
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
+import useTheme from '@/theme/useTheme';
+import { RequimentScreenstyles as styles } from './stylesS';
 
 const AppDescriptionScreen = () => {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const router = useRouter();
 
+  const appSections = [
+    'overview',
+    'game',
+    'moto',
+    'interaction',
+    'communication',
+    'feedback',
+  ];
+
+  const renderSection = (key: string, index: number) => (
+    <View key={index}>
+      <Text style={[styles.heading, { color: theme.textPrimary }]}>
+        {t(`appDescription.${key}Title`)}
+      </Text>
+      <Text style={[styles.paragraph, { color: theme.textSecondary }]}>
+        {t(`appDescription.${key}Content`)}
+      </Text>
+    </View>
+  );
 
   return (
-    <SafeAreaView style={RequimentScreenstyles.safeArea}>  
-      <ScrollView style={RequimentScreenstyles.container}>
-        <View style={RequimentScreenstyles.headerContainer}>
-          <TouchableOpacity style={RequimentScreenstyles.backButton} onPress={() => router.back()}>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.container}>
+
+        {/* Header */}
+        <View style={styles.headerContainer}>
+          <TouchableOpacity style={styles.backButton} onPress={router.back}>
             <Ionicons name="arrow-back" size={24} color={theme.primary} />
           </TouchableOpacity>
-          <Text style={RequimentScreenstyles.appName}>MOBIDICAL</Text>
-          <Image source={require('@/assets/images/app_logo.png')} style={RequimentScreenstyles.logo} /> {/* Fix Image import */}
+
+          <Text style={styles.appName}>MOBIDICAL</Text>
+
+          <Image
+            source={require('@/assets/images/app_logo.png')}
+            style={styles.logo}
+          />
         </View>
 
-        <Text style={[RequimentScreenstyles.heading, { color: theme.textPrimary }]}>
-          {t('appDescription.overviewTitle')}
-        </Text>
-        <Text style={[RequimentScreenstyles.paragraph, { color: theme.textSecondary }]}>
-          {t('appDescription.overviewContent')}
-        </Text>
+        {/* Sections */}
+        {appSections.map((section, index) => renderSection(section, index))}
 
-        <Text style={[RequimentScreenstyles.heading, { color: theme.textPrimary }]}>
-          {t('appDescription.gameTitle')}
-        </Text>
-        <Text style={[RequimentScreenstyles.paragraph, { color: theme.textSecondary }]}>
-          {t('appDescription.gameContent')}
-        </Text>
-
-        <Text style={[RequimentScreenstyles.heading, { color: theme.textPrimary }]}>
-          {t('appDescription.motoTitle')}
-        </Text>
-        <Text style={[RequimentScreenstyles.paragraph, { color: theme.textSecondary }]}>
-          {t('appDescription.motoContent')}
-        </Text>
-
-        <Text style={[RequimentScreenstyles.heading, { color: theme.textPrimary }]}>
-          {t('appDescription.interactionTitle')}
-        </Text>
-        <Text style={[RequimentScreenstyles.paragraph, { color: theme.textSecondary }]}>
-          {t('appDescription.interactionContent')}
-        </Text>
-
-        <Text style={[RequimentScreenstyles.heading, { color: theme.textPrimary }]}>
-          {t('appDescription.communicationTitle')}
-        </Text>
-        <Text style={[RequimentScreenstyles.paragraph, { color: theme.textSecondary }]}>
-          {t('appDescription.communicationContent')}
-        </Text>
-
-        <Text style={[RequimentScreenstyles.heading, { color: theme.textPrimary }]}>
-          {t('appDescription.feedbackTitle')}
-        </Text>
-        <Text style={[RequimentScreenstyles.paragraph, { color: theme.textSecondary }]}>
-          {t('appDescription.feedbackContent')}
-        </Text>
       </ScrollView>
     </SafeAreaView>
   );
 };
-
-// Styles (if any styles are missing, you can define them here)
 
 export default AppDescriptionScreen;

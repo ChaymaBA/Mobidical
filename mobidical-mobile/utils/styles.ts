@@ -787,6 +787,7 @@ export const editProfilestyles = StyleSheet.create({
     color: colors.palette.text100, // Couleur du texte du bouton comme dans settings
     fontSize: 16,
     fontWeight: 'bold',
+  
   },
 });
 

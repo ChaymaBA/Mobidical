@@ -3,7 +3,6 @@ import {
     View,
     Text,
     TextInput,
-    StyleSheet,
     TouchableOpacity,
     Alert,
     ActivityIndicator,
@@ -14,16 +13,26 @@ import { ChangePasswordstyles } from '@/utils/styles';
 import { useAuth } from '@/navigation/AuthContext';
 import { images } from '@/theme/images';
 
- 
 const ChangePassword = () => {
+    // Form states
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [errors, setErrors] = useState<{ currentPassword?: string; newPassword?: string; confirmPassword?: string }>({});
 
+    // Loading and error state
+    const [loading, setLoading] = useState(false);
+    const [errors, setErrors] = useState<{
+        currentPassword?: string;
+        newPassword?: string;
+        confirmPassword?: string;
+    }>({});
+
+    /**
+     * Validate the password change form.
+     * Returns true if all fields are valid, false otherwise.
+     */
     const validateForm = () => {
-        const newErrors: { currentPassword?: string; newPassword?: string; confirmPassword?: string } = {};
+        const newErrors: typeof errors = {};
 
         if (!currentPassword) {
             newErrors.currentPassword = 'Le mot de passe actuel est requis';
@@ -42,48 +51,12 @@ const ChangePassword = () => {
         }
 
         setErrors(newErrors);
-
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleChangePassword = async () => {
-        if (!validateForm()) return;
-
-        try {
-            setLoading(true);
-
-            // Simuler un appel API pour changer le mot de passe
-            // Dans un cas réel, vous feriez un appel à votre backend
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            // Exemple d'appel API
-            // const response = await fetch('https://api.example.com/change-password', {
-            //   method: 'POST',
-            //   headers: {
-            //     'Content-Type': 'application/json',
-            //     'Authorization': 'Bearer YOUR_AUTH_TOKEN'
-            //   },
-            //   body: JSON.stringify({
-            //     currentPassword,
-            //     newPassword
-            //   })
-            // });
-            // const data = await response.json();
-            // if (!response.ok) throw new Error(data.message);
-
-            Alert.alert(
-                'Succès',
-                'Votre mot de passe a été modifié avec succès',
-                [{ text: 'OK', onPress: () => resetForm() }]
-            );
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Une erreur est survenue lors du changement de mot de passe';
-            Alert.alert('Erreur', errorMessage);
-        } finally {
-            setLoading(false);
-        }
-    };
-
+    /**
+     * Reset form inputs and errors
+     */
     const resetForm = () => {
         setCurrentPassword('');
         setNewPassword('');
@@ -91,9 +64,63 @@ const ChangePassword = () => {
         setErrors({});
     };
 
+    /**
+     * Handle the password change logic.
+     * For now, it mocks the process with a timeout.
+     * Replace with actual API call when backend is ready.
+     */
+    const handleChangePassword = async () => {
+        if (!validateForm()) return;
+
+        try {
+            setLoading(true);
+
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            Alert.alert('Succès', 'Votre mot de passe a été modifié avec succès', [
+                { text: 'OK', onPress: resetForm },
+            ]);
+        } catch (error) {
+            const errorMessage =
+                error instanceof Error
+                    ? error.message
+                    : 'Une erreur est survenue lors du changement de mot de passe';
+            Alert.alert('Erreur', errorMessage);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    /**
+     * Render a labeled input with error message.
+     */
+    const renderInput = (
+        label: string,
+        placeholder: string,
+        value: string,
+        onChangeText: (text: string) => void,
+        error?: string
+    ) => (
+        <View style={ChangePasswordstyles.inputContainer}>
+            <Text style={ChangePasswordstyles.label}>{label}</Text>
+            <TextInput
+                style={[
+                    ChangePasswordstyles.input,
+                    error && ChangePasswordstyles.inputError,
+                ]}
+                placeholder={placeholder}
+                secureTextEntry
+                value={value}
+                onChangeText={onChangeText}
+            />
+            {error && <Text style={ChangePasswordstyles.errorText}>{error}</Text>}
+        </View>
+    );
+
     return (
         <View style={ChangePasswordstyles.container}>
-            {/* Header avec logo et nom de l'application */}
+            {/* Header with logo and app name */}
             <View style={ChangePasswordstyles.headerContainer}>
                 <Text style={ChangePasswordstyles.appName}>MOBIDICAL</Text>
                 <Image
@@ -103,61 +130,47 @@ const ChangePassword = () => {
                 />
             </View>
 
+            {/* Title */}
             <Text style={ChangePasswordstyles.titleCHP}>Changer le mot de passe</Text>
 
-            <View style={ChangePasswordstyles.inputContainer}>
-                <Text style={ChangePasswordstyles.label}>Mot de passe actuel</Text>
-                <TextInput
-                    style={[ChangePasswordstyles.input, errors.currentPassword && ChangePasswordstyles.inputError]}
-                    placeholder="Entrez votre mot de passe actuel"
-                    secureTextEntry
-                    value={currentPassword}
-                    onChangeText={setCurrentPassword}
-                />
-                {errors.currentPassword && (
-                    <Text style={ChangePasswordstyles.errorText}>{errors.currentPassword}</Text>
-                )}
-            </View>
+            {/* Password Fields */}
+            {renderInput(
+                'Mot de passe actuel',
+                'Entrez votre mot de passe actuel',
+                currentPassword,
+                setCurrentPassword,
+                errors.currentPassword
+            )}
+            {renderInput(
+                'Nouveau mot de passe',
+                'Entrez votre nouveau mot de passe',
+                newPassword,
+                setNewPassword,
+                errors.newPassword
+            )}
+            {renderInput(
+                'Confirmer le nouveau mot de passe',
+                'Confirmez votre nouveau mot de passe',
+                confirmPassword,
+                setConfirmPassword,
+                errors.confirmPassword
+            )}
 
-            <View style={ChangePasswordstyles.inputContainer}>
-                <Text style={ChangePasswordstyles.label}>Nouveau mot de passe</Text>
-                <TextInput
-                    style={[ChangePasswordstyles.input, errors.newPassword && ChangePasswordstyles.inputError]}
-                    placeholder="Entrez votre nouveau mot de passe"
-                    secureTextEntry
-                    value={newPassword}
-                    onChangeText={setNewPassword}
-                />
-                {errors.newPassword && (
-                    <Text style={ChangePasswordstyles.errorText}>{errors.newPassword}</Text>
-                )}
-            </View>
-
-            <View style={ChangePasswordstyles.inputContainer}>
-                <Text style={ChangePasswordstyles.label}>Confirmer le nouveau mot de passe</Text>
-                <TextInput
-                    style={[ChangePasswordstyles.input, errors.confirmPassword && ChangePasswordstyles.inputError]}
-                    placeholder="Confirmez votre nouveau mot de passe"
-                    secureTextEntry
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                />
-                {errors.confirmPassword && (
-                    <Text style={ChangePasswordstyles.errorText}>{errors.confirmPassword}</Text>
-                )}
-            </View>
-
+            {/* Submit Button */}
             <TouchableOpacity
                 style={ChangePasswordstyles.button}
                 onPress={handleChangePassword}
                 disabled={loading}
             >
                 {loading ? (
-                    <ActivityIndicator color="#fff" size="small" />
+                    <ActivityIndicator color={colors.palette.white} size="small" />
                 ) : (
                     <Text style={ChangePasswordstyles.buttonText}>Changer le mot de passe</Text>
                 )}
             </TouchableOpacity>
+
         </View>
     );
 };
+
+export default ChangePassword;

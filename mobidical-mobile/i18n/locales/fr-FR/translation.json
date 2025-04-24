@@ -166,8 +166,7 @@
     "errors.required": "Ce champ est requis",
     "errors.startDateInvalid": "La date de début ne peut pas être avant le 20 avril 2025",
     "errors.endDateInvalid": "La date de fin ne peut pas être dans le futur",
-    
-    "Provide Your Feedback": "Donnez votre avis",
+    "feedback": "Commentaires",
     "Not Good": "Pas bon",
     "Passable": "Passable",
     "Good": "Bien",

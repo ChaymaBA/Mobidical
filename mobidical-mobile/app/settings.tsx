@@ -20,9 +20,10 @@ import { useAuth } from '@/navigation/AuthContext';
 import { colors } from '@/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StackActions } from '@react-navigation/native';
-import { router, useNavigationContainerRef } from 'expo-router';
+import { useNavigationContainerRef } from 'expo-router';
 
 const Settings = () => {
+  // Hooks for theme, authentication, and translation
   const router = useRouter();
   const { isDarkMode, theme, toggleTheme } = useTheme();
   const { signOut } = useAuth();
@@ -30,18 +31,23 @@ const Settings = () => {
   const currentLanguage = i18n.language;
   const rootNavigation = useNavigationContainerRef();
 
+  // State to handle language dropdown and notification toggle
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [notificationEnabled, setNotificationEnabled] = useState(true);
 
+  // Available languages for the dropdown
   const languages = [
     { label: 'English', value: 'en-US' },
     { label: 'Français', value: 'fr-FR' },
   ];
 
+  // Load user preferences (language and notification settings)
   useEffect(() => {
     const loadPreferences = async () => {
       const savedLanguage = await AsyncStorage.getItem("language");
       const savedNotification = await AsyncStorage.getItem("notifications");
+
+      // Apply saved language and notification preferences
       if (savedLanguage) i18n.changeLanguage(savedLanguage);
       if (savedNotification !== null) {
         const enabled = savedNotification === 'true';
@@ -52,17 +58,20 @@ const Settings = () => {
     loadPreferences();
   }, []);
 
+  // Change language and save it to AsyncStorage
   const changeLanguage = async (lang: string) => {
     await AsyncStorage.setItem("language", lang);
     i18n.changeLanguage(lang);
   };
 
+  // Toggle notification setting and update AsyncStorage
   const toggleNotifications = async (enabled: boolean) => {
     setNotificationEnabled(enabled);
     await AsyncStorage.setItem("notifications", String(enabled));
     await Audio.setIsEnabledAsync(enabled);
   };
 
+  // Handle user logout with confirmation prompt
   const handleLogout = () => {
     Alert.alert(
       t('logout'),
@@ -74,9 +83,9 @@ const Settings = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await signOut(); // clear user
-              rootNavigation.dispatch(StackActions.popToTop());
-              router.replace('/login'); // navigate without back history
+              await signOut(); // Sign out the user and clear the session
+              rootNavigation.dispatch(StackActions.popToTop()); // Clear navigation stack
+              router.replace('/login'); // Redirect to login screen
             } catch (error) {
               console.error('Logout error:', error);
             }
@@ -90,7 +99,7 @@ const Settings = () => {
   return (
     <SafeAreaView style={[settingscreenstyles.safeArea, { backgroundColor: theme.background }]}>
       <View style={[settingscreenstyles.container, { backgroundColor: theme.background }]}>
-        {/* Header */}
+        {/* Header with app name and logo */}
         <View style={settingscreenstyles.headerContainer}>
           <TouchableOpacity style={settingscreenstyles.backButton} onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={24} color={theme.iconColor} />
@@ -100,14 +109,16 @@ const Settings = () => {
         </View>
 
         <ScrollView contentContainerStyle={settingscreenstyles.scrollContent} keyboardShouldPersistTaps="handled">
-          {/* Profil & Notifications */}
+          {/* Profile & Notifications Section */}
           <View style={[settingscreenstyles.section, { backgroundColor: theme.card }]}>
+            {/* Profile Edit Button */}
             <TouchableOpacity style={settingscreenstyles.settingItem} onPress={() => router.push('/profil')}>
               <Feather name="user" size={22} color={theme.iconColor} style={settingscreenstyles.icon} />
               <Text style={[settingscreenstyles.settingText, { color: theme.textPrimary }]}>{t('updateProfile')}</Text>
               <AntDesign name="right" size={16} color={colors.palette.owl200} />
             </TouchableOpacity>
 
+            {/* Notification Toggle */}
             <View style={[settingscreenstyles.divider, { backgroundColor: theme.separator }]} />
             <View style={settingscreenstyles.settingItem}>
               <Ionicons name="notifications-outline" size={24} color={theme.iconColor} style={settingscreenstyles.icon} />
@@ -124,9 +135,8 @@ const Settings = () => {
               />
             </View>
 
+            {/* Language Selection */}
             <View style={[settingscreenstyles.divider, { backgroundColor: theme.separator }]} />
-
-            {/* Langue */}
             <TouchableOpacity
               style={settingscreenstyles.settingItem}
               onPress={() => setShowLanguageDropdown(!showLanguageDropdown)}
@@ -141,6 +151,7 @@ const Settings = () => {
               </View>
             </TouchableOpacity>
 
+            {/* Language Dropdown */}
             {showLanguageDropdown && (
               <View style={{ marginLeft: 55, marginTop: -10, marginBottom: 10 }}>
                 {languages.map((lang) => (
@@ -159,7 +170,7 @@ const Settings = () => {
             )}
           </View>
 
-          {/* Dark Mode */}
+          {/* Dark Mode Toggle */}
           <View style={[settingscreenstyles.section, { backgroundColor: theme.card }]}>
             <View style={settingscreenstyles.settingItem}>
               <Ionicons name="moon-outline" size={22} color={theme.iconColor} style={settingscreenstyles.icon} />
@@ -177,24 +188,25 @@ const Settings = () => {
             </View>
           </View>
 
-          {/* Enfant & Préférences */}
+          {/* Child & Preferences Section */}
           <View style={[settingscreenstyles.section, { backgroundColor: theme.card }]}>
+            {/* Edit Child Info Button */}
             <TouchableOpacity style={settingscreenstyles.settingItem} onPress={() => router.push('/Settings/UpdateInfochildScreen')}>
               <Feather name="edit" size={22} color={theme.iconColor} style={settingscreenstyles.icon} />
               <Text style={[settingscreenstyles.settingText, { color: theme.textPrimary }]}>{t('editChildInfo')}</Text>
               <AntDesign name="right" size={16} color={colors.palette.owl200} />
             </TouchableOpacity>
 
+            {/* Progression Child Button */}
             <View style={[settingscreenstyles.divider, { backgroundColor: theme.separator }]} />
-
-            <TouchableOpacity style={settingscreenstyles.settingItem} onPress={() => router.push('/Settings/ProfressionChildScreen')}>
+            <TouchableOpacity style={settingscreenstyles.settingItem} onPress={() => router.push('/Settings/ProgressionChildScreen')}>
               <Feather name="bar-chart-2" size={22} color={theme.iconColor} style={settingscreenstyles.icon} />
               <Text style={[settingscreenstyles.settingText, { color: theme.textPrimary }]}>{t('childProgress')}</Text>
               <AntDesign name="right" size={16} color={colors.palette.owl200} />
             </TouchableOpacity>
 
+            {/* Preferences Button */}
             <View style={[settingscreenstyles.divider, { backgroundColor: theme.separator }]} />
-
             <TouchableOpacity style={settingscreenstyles.settingItem} onPress={() => router.push('/Settings/PreferencesScreen')}>
               <Feather name="settings" size={22} color={theme.iconColor} style={settingscreenstyles.icon} />
               <Text style={[settingscreenstyles.settingText, { color: theme.textPrimary }]}>{t('preferences')}</Text>
@@ -202,24 +214,25 @@ const Settings = () => {
             </TouchableOpacity>
           </View>
 
-          {/* Informations */}
+          {/* Information Section */}
           <View style={[settingscreenstyles.section, { backgroundColor: theme.card }]}>
+            {/* Feedback Button */}
             <TouchableOpacity style={settingscreenstyles.settingItem} onPress={() => router.push('/Settings/FeedbackScreen')}>
               <MaterialIcons name="feedback" size={24} color={theme.iconColor} style={settingscreenstyles.icon} />
               <Text style={[settingscreenstyles.settingText, { color: theme.textPrimary }]}>{t('feedback')}</Text>
               <AntDesign name="right" size={16} color={colors.palette.owl200} />
             </TouchableOpacity>
 
+            {/* Requirements Button */}
             <View style={[settingscreenstyles.divider, { backgroundColor: theme.separator }]} />
-
             <TouchableOpacity style={settingscreenstyles.settingItem} onPress={() => router.push('/Settings/RequimentScreen')}>
               <AntDesign name="questioncircleo" size={22} color={theme.iconColor} style={settingscreenstyles.icon} />
               <Text style={[settingscreenstyles.settingText, { color: theme.textPrimary }]}>{t('requirements')}</Text>
               <AntDesign name="right" size={16} color={colors.palette.owl200} />
             </TouchableOpacity>
 
+            {/* About Button */}
             <View style={[settingscreenstyles.divider, { backgroundColor: theme.separator }]} />
-
             <TouchableOpacity style={settingscreenstyles.settingItem} onPress={() => router.push('/Settings/AboutScreen')}>
               <AntDesign name="exclamationcircleo" size={22} color={theme.iconColor} style={settingscreenstyles.icon} />
               <Text style={[settingscreenstyles.settingText, { color: theme.textPrimary }]}>{t('about')}</Text>
@@ -227,12 +240,12 @@ const Settings = () => {
             </TouchableOpacity>
           </View>
 
-          {/* Déconnexion */}
+          {/* Logout Section */}
           <View style={[settingscreenstyles.section, { backgroundColor: theme.card }]}>
+            {/* Logout Button */}
             <TouchableOpacity style={settingscreenstyles.settingItem} onPress={handleLogout}>
-              <AntDesign name="logout" size={22} color="red" style={settingscreenstyles.icon} />
+              <Feather name="log-out" size={22} color={theme.iconColor} style={settingscreenstyles.icon} />
               <Text style={[settingscreenstyles.settingText, { color: theme.textPrimary }]}>{t('logout')}</Text>
-              <AntDesign name="right" size={16} color={colors.palette.owl200} />
             </TouchableOpacity>
           </View>
         </ScrollView>

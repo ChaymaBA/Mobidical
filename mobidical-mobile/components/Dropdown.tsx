@@ -1,22 +1,26 @@
-import React from 'react';
-import DropDownPicker, { DropDownPickerProps } from 'react-native-dropdown-picker';
-import { StyleSheet } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import useTheme from '@/theme/useTheme';
+import React from 'react'
+import DropDownPicker, {
+  ValueType,
+  ItemType,
+} from 'react-native-dropdown-picker'
+import { useTranslation } from 'react-i18next'
+import useTheme from '@/theme/useTheme'
+import { dropdownstyles } from './stylesComponents'
 
-type CustomDropDownProps<T = any> = {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  value: T;
-  setValue: React.Dispatch<React.SetStateAction<T>>;
-  items: DropDownPickerProps<T>['items'];
-  placeholderKey: string;
-  zIndex?: number;
-  zIndexInverse?: number;
-  name?: string;
-};
+// 🔧 Contraindre T à être un ValueType (string | number | boolean)
+type CustomDropDownProps<T extends ValueType> = {
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  value: T | null
+  setValue: React.Dispatch<React.SetStateAction<T | null>>
+  items: ItemType<T>[]
+  placeholderKey: string
+  zIndex?: number
+  zIndexInverse?: number
+  name?: string
+}
 
-export function CustomDropDown<T = any>({
+export function CustomDropDown<T extends ValueType>({
   open,
   setOpen,
   value,
@@ -27,9 +31,9 @@ export function CustomDropDown<T = any>({
   zIndexInverse = 1000,
   name,
 }: CustomDropDownProps<T>) {
-  const { t } = useTranslation();
-  const {theme} = useTheme();
-
+  const { t } = useTranslation()
+  const { theme } = useTheme()
+  
   return (
     <DropDownPicker
       open={open}
@@ -39,7 +43,7 @@ export function CustomDropDown<T = any>({
       items={items}
       placeholder={t(placeholderKey)}
       style={[
-        styles.dropdown,
+        dropdownstyles.dropdown,
         {
           backgroundColor: theme.background,
           borderWidth: 0,
@@ -53,23 +57,10 @@ export function CustomDropDown<T = any>({
       scrollViewProps={{ nestedScrollEnabled: true }}
       zIndex={zIndex}
       zIndexInverse={zIndexInverse}
-      dropDownContainerStyle={styles.dropdownContainer}
+      dropDownContainerStyle={dropdownstyles.dropdownContainer}
       containerStyle={{ marginBottom: 15 }}
       textStyle={{ color: theme.textPrimary }}
     />
-  );
+  )
 }
 
-const styles = StyleSheet.create({
-  dropdown: {
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 50,
-  },
-  dropdownContainer: {
-    borderWidth: 0,
-    elevation: 3,
-    borderRadius: 12,
-    marginTop: 4,
-  },
-});

@@ -65,7 +65,7 @@
   "signUpButton": "Sign Up",
   "creatingAccountButton": "Creating Account...",
   "alreadyHaveAccount": "Already have an account? Sign In",
-
+  "feedback": "Feedback",
   "emailRequired": "Email is required",
   "invalidEmail": "Invalid email address",
   "passwordRequired": "Password is required",
@@ -169,7 +169,7 @@
 "errors.startDateInvalid": "The start date cannot be before April 20, 2025",
 "errors.endDateInvalid": "The end date cannot be in the future",
 
-    "Provide Your Feedback": "Provide Your Feedback",
+    
     "Not Good": "Not Good",
     "Passable": "Passable",
     "Good": "Good",

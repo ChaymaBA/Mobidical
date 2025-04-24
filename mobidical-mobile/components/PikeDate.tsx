@@ -1,11 +1,12 @@
 // components/DatePicker.tsx
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Platform, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, Platform } from 'react-native';
 import { Controller } from 'react-hook-form';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Text } from '@/components/CustomText';
 import { colors } from '@/theme/colors';
-import { Ionicons } from '@expo/vector-icons'; // Assure-toi que ce package est installé
+import { Ionicons } from '@expo/vector-icons'; 
+import { PikeDatestyles }from './stylesComponents'
 
 interface DatePickerProps {
     name: string;
@@ -55,12 +56,12 @@ export const DatePicker = ({
                 return (
                     <View>
                         <TouchableOpacity
-                            style={[styles.container, style]} // ← utilise styles
+                            style={[PikeDatestyles.container, style]} // ← utilise styles
                             onPress={() => setShowDatePicker(true)}
                             disabled={disabled}
                         >
                             {leftIcon && (
-                                <Ionicons name={leftIcon as any} size={20} color={colors.palette.text100} style={styles.icon} />
+                                <Ionicons name={leftIcon as any} size={20} color={colors.palette.text100} style={PikeDatestyles.icon} />
                             )}
                             <Text style={{ color: value ? colors.palette.text200 : colors.palette.text200 }}>
                                 {value || placeholder}
@@ -83,16 +84,3 @@ export const DatePicker = ({
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: colors.border,
-        padding: 10,
-        borderRadius: 8,
-    },
-    icon: {
-        marginRight: 10,
-    },
-});

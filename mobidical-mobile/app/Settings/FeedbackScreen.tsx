@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -6,21 +6,23 @@ import {
     TouchableOpacity,
     Image,
     Pressable,
-    Alert
+    Alert,
 } from 'react-native';
 import { router } from 'expo-router';
-
-import { Controller, useForm } from 'react-hook-form';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Ionicons } from '@expo/vector-icons';
+import { ArrowLeft } from 'lucide-react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import {  ArrowLeft } from 'lucide-react-native';
-import { TextInput } from '@/components/TextInput';
+
 import useTheme from '@/theme/useTheme';
 import { images } from '@/theme/images';
-import { FeedBackScreenstyles } from './stylesS';
+import { TextInput } from '@/components/TextInput';
+import { FeedBackScreenstyles } from './stylesS'; 
+import { colors } from '@/theme';
 
+// 🧾 Définition du type du formulaire
 type FormData = {
     feedback: string;
 };
@@ -35,40 +37,33 @@ const FeedbackScreen = () => {
 
     const { control, handleSubmit, setValue } = useForm<FormData>({
         defaultValues: {
-            feedback: ''
-        }
+            feedback: '',
+        },
     });
 
-    // Charger les données sauvegardées au chargement du composant
+    // 📦 Charger les données sauvegardées (AsyncStorage)
     useEffect(() => {
         const loadSavedFeedback = async () => {
             try {
                 const savedData = await AsyncStorage.getItem('feedbackData');
                 if (savedData) {
-                    const parsedData = JSON.parse(savedData);
-
-                    // Définir la note
-                    if (parsedData.rating) {
-                        setRating(parsedData.rating);
-                    }
-
-                    // Définir le feedback
-                    if (parsedData.feedback) {
-                        setValue('feedback', parsedData.feedback);
-                    }
+                    const parsed = JSON.parse(savedData);
+                    if (parsed.rating) setRating(parsed.rating);
+                    if (parsed.feedback) setValue('feedback', parsed.feedback);
                 }
             } catch (error) {
                 console.error('Error loading feedback data:', error);
             }
         };
-
         loadSavedFeedback();
     }, [setValue]);
 
+    // ⭐ Gestion du clic sur les étoiles
     const handleStarPress = (value: number) => {
         setRating(value);
     };
 
+    // 📝 Traduction du score en texte
     const getRatingText = () => {
         switch (rating) {
             case 1:
@@ -84,37 +79,26 @@ const FeedbackScreen = () => {
         }
     };
 
+    // ✅ Envoi du feedback
     const onSubmit = async (data: FormData) => {
         if (rating === 0) {
-            Alert.alert(
-                t('Missing Rating'),
-                t('Please select a rating before submitting'),
-                [{ text: t('OK') }]
-            );
+            Alert.alert(t('Missing Rating'), t('Please select a rating before submitting'), [
+                { text: t('OK') },
+            ]);
             return;
         }
 
         setIsSubmitting(true);
         try {
-            await AsyncStorage.setItem(
-                'feedbackData',
-                JSON.stringify({ ...data, rating }),
-            );
-            console.log('Feedback stored successfully');
-
-            // Afficher un message de succès
-            Alert.alert(
-                t('Success'),
-                t('Your feedback has been submitted successfully'),
-                [{ text: t('OK') }]
-            );
+            await AsyncStorage.setItem('feedbackData', JSON.stringify({ ...data, rating }));
+            Alert.alert(t('Success'), t('Your feedback has been submitted successfully'), [
+                { text: t('OK') },
+            ]);
         } catch (error) {
             console.error('Error saving feedback:', error);
-            Alert.alert(
-                t('Error'),
-                t('There was an error submitting your feedback'),
-                [{ text: t('OK') }]
-            );
+            Alert.alert(t('Error'), t('There was an error submitting your feedback'), [
+                { text: t('OK') },
+            ]);
         } finally {
             setIsSubmitting(false);
         }
@@ -135,17 +119,13 @@ const FeedbackScreen = () => {
                         <Image source={images.app_logo} style={styles.logo} />
                     </View>
 
-                    <Text style={[styles.title, { color: theme.textPrimary }]}>
-                        {t('Provide Your Feedback')}
-                    </Text>
-
                     <View style={styles.starRatingContainer}>
                         {[1, 2, 3, 4].map((star) => (
                             <TouchableOpacity key={star} onPress={() => handleStarPress(star)}>
                                 <Ionicons
                                     name={star <= rating ? 'star' : 'star-outline'}
                                     size={30}
-                                    color={star <= rating ? '#FFD700' : '#CCCCCC'}
+                                    color={star <= rating ? colors.palette.owlBeak :colors.palette.white }
                                 />
                             </TouchableOpacity>
                         ))}
@@ -173,7 +153,7 @@ const FeedbackScreen = () => {
                         />
                     </View>
 
-                    {/* Bouton Submit repositionné dans la zone rouge */}
+                    {/* 🚀 Bouton d'envoi */}
                     <View style={styles.midButtonContainer}>
                         <Pressable
                             style={[styles.button, isSubmitting && styles.buttonDisabled]}
