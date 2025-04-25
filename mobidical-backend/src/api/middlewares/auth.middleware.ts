@@ -64,6 +64,7 @@ export class AuthMiddleware {
       
       if (req.user?.role === UserRole.ADMIN) return next();
       if (req.user?.id === resourceId) return next();
+      if (req.user?.child_id) return next();
 
       res.status(403).json({ message: 'Unauthorized operation' });
     };

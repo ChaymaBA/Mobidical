@@ -57,3 +57,66 @@ export const PREFERENCE_ROUTES = {
   UPDATE: '/:id',
   DELETE: '/:id'
 };
+
+export const MEDIA_ASSET_ROUTES = {
+  GET_ALL: '/',
+  GET_BY_ID: '/:id',
+  GET_BY_USER: '/user/:userId',
+  GET_BY_CHILD: '/child/:childId', // Changé pour refléter que l'ID est pris du token
+  GET_TYPES: '/types',
+  CREATE: '/',
+  UPDATE: '/:id',
+  DELETE: '/:id'
+};
+
+export const EXERCISE_ASSIGNMENT_ROUTES = {
+  GET_ALL: '/',
+  GET_BY_ID: '/:id',
+  GET_BY_CHILD: '/child/:childId',
+  CREATE: '/',
+  UPDATE: '/:id',
+  DELETE: '/:id',
+  COMPLETE: '/complete/:id',
+};
+
+export const CATEGORY_ROUTES = {
+  GET_ALL: '/',
+  GET_BY_ID: '/:id',
+  GET_BY_NAME: '/name/:name',
+  CREATE: '/',
+  UPDATE: '/:id',
+  DELETE: '/:id',
+};
+
+export const USER_DEVICE_ROUTES = {
+  GET_ALL: '/all',
+  GET_BY_ID: '/:id',
+  CREATE: '/',
+  UPDATE: '/:id',
+  DELETE: '/:id'
+};
+
+export const SESSION_ROUTES = {
+  CREATE: '/',
+  GET_ALL: '/',
+  GET_BY_ID: '/:id',
+  UPDATE: '/:id',
+  DELETE: '/:id',
+};
+
+export const USER_SESSION_ROUTES = {
+  CREATE: '/',
+  GET_ALL: '/',
+  GET_BY_ID: '/:id',
+  UPDATE: '/:id',
+  DELETE: '/:id',
+};
+
+export const REWARD_ROUTES = {
+  GET_ALL: '/',
+  GET_BY_ID: '/:id',
+  CREATE: '/',
+  UPDATE: '/:id',
+  DELETE: '/:id',
+  ATTRIBUER: '/attribuer/:userId/:rewardId'
+};
