@@ -1,5 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from "typeorm";
 import { ProgressReport } from "./Progress_Report";
+import { ExerciseAssignment } from "./Exercise_assignment";
 
 @Entity("reward")
 export class Reward {
@@ -14,6 +15,10 @@ export class Reward {
 
   @OneToMany(() => ProgressReport, (progressReport) => progressReport.reward)
   progressReport!: ProgressReport[];
+
+  @OneToMany(() => ExerciseAssignment, (exerciseAssignment) => exerciseAssignment.reward)
+  exerciseAssignments!: ExerciseAssignment[];
+
 
   attribuerRecompense(): void {
     

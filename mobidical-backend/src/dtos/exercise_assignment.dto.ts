@@ -29,6 +29,8 @@ export interface ExerciseAssignmentResponse {
   score: number;
   assigned_at: Date;
   completed_at?: Date;
+  checkPoint?: number; // Optional field for user role
+
 }
 
 /**
@@ -45,6 +47,7 @@ export function transformSingleExerciseAssignmentToResponse(
     score: assignment.score,
     assigned_at: assignment.assigned_at,
     completed_at: assignment.completed_at || undefined,
+    checkPoint: assignment.checkPoint || undefined, // Optional field for user role
   };
 
   if (assignment.child) {

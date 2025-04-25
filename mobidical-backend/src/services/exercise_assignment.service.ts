@@ -63,4 +63,31 @@ export class ExerciseAssignmentService {
     const assignment = await this.getAssignmentById(assignmentId);
     return assignment?.child?.user_id === userId;
   }
+
+  /**
+   * Marque un exercice comme complété et ajoute des points.
+   * @param assignmentId ID de l'assignement
+   * @param earnedPoints Nombre de points à ajouter (par défaut : 10)
+   */
+  async completeAssignmentAndAddPoints(
+    assignmentId: number,
+    earnedPoints: number = 10
+  ): Promise<ExerciseAssignment> {
+    const assignment = await this.assignmentRepository.findById(assignmentId);
+
+    if (!assignment) {
+      throw new Error('Exercise assignment not found');
+    }
+
+    if (assignment.is_completed) {
+      throw new Error('Exercise is already completed');
+    }
+
+    assignment.is_completed = true;
+    assignment.completed_at = new Date();
+    assignment.attempts += 1;
+    assignment.checkPoint = (assignment.checkPoint || 0) + earnedPoints;
+
+    return await this.assignmentRepository.save(assignment);
+  }
 }

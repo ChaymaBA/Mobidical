@@ -94,4 +94,9 @@ export class ExerciseAssignmentRepository {
     const result = await this.assignmentRepo.delete({ id });
     return result.affected ? result.affected > 0 : false;
   }
+
+  async save(assignment: ExerciseAssignment): Promise<ExerciseAssignment> {
+    return await this.assignmentRepo.save(assignment);
+  }
+
 }

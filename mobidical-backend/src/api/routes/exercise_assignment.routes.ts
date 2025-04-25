@@ -68,5 +68,11 @@ export default function (controllers: { exerciseAssignmentController: ExerciseAs
     exerciseAssignmentController.deleteAssignment.bind(exerciseAssignmentController)
   );
 
+  router.post(
+    EXERCISE_ASSIGNMENT_ROUTES.COMPLETE,
+    AuthMiddleware.authenticate,
+    exerciseAssignmentController.completeAssignment.bind(exerciseAssignmentController)
+  );
+
   return router;
 }

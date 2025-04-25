@@ -101,7 +101,6 @@ export class ExerciseAssignmentController {
       const userId = req.user?.id as number;
       const userRole = req.user?.role; 
   
-      // Si ce n'est pas un admin, vérifier la propriété
       if (userRole !== UserRole.ADMIN) {
         const isOwner = await this.assignmentService.isAssignmentOwnedByUser(assignmentId, userId);
         if (!isOwner) {
@@ -117,6 +116,27 @@ export class ExerciseAssignmentController {
       }
   
       res.json({ message: 'Exercise assignment deleted successfully' });
+    } catch (error) {
+      handleError(res, error);
+    }
+  }
+
+  async completeAssignment(req: Request, res: Response): Promise<void> {
+    try {
+      const assignmentId = parseInt(req.params.id);
+      const earnedPoints = req.body.earnedPoints ?? 10;
+
+      const updatedAssignment = await this.assignmentService.completeAssignmentAndAddPoints(
+        assignmentId,
+        earnedPoints
+      );
+
+      const responseData = transformSingleExerciseAssignmentToResponse(updatedAssignment, req.user?.role as UserRole);
+
+      res.json({
+        message: 'Exercise assignment marked as completed and points added',
+        assignment: responseData,
+      });
     } catch (error) {
       handleError(res, error);
     }

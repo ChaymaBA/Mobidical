@@ -32,3 +32,9 @@ export enum RecommendationType {
   DIFFICULTY = "difficulty",
   APPROACH = "approach",
 }
+
+export enum DeviceType {
+  MOBILE = 'MOBILE',
+  TABLET = 'TABLET',
+  DESKTOP = 'DESKTOP',
+  OTHER = 'OTHER',}
