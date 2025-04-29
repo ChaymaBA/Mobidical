@@ -33,7 +33,7 @@ interface ThemeContextType {
     theme: ThemeColors;
 }
 
-// ✅ Exporte la seule fonction createTheme (correcte)
+
 export const createTheme = (palette: CommonPalette, isDark: boolean): ThemeColors => ({
     palette,
     background: palette.background100,
@@ -46,7 +46,7 @@ export const createTheme = (palette: CommonPalette, isDark: boolean): ThemeColor
     switchThumb: palette.white,
     headerBackground: isDark ? palette.black : palette.white,
     primary: palette.owl100,
-    accent: palette.owlBeak,
+    accent: palette.white,
     separator: isDark ? palette.text200 : palette.black,
     error: isDark ? palette.lionRed : palette.lionTongue,
     errorBackground: isDark ? "rgba(255, 59, 48, 0.1)" : palette.overlay20,
@@ -110,3 +110,4 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         </ThemeContext.Provider>
     );
 };
+

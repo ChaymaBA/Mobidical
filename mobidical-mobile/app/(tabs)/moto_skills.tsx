@@ -1,12 +1,25 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Text } from '@/components/CustomText';
+import useTheme from '@/theme/useTheme';
 
-const moto_skills = () => {
+export default function MotoSkillsScreen() {
+  // Récupération du thème actuel
+  const { theme } = useTheme();
+
   return (
-    <View>
-      <Text>moto_skills</Text>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <Text variant="h1" style={{ color: theme.textPrimary }}>Moto Skills</Text>
+      <Text style={{ color: theme.textSecondary }}>Develop motor skills with these exercises</Text>
     </View>
-  )
+  );
 }
 
-export default moto_skills
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

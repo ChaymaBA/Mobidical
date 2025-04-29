@@ -1,8 +1,9 @@
 import React, { useState, forwardRef } from 'react';
-import { TextInput as RNTextInput, View, Text, StyleSheet, TextInputProps, TouchableOpacity, ReturnKeyTypeOptions, KeyboardTypeOptions } from 'react-native';
+import { TextInput as RNTextInput, View, Text, TextInputProps, TouchableOpacity, ReturnKeyTypeOptions, KeyboardTypeOptions, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Controller, Control, FieldValues } from 'react-hook-form';
+import { Controller, Control } from 'react-hook-form';
 import { colors } from '@/theme/colors';
+import { TextInputstyle } from './stylesComponents'
 
 
 interface CustomTextInputProps extends TextInputProps {
@@ -17,6 +18,7 @@ interface CustomTextInputProps extends TextInputProps {
   keyboardType?: KeyboardTypeOptions;
   placeholder?: string;
   placeholderTextColor?: string;
+  iconbackgroundColor?: ViewStyle;
   onSubmitEditing?: () => void;
 }
 
@@ -32,26 +34,27 @@ export const TextInput = forwardRef<RNTextInput, CustomTextInputProps>(
     // Si pas de control ou name, on rend l'input directement
     if (!control || !name) {
       return (
-        <View style={styles.container}>
-          {label && <Text style={styles.label}>{label}</Text>}
+        <View style={TextInputstyle.container}>
+          {label && <Text style={TextInputstyle.label}>{label}</Text>}
           <View style={[
-            styles.inputContainer,
-            isFocused && styles.focusedContainer
+            TextInputstyle.inputContainer,
+            isFocused && TextInputstyle.focusedContainer
           ]}>
             {leftIcon && (
-              <View style={styles.leftIconContainer}>
+              <View style={TextInputstyle.leftIconContainer}>
                 <Ionicons
                   name={leftIcon}
                   size={20}
-                  color="#333"
+                  color={colors.palette.text100}
+                  backgroundColor={colors.palette.white}
                 />
               </View>
             )}
             <RNTextInput
               ref={ref}
               style={[
-                styles.input,
-                leftIcon && styles.inputWithLeftIcon,
+                TextInputstyle.input,
+                leftIcon && TextInputstyle.inputWithLeftIcon,
                 style,
               ]}
               secureTextEntry={isPassword && !isPasswordVisible}
@@ -66,11 +69,11 @@ export const TextInput = forwardRef<RNTextInput, CustomTextInputProps>(
               {...props}
             />
             {isPassword && (
-              <TouchableOpacity onPress={togglePasswordVisibility} style={styles.rightIconContainer}>
+              <TouchableOpacity onPress={togglePasswordVisibility} style={TextInputstyle.rightIconContainer}>
                 <Ionicons
                   name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
                   size={20}
-                  color=  '#333'
+                  color={colors.palette.text100}
                 />
               </TouchableOpacity>
             )}
@@ -81,8 +84,8 @@ export const TextInput = forwardRef<RNTextInput, CustomTextInputProps>(
 
     // Si control et name sont fournis, on utilise Controller de react-hook-form
     return (
-      <View style={styles.container}>
-        {label && <Text style={styles.label}>{label}</Text>}
+      <View style={TextInputstyle.container}>
+        {label && <Text style={TextInputstyle.label}>{label}</Text>}
 
         <Controller
           control={control}
@@ -91,24 +94,24 @@ export const TextInput = forwardRef<RNTextInput, CustomTextInputProps>(
           render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
             <>
               <View style={[
-                styles.inputContainer,
-                isFocused && styles.focusedContainer,
-                error && styles.errorContainer
+                TextInputstyle.inputContainer,
+                isFocused && TextInputstyle.focusedContainer,
+                error && TextInputstyle.errorContainer
               ]}>
                 {leftIcon && (
-                  <View style={styles.leftIconContainer}>
+                  <View style={TextInputstyle.leftIconContainer}>
                     <Ionicons
                       name={leftIcon}
-                      size={20}
-                      color="#333"
+                      color={colors.palette.text100}
+         
                     />
                   </View>
                 )}
                 <RNTextInput
                   ref={ref}
                   style={[
-                    styles.input,
-                    leftIcon && styles.inputWithLeftIcon,
+                    TextInputstyle.input,
+                    leftIcon && TextInputstyle.inputWithLeftIcon,
                     style,
                   ]}
                   value={value}
@@ -128,18 +131,18 @@ export const TextInput = forwardRef<RNTextInput, CustomTextInputProps>(
                   {...props}
                 />
                 {isPassword && (
-                  <TouchableOpacity onPress={togglePasswordVisibility} style={styles.rightIconContainer}>
+                  <TouchableOpacity onPress={togglePasswordVisibility} style={TextInputstyle.rightIconContainer}>
                     <Ionicons
                       name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
                       size={20}
-                      color="#333"
+                      color={colors.palette.text100}
                     />
                   </TouchableOpacity>
                 )}
               </View>
 
               {/* Message d'erreur placé en dehors du inputContainer */}
-              {error && <Text style={styles.errorText}>{error.message}</Text>}
+              {error && <Text style={TextInputstyle.errorText}>{error.message}</Text>}
             </>
           )}
         />
@@ -177,9 +180,9 @@ export const CustomTextInput = ({
       rules={rules}
       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
         <>
-          <View style={styles.inputWrapper}>
+          <View style={TextInputstyle.inputWrapper}>
             {leftIcon && (
-              <Ionicons name={leftIcon} size={20} style={stylesRegister.icon} />
+              <Ionicons name={leftIcon} size={20} style={TextInputstyle.icon} />
             )}
             <RNTextInput
               placeholder={placeholder}
@@ -187,11 +190,11 @@ export const CustomTextInput = ({
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
-              style={[styles.input, style]}
+              style={[TextInputstyle.input, style]}
               {...rest}
             />
             {isPassword && (
-              <View style={stylesRegister.eyeIconWrapper}>
+              <View style={TextInputstyle.eyeIconWrapper}>
                 {showPassword ? (
                   <Ionicons name="eye-off-outline" size={20} onPress={() => setShowPassword(false)} />
                 ) : (
@@ -200,95 +203,10 @@ export const CustomTextInput = ({
               </View>
             )}
           </View>
-          {error && <Text style={stylesRegister.error}>{error.message}</Text>}
+          {error && <Text style={TextInputstyle.error}>{error.message}</Text>}
         </>
       )}
     />
   );
 };
 
-const stylesRegister = StyleSheet.create({
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    backgroundColor: '#fff',
-  },
-  icon: {
-    marginRight: 8,
-    color: '#999',
-  },
-  input: {
-    flex: 1,
-    height: 45,
-    color: '#000',
-  },
-  eyeIconWrapper: {
-    marginLeft: 8,
-  },
-  error: {
-    color: 'red',
-    marginTop: 4,
-    fontSize: 12,
-  },
-});
-
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: 12,
-    width: '100%',
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 8,
-    color: '#333',
-    width: '100%',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    width: '100%',
-  },
-  focusedContainer: {
-    borderColor:  colors.palette.black,
-  },
-  errorContainer: {
-    borderColor: colors.palette.lionRed,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-  },
-  inputWithLeftIcon: {
-    paddingLeft: 8, // Moins de padding à gauche quand il y a une icône
-  },
-  errorText: {
-    color: colors.palette.lionRed,
-    fontSize: 14,
-    marginTop: 6,
-    marginLeft: 4,
-  },
-  leftIconContainer: {
-    paddingHorizontal: 12,
-  },
-  rightIconContainer: {
-    paddingHorizontal: 12,
-  },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    backgroundColor: '#fff',
-  },
-});

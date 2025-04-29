@@ -1,5 +1,6 @@
 import { StyleSheet, Dimensions } from 'react-native';
 import { colors } from '../theme/colors';
+import { palette } from '@/theme';
 
 const { height, width } = Dimensions.get('window');
 
@@ -84,23 +85,23 @@ export const loginScreenStyles = StyleSheet.create({
   },
   
   validationError: {
-    color: 'red',
+    color: colors.palette.lionRed,
     fontSize: 12,
     marginTop: 5,
   },
   
   validationSuccess: {
-    color: 'green',
+    color:colors.palette.liongreen,
     fontSize: 12,
     marginTop: 5,
   },
   
   inputFieldWithError: {
-    borderColor: 'red',
+    borderColor: colors.palette.lionRed
   },
   
   inputFieldWithSuccess: {
-    borderColor: 'green',
+    borderColor: colors.palette.liongreen,
   },
   
   passwordInputContainer: {
@@ -139,6 +140,15 @@ export const loginScreenStyles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 15,
   },
+  rememberMeText:{
+    fontSize: 14,
+    color: colors.palette.black,
+  },
+  checkmark:{
+    fontSize: 20,
+    color: colors.palette.white,
+  },
+
 });
 
 export const registerScreenStyles = StyleSheet.create({
@@ -172,6 +182,12 @@ export const registerScreenStyles = StyleSheet.create({
     height: 40,
     resizeMode: 'contain',
   },
+  label: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 5,
+    color: colors.palette.black,
+  },
   container: {
     flex: 1,
     padding: 23, // Augmenté de 15 à 20
@@ -181,12 +197,13 @@ export const registerScreenStyles = StyleSheet.create({
     maxWidth: 400,
     alignSelf: 'center',
   },
-  title: {
+  titleR: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: 'thin',
     color: colors.palette.black,
     textAlign: 'center',
     marginBottom: 20,
+    
   },
   inputContainer: {
     marginBottom: 12,
@@ -198,14 +215,6 @@ export const registerScreenStyles = StyleSheet.create({
     fontSize: 14,
     color: colors.palette.black,
     fontWeight: '500',
-  },
-  inputField: {
-    borderWidth: 1,
-    borderColor: colors.palette.text200,
-    borderRadius: 6,
-    padding: 10,
-    fontSize: 14,
-    height: 40,
   },
   passwordContainer: {
   
@@ -256,38 +265,12 @@ export const registerScreenStyles = StyleSheet.create({
     justifyContent: 'space-around',
     paddingHorizontal: 10, // Ajouté pour aligner avec les champs
   },
-  // Styles pour les boutons radio
-  radioContainer: {
-    marginVertical: 8,
-    gap: 8,
-    paddingHorizontal: 10, // Ajouté pour aligner avec les champs
-  },
-  radioOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  radio: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    borderWidth: 1.5,
-    borderColor: colors.palette.owlBook,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  radioDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: colors.palette.black,
-  },
-  radioLabel: {
-    fontSize: 14,
-  },
+ 
+  
+  
   textInput: {
     borderWidth: 1,
-    borderColor: colors.palette.black,
+    borderColor: colors.palette.text200,
     borderRadius: 6,
     padding: 10,
     fontSize: 14,
@@ -500,7 +483,7 @@ export const passwordScreenStyles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
   },
-  title: {
+  titleP: {
     fontSize: 20,
     fontWeight: 'bold',
     color: colors.palette.black,
@@ -616,136 +599,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export const profileScreenStyles = StyleSheet.create({
-  // Vos styles existants...
-  backgroundImage: {
-    flex: 1,
-    width: '100%',
-    height: '100%'
-  },
-  safeArea: {
-    flex: 1,
-  },
-  scrollView: {
-    flexGrow: 1,
-    paddingBottom: 20
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-  },
-  appName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    flex: 1,
-    textAlign: 'center',
-    color: colors.palette.black,
-  },
-  logo: {
-    width: 40,
-    height: 40,
-    resizeMode: 'contain'
-  },
 
-  // Nouveau style pour le conteneur de titre centré
-  titleContainer: {
-    alignItems: 'center',
-    marginVertical: 15,
-    width: '100%',
-  },
-
-  // Style pour le titre centré
-  centerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.palette.black,
-    textAlign: 'center',
-  },
-
-  profileContainer: {
-    margin: 16,
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: colors.palette.black
-  },
-  profileHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: colors.palette.black,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  editButton: {
-    padding: 8,
-  },
-
-  // Styles modifiés pour l'image de profil interactive
-  profileImageContainer: {
-    position: 'relative',  // Nouveau
-    alignItems: 'center',
-    marginBottom: 24
-  },
-  profileImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    borderWidth: 3,
-    borderColor: colors.palette.black
-  },
-
-  // Nouveau style pour l'icône d'appareil photo superposée
-  cameraIconContainer: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    backgroundColor: colors.palette.white,
-    borderRadius: 20,
-    padding: 8,
-    borderWidth: 2,
-    borderColor: colors.palette.black,
-  },
-
-  infoSection: {
-    marginBottom: 24
-  },
-  infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 12
-  },
-  infoLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.palette.black
-  },
-  infoValue: {
-    fontSize: 16,
-    color: colors.palette.text100
-  },
-  separator: {
-    height: 1,
-    backgroundColor: colors.palette.black,
-    marginVertical: 4
-  },
-  logoutButton: {
-    backgroundColor: colors.palette.black,
-    color: colors.palette.white,
-  }
-});
-const ChangePasswordstyles = StyleSheet.create({
+export const ChangePasswordstyles = StyleSheet.create({ 
   container: {
     flex: 1,
     padding: 20,
@@ -766,7 +621,7 @@ const ChangePasswordstyles = StyleSheet.create({
     width: 80,
     height: 80,
   },
-  title: {
+  titleCHP: {
     fontSize: 20,
     fontWeight: '600',
     color: colors.palette.black,
@@ -819,7 +674,7 @@ const ChangePasswordstyles = StyleSheet.create({
 export const editProfilestyles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.background, // Ajout du fond comme dans settings
   },
   container: {
     flex: 1,
@@ -829,97 +684,111 @@ export const editProfilestyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomWidth: 0,  
-    borderBottomColor: 'transparent', 
+    borderBottomWidth: 0,
+    borderBottomColor: 'transparent',
   },
-    appName: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: colors.palette.black,
-        flex: 1,
-        textAlign: 'center',
-    },
-    logo: {
-        width: 40,
-        height: 40,
-    },
-    pageTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginVertical: 20,
-        color: colors.palette.black,
-    },
-    profileImageContainer: {
-        alignItems: 'center',
-        marginVertical: 20,
-    },
-    profileImage: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
-        backgroundColor: colors.palette.text100,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    userIcon: {
-        opacity: 0.5,
-    },
-    imageActionButton: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-        backgroundColor: colors.palette.owl100,
-        borderRadius: 18,
-        padding: 8,
-        borderWidth: 2,
-        borderColor: colors.palette.owl100,
-    },
-    userImage: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
-    },
-    inputContainer: {
-        marginBottom: 16,
-    },
-    inputLabel: {
-        fontSize: 16,
-        marginBottom: 6,
-        color: colors.palette.black,
-        fontWeight: '500',
-    },
-    inputField: {
-        backgroundColor: colors.palette.text200,
-        borderRadius: 8,
-        paddingHorizontal: 12,
-        paddingVertical: 10,
-        fontSize: 16,
-    },
-    button: {
-        backgroundColor: colors.palette.black,
-        borderRadius: 8,
-        paddingVertical: 12,
-        marginTop: 20,
-        marginBottom: 30,
-    },
-    errorText: {
-        color: colors.palette.lionRed,
-        marginBottom: 10,
-    },
-    noteText: {
-        fontSize: 12,
-        color: colors.palette.text200,
-        marginTop: 5,
-    },
-    backButton: {
-        padding: 10,
-    },
-    backButtonText: {
-        color: colors.palette.text100,
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
+  appName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.palette.black, // Aligné avec l'écran de paramètres
+    flex: 1,
+    textAlign: 'center',
+  },
+  logo: {
+    width: 40,
+    height: 40,
+  },
+  pageTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: 20,
+    color: colors.palette.black, // Comme dans settings
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 20,
+  },
+  profileImageContainer: {
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  profileImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: colors.palette.text200,
+    borderBlockColor: colors.palette.text200,
+  },
+  userIcon: {
+    opacity: 0.5,
+    color:colors.palette.text200,
+    borderBlockColor:colors.palette.white,
+  },
+  imageActionButton: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    borderRadius: 18,
+    padding: 8,
+    borderWidth: 2,
+    borderColor: colors.palette.text200, 
+  },
+  userImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderBlockColor: colors.palette.text200,
+    backgroundColor:colors.palette.text200, 
+  },
+  inputContainer: {
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 16,
+    marginBottom: 6,
+    fontWeight: '500',
+    color: colors.palette.black, // Ajout de couleur
+  },
+  inputField: {
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
+    backgroundColor: colors.palette.white, // Fond blanc comme dans les sections
+    shadowColor: colors.palette.black, // Ombre
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  button: {
+    borderRadius: 8,
+    paddingVertical: 12,
+    marginTop: 20,
+    marginBottom: 30,
+    backgroundColor: colors.palette.black, // Une couleur principale comme dans settings
+  },
+  errorText: {
+    marginBottom: 10,
+    color: colors.palette.lionRed, // Ajout d'une couleur d'erreur
+  },
+  noteText: {
+    fontSize: 12,
+    marginTop: 5,
+    color: colors.palette.text200, // Une couleur plus claire
+  },
+  backButton: {
+    padding: 10,
+  },
+  backButtonText: {
+    color: colors.palette.text100, // Couleur du texte du bouton comme dans settings
+    fontSize: 16,
+    fontWeight: 'bold',
+  
+  },
 });
 
 
@@ -978,7 +847,8 @@ export const settingscreenstyles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   icon: {
-    marginRight: 16,
+    marginRight: 16, 
+    color:colors.palette.owl200,
   },
   settingText: {
     flex: 1,
@@ -1001,10 +871,113 @@ export const settingscreenstyles = StyleSheet.create({
   },
   backButton: {
     padding: 10,
+    color: colors.palette.text100,
   },
   backButtonText: {
     color: colors.palette.text100,
     fontSize: 16,
     fontWeight: 'bold',
   },
+  languageSelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 'auto',
+    paddingHorizontal: 10,
+  },
+  languageText: {
+    fontSize: 14,
+    marginRight: 5,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  languageModal: {
+    width: '80%',
+    borderRadius: 10,
+    overflow: 'hidden',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  languageOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  languageOptionText: {
+    fontSize: 16,
+  }
 });
+
+
+export const kidsInfoStyles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
+  safeArea: {
+    flex: 1,
+  },
+  header: {
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  appName: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: colors.palette.black,
+  },
+  logo: {
+    width: 80,
+    height: 80,
+    marginTop: 10,
+    resizeMode: 'contain',
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: colors.palette.black,
+    marginBottom: 20,
+  },
+  inputContainer: {
+    marginHorizontal: 20,
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 16,
+    color: colors.palette.black,
+    marginBottom: 6,
+  },
+  inputField: {
+    backgroundColor: colors.palette.text100,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
+    color: colors.palette.text100,
+    borderWidth: 1,
+    borderColor: colors.palette.text100,
+  },
+  errorText: {
+    marginTop: 4,
+    color: colors.palette.lionRed,
+    fontSize: 14,
+  },
+  button: {
+    marginHorizontal: 20,
+    marginVertical: 20,
+  }
+
+  
+});
+

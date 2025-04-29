@@ -1,51 +1,46 @@
-import React, { ReactNode } from 'react';
-import { Modal as RNModal, View, TouchableOpacity, StyleSheet } from 'react-native';
-import { X } from 'lucide-react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, Modal} from 'react-native';
+import { useTheme } from '@/theme/themeProvider'; 
+import {colors} from '@/theme/colors';
+import { Modalstyles }from './stylesComponents'
 
-interface ModalProps {
+type LanguageModalProps = {
   visible: boolean;
   onClose: () => void;
-  children: ReactNode;
-}
+};
 
-export const Modal = ({ visible, onClose, children }: ModalProps) => {
+const LanguageModal: React.FC<LanguageModalProps> = ({ visible, onClose }) => {
+  const { theme } = useTheme();
+
+  const languages = [
+    { code: 'en', name: 'English' },
+    { code: 'fr', name: 'Français' },
+    { code: 'ar', name: 'العربية' },
+  ];
+
   return (
-    <RNModal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
-      <View style={styles.overlay}>
-        <View style={styles.content}>
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <X size={24} color="#333" />
-          </TouchableOpacity>
-          {children}
+    <Modal visible={visible} transparent animationType="slide">
+      <View style={[Modalstyles.modalOverlay, { backgroundColor: colors.palette.overlay20}]}>
+        <View style={[Modalstyles.modalContent, { backgroundColor: theme.card }]}>
+          {languages.map((lang) => (
+            <TouchableOpacity
+              key={lang.code}
+              style={Modalstyles.languageItem}
+              onPress={() => {
+                // i18n.changeLanguage(lang.code);
+                onClose();
+              }}
+            >
+              <Text style={[Modalstyles.languageText, { color: theme.textPrimary }]}>
+                {lang.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </View>
       </View>
-    </RNModal>
+    </Modal>
   );
 };
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  content: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 20,
-    width: '90%',
-    maxWidth: 400,
-  },
-  closeButton: {
-    position: 'absolute',
-    right: 12,
-    top: 12,
-    zIndex: 1,
-  },
-});
+
+

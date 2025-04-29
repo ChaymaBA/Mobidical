@@ -3,13 +3,13 @@ export const palette = {
 
     // coleur premieur 
     owl100: "#EDC8A3FF",   
-    owl200: "#8B5A2B",    
+    owl200: "#35B1AFFF",    
     owlBook: "#357ABD",  
     owlBeak: "#FFCC00",   
 
     // Couleurs secondaire 
     lion100: "#FFA726",   
-    liongreen: "#34C759",   
+    liongreen: "#0EB838FF",   
     lionRed: "##FF3B30",  
     lionBook: "#007AFF",  
     lionTongue: "#E57373",

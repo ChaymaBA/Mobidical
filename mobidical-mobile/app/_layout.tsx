@@ -1,13 +1,19 @@
-import { AuthProvider, useAuth } from '@/navigation/AuthContext';
+import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Stack, useRouter } from 'expo-router';
-import { View, ActivityIndicator } from 'react-native';
-import { useEffect, useState } from 'react';
-import { colors } from '@/theme/colors';
 
+import { AuthProvider, useAuth } from '@/navigation/AuthContext';
+import useTheme from '@/theme/useTheme';
+import { $styles } from '@/theme/styles';
+import '@/i18n'; // Initialize internationalization
+
+/**
+ * RootLayout is the top-level component that wraps the entire app.
+ * It sets up gesture handling and provides the authentication context.
+ */
 export default function RootLayout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={$styles.flex1}>
       <AuthProvider>
         <RootNavigation />
       </AuthProvider>
@@ -15,46 +21,34 @@ export default function RootLayout() {
   );
 }
 
+/**
+ * RootNavigation handles the main navigation logic of the app.
+ * It redirects users to appropriate screens based on their authentication state
+ * and applies the current theme to the entire stack.
+ */
 function RootNavigation() {
-  const { isAuthenticated } = useAuth();
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const { isAuthenticated } = useAuth(); // Access auth state
+  const { theme } = useTheme();          // Access current theme (light/dark)
+  const router = useRouter();            // Get navigation router
 
+  // Handle automatic redirection based on authentication status
   useEffect(() => {
-    if (isAuthenticated !== undefined) {
-      setTimeout(() => {
-        if (isAuthenticated) {
-          router.replace('/(tabs)');
-        } else {
-          router.replace('/(auth)/login');
-        }
-        setLoading(false);
-      }, 100);
+    if (isAuthenticated) {
+      console.log('User is authenticated:', isAuthenticated);
+      router.replace('/(tabs)'); // Redirect to main app
+    } else {
+      router.replace('/(auth)/login'); // Redirect to login screen
     }
   }, [isAuthenticated]);
 
   return (
-    <>
-      <Stack screenOptions={{ gestureEnabled: true, headerShown: false }} />
-      {loading && (
-        <View
-          style={{
-            position: 'absolute',
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: colors.palette.white 
-          }}
-        >
-          <ActivityIndicator
-            size="large"
-            color={colors.palette.owlBook} 
-          />
-        </View>
-      )}
-    </>
+    <Stack
+      screenOptions={{
+        headerShown: false, // Hide the default header for all screens
+        contentStyle: {
+          backgroundColor: theme.background, // Apply theme background color
+        },
+      }}
+    />
   );
 }

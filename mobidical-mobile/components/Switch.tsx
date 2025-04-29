@@ -1,7 +1,7 @@
 import { colors } from '@/theme';
 import React from 'react';
-import { Pressable, StyleSheet, Animated } from 'react-native';
-
+import { Pressable,  Animated } from 'react-native';
+import { Switchstyles }from './stylesComponents'
 interface SwitchProps {
   value: boolean;
   onValueChange: (value: boolean) => void;
@@ -30,17 +30,17 @@ export const Switch = ({
   return (
     <Pressable
       style={[
-        styles.track,
+        Switchstyles.track,
         {
           backgroundColor: value ? colors.palette.liongreen :colors.palette.white
         },
-        disabled && styles.disabled,
+        disabled && Switchstyles.disabled,
       ]}
       onPress={toggleSwitch}
     >
       <Animated.View
         style={[
-          styles.thumb,
+          Switchstyles.thumb,
           {
             transform: [{ translateX }],
           },
@@ -50,28 +50,3 @@ export const Switch = ({
   );
 };
 
-const styles = StyleSheet.create({
-  track: {
-    width: 50,
-    height: 28,
-    borderRadius: 14,
-    padding: 2,
-  },
-  thumb: {
-    width: 24,
-    height: 24,
-    backgroundColor: colors.palette.white,
-    borderRadius: 12,
-    shadowColor: colors.palette.black,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-});

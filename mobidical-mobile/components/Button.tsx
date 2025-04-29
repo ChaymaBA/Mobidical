@@ -1,45 +1,62 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { colors } from '@/theme/colors';
+import {
+    TouchableOpacity,
+    Text,
+    ViewStyle,
+    TextStyle,
+    GestureResponderEvent,
+} from 'react-native';
+import { buotonstyles } from './stylesComponents'
+
+// Types de variantes de bouton
+type ButtonVariant = 'primary' | 'secondary' | 'outline';
+// Tailles possibles
+type ButtonSize = 'small' | 'medium' | 'large';
 
 interface ButtonProps {
-    onPress: () => void;
     title: string;
-    variant?: 'primary' | 'secondary' | 'outline';
-    size?: 'small' | 'medium' | 'large';
+    onPress: (event: GestureResponderEvent) => void;
+    variant?: ButtonVariant;
+    size?: ButtonSize;
     disabled?: boolean;
     style?: ViewStyle;
     textStyle?: TextStyle;
 }
 
 export const Button = ({
-    onPress,
     title,
+    onPress,
     variant = 'primary',
     size = 'medium',
     disabled = false,
     style,
     textStyle,
 }: ButtonProps) => {
-    const getVariantStyle = () => {
+    /**
+     * Style spécifique selon la variante de bouton
+     */
+    const getVariantStyle = (): ViewStyle => {
         switch (variant) {
             case 'secondary':
-                return styles.secondary;
+                return buotonstyles.secondary;
             case 'outline':
-                return styles.outline;
+                return buotonstyles.outline;
             default:
-                return styles.primary;
+                return buotonstyles.primary;
         }
     };
 
-    const getSizeStyle = () => {
+    /**
+     * Style spécifique selon la taille
+     */
+    const getSizeStyle = (): ViewStyle => {
         switch (size) {
             case 'small':
-                return styles.small;
+                return buotonstyles.small;
             case 'large':
-                return styles.large;
+                return buotonstyles.large;
             default:
-                return styles.medium;
+                return buotonstyles.medium;
         }
     };
 
@@ -48,19 +65,19 @@ export const Button = ({
             onPress={onPress}
             disabled={disabled}
             style={[
-                styles.button,
+                buotonstyles.buttonBase,
                 getVariantStyle(),
                 getSizeStyle(),
-                disabled && styles.disabled,
-                style,
+                disabled && buotonstyles.disabled,
+                style, // styles personnalisés en prop
             ]}
         >
             <Text
                 style={[
-                    styles.text,
-                    variant === 'outline' && styles.outlineText,
-                    disabled && styles.disabledText,
-                    textStyle,
+                    buotonstyles.textBase,
+                    variant === 'outline' && buotonstyles.outlineText,
+                    disabled && buotonstyles.disabledText,
+                    textStyle, // styles texte personnalisés
                 ]}
             >
                 {title}
@@ -69,47 +86,3 @@ export const Button = ({
     );
 };
 
-const styles = StyleSheet.create({
-    button: {
-        borderRadius: 8,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    primary: {
-        backgroundColor: colors.palette.lionBook,
-    },
-    secondary: {
-        backgroundColor: colors.palette.owlBook,
-    },
-    outline: {
-        backgroundColor: 'transparent',
-        borderWidth: 2,
-        borderColor: colors.palette.lionBook,
-    },
-    small: {
-        paddingVertical: 8,
-        paddingHorizontal: 12,
-    },
-    medium: {
-        paddingVertical: 12,
-        paddingHorizontal: 16,
-    },
-    large: {
-        paddingVertical: 16,
-        paddingHorizontal: 24,
-    },
-    disabled: {
-        opacity: 0.5,
-    },
-    text: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    outlineText: {
-        color: colors.palette.lionBook,
-    },
-    disabledText: {
-        color: colors.palette.text100,
-    },
-});

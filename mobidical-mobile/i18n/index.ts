@@ -1,32 +1,34 @@
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import translationEN from './demo-en';
-import translationFR from './demo-fr';
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
+import * as Localization from "expo-localization";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import translationEn from "./locales/en-US/translation.json";
+import translationFr from "./locales/fr-FR/translation.json";
+
 
 const resources = {
-    en: {
-        translation: translationEN
-    },
-    fr: {
-        translation: translationFR
-    },
+    "en-US": { translation: translationEn },
+    "fr-FR": { translation: translationFr },
+}
+
+const initI18n = async () => {
+    let savedLanguage = await AsyncStorage.getItem("language");
+
+    if (!savedLanguage) {
+        savedLanguage = Localization.locale;
+    }
+
+    i18n.use(initReactI18next).init({
+        compatibilityJSON: "v4",
+        resources,
+        lng: savedLanguage,
+        fallbackLng: "fr-FR",
+        interpolation: {
+            escapeValue: false,
+        },
+    });
 };
 
-i18n
-    .use(initReactI18next) // passe i18n à react-i18next
-    .init({
-        resources,
-        lng: 'fr', // langue par défaut
-        fallbackLng: 'en', // langue de secours
-
-        interpolation: {
-            escapeValue: false // non nécessaire pour React
-        },
-
-        // Options supplémentaires
-        react: {
-            useSuspense: false, // recommandé pour React Native
-        }
-    });
+initI18n();
 
 export default i18n;
