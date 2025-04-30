@@ -3,7 +3,6 @@ import { colors } from '../theme/colors';
 import { palette } from '@/theme';
 
 const { height, width } = Dimensions.get('window');
-
 export const loginScreenStyles = StyleSheet.create({
   backgroundImage: {
     flex: 1,

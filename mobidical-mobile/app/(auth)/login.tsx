@@ -11,6 +11,7 @@ import {
   Platform
 } from 'react-native';
 import { router } from 'expo-router';
+import axios from 'axios'; 
 import { TextInput } from '@/components/TextInput';
 import { Button } from '@/components/Button';
 import { Text } from '@/components/CustomText';
@@ -22,10 +23,19 @@ import { validateEmail, validatePassword } from '@/utils/validation';
 import { observer } from 'mobx-react-lite';
 import { useAuth } from '@/navigation/AuthContext';
 
+const API_URL = 'http://192.168.1.19:3000/api/auth/login';
+const authAPI = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
 const LoginScreen = observer(() => {
   const [rememberMe, setRememberMe] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const passwordInputRef = useRef<any>(null);
-  const { signIn } = useAuth(); // ✅ Utilisation du hook de contexte
+  const { signIn } = useAuth();
 
   const {
     control,
@@ -41,9 +51,44 @@ const LoginScreen = observer(() => {
 
   const onSubmit = async (data: any) => {
     try {
-      await signIn(data.email, data.password);
+      setIsLoading(true);
+
+      // Appel API avec axios
+      const response = await authAPI.post('/auth/login', {
+        email: data.email,
+        password: data.password
+      });
+
+      // Vérifier si la réponse contient les données nécessaires
+      if (response.data && response.data.token) {
+        // Vous pouvez stocker le token ici si nécessaire
+
+        // Utilisation du contexte d'authentification pour finaliser la connexion
+        await signIn(data.email, data.password);
+
+        // Afficher un message de succès si nécessaire
+        // Alert.alert('Success', 'You are now logged in');
+      } else {
+        throw new Error('Invalid response from server');
+      }
     } catch (error: any) {
-      Alert.alert('Login Failed', error.message || 'Something went wrong');
+      // Gestion avancée des erreurs
+      let errorMessage = 'Something went wrong';
+
+      if (error.response) {
+        // La requête a été faite et le serveur a répondu avec un code d'état en dehors de la plage 2xx
+        errorMessage = error.response.data?.message || `Error ${error.response.status}: ${error.response.statusText}`;
+      } else if (error.request) {
+        // La requête a été faite mais aucune réponse n'a été reçue
+        errorMessage = 'No response from server. Please check your connection.';
+      } else {
+        // Une erreur s'est produite lors de la configuration de la requête
+        errorMessage = error.message || 'Authentication failed';
+      }
+
+      Alert.alert('Login Failed', errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -115,9 +160,10 @@ const LoginScreen = observer(() => {
               </View>
 
               <Button
-                title="Sign In"
+                title={isLoading ? "Signing In..." : "Sign In"}
                 onPress={handleSubmit(onSubmit)}
                 style={loginScreenStyles.button}
+                disabled={isLoading}
               />
 
               <View style={loginScreenStyles.linksContainer}>

@@ -15,6 +15,7 @@ import { colors } from '@/theme';
 import DropDownPicker from 'react-native-dropdown-picker';
 import UserStore from '@/src/stores/UserStores';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import axios from 'axios';
 
 type EditProfileFormInputs = {
     firstName: string;
@@ -119,27 +120,31 @@ export default function EditProfileScreen() {
 
     const onSubmit = async (data: EditProfileFormInputs) => {
         setLoading(true);
+        setError('');
         try {
             const updatedData = {
                 ...data,
                 profileImage: profileImage || undefined,
             };
 
-            if (updateUserProfile) {
-                await updateUserProfile(updatedData);
+            // Appel API PUT
+            const response = await axios.put('http://192.168.1.19:3000/api/auth/profile', updatedData);
+
+            if (response.status === 200) {
                 Alert.alert('Success', 'Profile updated successfully!');
+                // Vous pouvez aussi mettre à jour MobX ici si nécessaire
+                //UserStore.setUserProfile(updatedData); 
                 router.back();
             } else {
-                Alert.alert('Error', 'Unable to update profile at this time.');
+                throw new Error('Unexpected response from server.');
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
-            setError('Failed to update profile. Please try again.');
+            setError(err?.response?.data?.message || 'Failed to update profile. Please try again.');
         } finally {
             setLoading(false);
         }
     };
-
     const [open, setOpen] = useState(false);
     const [items, setItems] = useState([
         { label: 'Educator', value: 'Educator' },

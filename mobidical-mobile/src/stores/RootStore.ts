@@ -5,12 +5,12 @@ import TodoStore from '@/src/stores/TodoStores';
 import { storage } from '@/utils/storage';
 
 class RootStore {
-    userStore: UserStore;
+    userStore: typeof UserStore;
     todoStore: TodoStore;
     isHydrated = false;
 
     constructor() {
-        this.userStore = new UserStore();
+        this.userStore = UserStore;
         this.todoStore = new TodoStore();
         makeAutoObservable(this);
     }

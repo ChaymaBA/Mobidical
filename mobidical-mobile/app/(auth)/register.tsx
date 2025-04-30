@@ -10,19 +10,23 @@ import {
 import { Link, router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; // Importer le composant
-
+import axios from 'axios';
 import { useAuth } from '@/navigation/AuthContext';
-
 import { TextInput } from '@/components/TextInput';
 import { Button } from '@/components/Button';
 import { Text } from '@/components/CustomText';
-
 import { registerScreenStyles } from '@/utils/styles';
 import { validateEmail, validatePassword } from '@/utils/validation';
 import { colors } from '@/theme/colors';
 import { images } from '@/theme/images';
 import { CustomDropDown } from '@/components/Dropdown';
-
+const API_URL = 'http://192.168.1.19:3000/api'; 
+const authAPI = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 type RegisterFormInputs = {
   firstName: string;
   lastName: string;
@@ -63,21 +67,40 @@ export default function RegisterScreen() {
     { label: 'Parent', value: 'Parent' },
     { label: 'Therapist', value: 'Therapist' }
   ]);
-
   const onSubmit = async (data: RegisterFormInputs) => {
     setLoading(true);
-    try {
-      // Authentification Firebase
-      await signUp(data.email, data.password, data.firstName, data.lastName, data.userType);
+    setError('');
 
-      Alert.alert(
-        'Registration Successful',
-        'Your account has been created successfully!',
-        [{ text: 'OK', onPress: () => router.replace('/kids-info') }]
-      );
-    } catch (err) {
-      console.error(err);
-      setError('Registration failed. Please try again.');
+    try {
+      const response = await authAPI.post('/auth/register', {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        password: data.password,
+        userType: data.userType
+      });
+
+      if (response.data?.success) {
+        Alert.alert(
+          'Registration Successful',
+          'Your account has been created successfully!',
+          [{ text: 'OK', onPress: () => router.replace('/kids-info') }]
+        );
+      } else {
+        throw new Error(response.data?.message || 'Registration failed');
+      }
+    } catch (error: any) {
+      let errorMessage = 'Something went wrong';
+
+      if (error.response) {
+        errorMessage = error.response.data?.message || `Error ${error.response.status}: ${error.response.statusText}`;
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your connection.';
+      } else {
+        errorMessage = error.message || 'Registration failed';
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
