@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, Image, ImageBackground, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import { View, Image, ImageBackground, TouchableOpacity, SafeAreaView, ScrollView, Alert } from 'react-native';
+import axios from 'axios';
 import { router } from 'expo-router';
-import { useAuth } from '@/navigation/AuthContext';
 import { TextInput } from '@/components/TextInput';
 import { Button } from '@/components/Button';
 import { Text } from '@/components/CustomText';
-import { useForm, Controller, FieldValues } from 'react-hook-form';
+import { useForm, FieldValues } from 'react-hook-form';
 import { passwordScreenStyles } from '@/utils/styles';
 import { images } from '@/theme/images';
 import { colors } from '@/theme/colors';
@@ -13,9 +13,8 @@ import { validateEmail } from '@/utils/validation';
 
 const ResetPasswordScreen = () => {
   const [loading, setLoading] = useState(false);
-  const { resetPassword } = useAuth();
 
-  const { control, handleSubmit, reset } = useForm<FieldValues>({
+  const { control, handleSubmit } = useForm<FieldValues>({
     defaultValues: {
       email: '',
     },
@@ -24,10 +23,15 @@ const ResetPasswordScreen = () => {
   const onSubmit = async (data: FieldValues) => {
     setLoading(true);
     try {
-      await resetPassword(data.email);
+      const response = await axios.post('http://192.168.1.19:3000/api/auth/forgot-password', {
+        email: data.email,
+      });
+
+      Alert.alert('Success', 'Instructions sent to your email.');
       router.replace('/login');
     } catch (err: any) {
-      console.error('Reset password error:', err);
+      console.error('Reset password error:', err?.response?.data || err.message);
+      Alert.alert('Error', err?.response?.data?.message || 'Something went wrong.');
     } finally {
       setLoading(false);
     }
@@ -40,11 +44,7 @@ const ResetPasswordScreen = () => {
       resizeMode="cover"
     >
       <SafeAreaView style={passwordScreenStyles.safeArea}>
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
-          keyboardShouldPersistTaps="handled"
-        >
-          {/* Header with app name and logo */}
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
           <View style={passwordScreenStyles.header}>
             <Text style={passwordScreenStyles.appName}>MOBIDICAL</Text>
             <Image source={images.app_logo} style={passwordScreenStyles.logo} />
@@ -57,7 +57,6 @@ const ResetPasswordScreen = () => {
               Enter your email address and we'll send you instructions to reset your password.
             </Text>
 
-            {/* Email Field */}
             <View style={passwordScreenStyles.inputContainer}>
               <Text style={passwordScreenStyles.label}>Email</Text>
               <TextInput

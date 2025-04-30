@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import { colors } from '@/theme/colors';
 import { ChangePasswordstyles } from '@/utils/styles';
-import { useAuth } from '@/navigation/AuthContext';
 import { images } from '@/theme/images';
 
 const ChangePassword = () => {

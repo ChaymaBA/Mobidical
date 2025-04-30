@@ -14,15 +14,12 @@ import {
 import { router } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// Custom components
+import axios from 'axios';
 import { TextInput } from '@/components/TextInput';
 import { Button } from '@/components/Button';
 import { Text } from '@/components/CustomText';
 import { RadioButton } from '@/components/RadioButton';
 import { DatePicker } from '@/components/PikeDate';
-
-// Theme, images, and styles
 import { images } from '@/theme/images';
 import useTheme from '@/theme/useTheme';
 import { useTranslation } from 'react-i18next';
@@ -75,7 +72,6 @@ export default function KidsInfoScreen() {
         };
     }, []);
 
-    // Handle form submission
     const onSubmit = async (data: KidsInfoFormInputs) => {
         setLoading(true);
         try {
@@ -89,11 +85,16 @@ export default function KidsInfoScreen() {
 
             const userId = user?.uid || 'anonymous';
 
-            // Save to AsyncStorage
+            // 
+            await axios.post('http://192.168.1.19:3000/api/children', {
+                ...formatted,
+                user_id: userId, 
+            });
+
             await AsyncStorage.setItem(`kidsInfo_${userId}`, JSON.stringify(formatted));
             await AsyncStorage.setItem(`kidsInfoCompleted_${userId}`, 'true');
 
-            // Navigate to home tabs
+            // Navigation après succès
             router.replace('/(tabs)');
         } catch (err) {
             console.error(err);
@@ -104,7 +105,6 @@ export default function KidsInfoScreen() {
         }
     };
 
-    // Reusable UI rendering helpers
     const renderLabel = (label: string) => (
         <Text style={registerScreenStyles.inputLabel}>{label}</Text>
     );
