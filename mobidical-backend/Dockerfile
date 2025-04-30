@@ -19,9 +19,18 @@ RUN find /app -type f -name "*.sh" -exec chmod +x {} \;
 # Build the TypeScript code
 RUN npm run build
 
+# Set NODE_ENV to ensure proper logging
+ENV NODE_ENV=development
+
+# Disable Node.js buffering for better real-time log output
+ENV NODE_OPTIONS=--no-warnings 
+
+# Ensure stdout and stderr are unbuffered
+ENV FORCE_COLOR=1
+
 # Create a non-root user and group for better security
 RUN addgroup --system nodeapp && \
-    adduser --system --ingroup nodeapp nodeapp
+  adduser --system --ingroup nodeapp nodeapp
 
 # Set ownership of the application files to the non-root user
 RUN chown -R nodeapp:nodeapp /app
@@ -37,5 +46,5 @@ EXPOSE $PORT
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:$PORT/health || exit 1
 
-# Run the application
+# Run the application with nodemon for development
 CMD ["npm", "run", "start"]

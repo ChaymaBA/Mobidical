@@ -1,14 +1,7 @@
 services:
-# we need to define the containers(services) that our compose file will manage 
-# in our case we have 4 services: 
-# 1- migrate-generate : handle the generation of the database generation
-# 2- migrate-run : Applies the database migration
-# 3- app : the main application service 
-# 4- db : the postgreSQL database service
   migrate:
     build: 
       context: .
-      # Add build caching
       cache_from:
         - node:latest
     entrypoint: sh -c "echo TASK=${TASK}; npm run ${TASK}"
@@ -20,29 +13,27 @@ services:
     networks:
       - app-network
     volumes:
-      - .:/app:delegated  # Use delegated for better performance
-      - /app/node_modules  # Anonymous volume for node_modules
-    # Add resource constraints
+      - .:/app:delegated
+      - /app/node_modules
     deploy:
       resources:
         limits:
           cpus: '0.5'
           memory: 512M
-
+ 
   app:
     build:
       context: .
       dockerfile: Dockerfile
-      # Add build caching
       cache_from:
         - node:latest
     command: npm run start:${ENV:-development}
     env_file:
       - ./config/.env.${ENV:-development}.local
     volumes:
-      - .:/app:delegated  # Use delegated for better performance
+      - .:/app:delegated
       - /app/node_modules
-      - npm-cache:/root/.npm  # Cache npm packages
+      - npm-cache:/root/.npm
     ports:
       - "${APP_PORT:-3000}:3000"
     depends_on:
@@ -50,19 +41,26 @@ services:
         condition: service_healthy
     networks:
       - app-network
-    # Add resource constraints
     deploy:
       resources:
         limits:
           cpus: '1.0'
           memory: 1G
-    # Add healthcheck for app
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-
+    # Enable interactive mode and TTY allocation for console output
+    tty: true
+    stdin_open: true
+    # Print logs to stdout/stderr
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+ 
   db:
     container_name: postgres_${COMPOSE_PROJECT_NAME}
     image: postgres:latest
@@ -72,7 +70,7 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d  # For any initialization scripts
+      - ./init-scripts:/docker-entrypoint-initdb.d
     networks:
       - app-network
     healthcheck:
@@ -80,7 +78,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    # Add PostgreSQL optimization settings
     command: 
       - "postgres"
       - "-c"
@@ -93,23 +90,21 @@ services:
       - "maintenance_work_mem=64MB"
       - "-c"
       - "checkpoint_completion_target=0.9"
-    # Add resource constraints
     deploy:
       resources:
         limits:
           cpus: '1.0'
           memory: 1G
-
+ 
 volumes:
   db_data:
     name: "${COMPOSE_PROJECT_NAME}_db_data"
-  npm-cache:  # Add volume for npm cache
+  npm-cache:
     name: "${COMPOSE_PROJECT_NAME}_npm_cache"
-
+ 
 networks:
   app-network:
     name: "${COMPOSE_PROJECT_NAME}_network"
     driver: bridge
-    # Add network optimization
     driver_opts:
       com.docker.network.driver.mtu: 1450
