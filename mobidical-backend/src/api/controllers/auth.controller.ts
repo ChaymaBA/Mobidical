@@ -20,12 +20,11 @@ export class AuthController {
     try {
       const userData = UserRegistrationDto.parse(req.body);
       const result = await this.authService.register(userData);
-      
       // Récupérer l'ID de l'enfant par défaut s'il existe
       const defaultChildId = result.user.children && result.user.children.length > 0 
         ? result.user.children[0].id 
         : null;
-      
+      console.log("User registered successfully:", result.user.id);
       res.status(201).json({
         message: 'User registered successfully',
         user: {
@@ -34,7 +33,9 @@ export class AuthController {
           lastName: result.user.lastName,
           email: result.user.email,
           role: result.user.role,
-          child_id: defaultChildId
+          child_id: defaultChildId,
+          role_type: result.user.role_type // Inclure le type de rôle
+          
         },
         tokens: {
           accessToken: result.accessToken,
@@ -51,7 +52,6 @@ export class AuthController {
     try {
       const { email, password, child_id } = req.body;
       const loginData = UserLoginDto.parse({ email, password });
-      
       // Convertir child_id en nombre si c'est une chaîne
       const childId = child_id ? (typeof child_id === 'string' ? parseInt(child_id, 10) : child_id) : undefined;
       
@@ -76,7 +76,8 @@ export class AuthController {
           lastName: result.user.lastName, 
           email: result.user.email,
           role: result.user.role,
-          child_id: selectedChildId
+          child_id: selectedChildId,
+          role_type: result.user.role_type // Inclure le type de rôle
         },
         tokens: {
           accessToken: result.accessToken,
@@ -191,9 +192,18 @@ export class AuthController {
 
   async resetPassword(req: Request, res: Response): Promise<void> {
     try {
-      const { resetToken, newPassword } = req.body;
+      const authHeader = req.headers.authorization;
+  
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        res.status(401).json({ message: 'Authorization token missing or invalid' });
+        return;
+      }
+  
+      const resetToken = authHeader.split(' ')[1]; // extrait le token après "Bearer"
+      const { newPassword } = req.body;
+  
       await this.authService.resetPassword(resetToken, newPassword);
-
+  
       res.json({
         message: 'Password reset successfully'
       });
