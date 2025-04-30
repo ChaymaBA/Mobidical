@@ -45,7 +45,8 @@ Before getting started, ensure the following tools are installed on your system:
 - `cd mobidacal-backend`
 - `cp .env.example .env`    # Fill in environment variables like DB credentials
 - `docker-compose up`       # Or run backend manually using Node.js
-
+- `npm run docker-build:staging`     # Build the Docker image for the staging environment
+- `npm run docker:migrate staging migration1`     #Run the database migration in the staging environment using the Docker container setup
 ---
 
 ### 3. 🤖 Run the AI Engine
