@@ -53,6 +53,7 @@ export const PREFERENCE_ROUTES = {
   GET_BY_ID: '/:id',
   GET_BY_CHILD: '/child/:childId',
   GET_BY_USER: '/user/:userId',
+  GET_BY_USER_OR_DEFAULT: '/default',
   CREATE: '/',
   UPDATE: '/:id',
   DELETE: '/:id'
