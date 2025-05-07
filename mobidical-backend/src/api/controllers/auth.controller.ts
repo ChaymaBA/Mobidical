@@ -122,6 +122,7 @@ export class AuthController {
         email: user.email,
         role: user.role,
         child_id: user.child_id // Inclure l'ID de l'enfant du token
+       
       });
     } catch (error) {
       handleError(res, error);
@@ -136,10 +137,10 @@ export class AuthController {
         return;
       }
   
-      const { username, email, lastName } = req.body;
+      const { username, email, lastName, role_type } = req.body;
   
       const updatedUser = await this.authService.updateUserProfile(user.id, {
-        username, email, lastName
+        username, email, lastName, role_type
       });
   
       res.json({
@@ -150,7 +151,8 @@ export class AuthController {
           lastName: updatedUser.lastName,
           email: updatedUser.email,
           role: updatedUser.role,
-          child_id: user.child_id // Préserver le child_id du token
+          child_id: user.child_id, // Préserver le child_id du token
+          role_type: updatedUser.role_type // Inclure le type de rôle
         }
       });
     } catch (error) {
