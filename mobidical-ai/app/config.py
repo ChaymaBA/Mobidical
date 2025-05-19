@@ -1,7 +1,7 @@
 import os
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "postgresql://user:pass@localhost/mobidical")
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "postgresql://staging_user:staging_password@localhost:5432/deploycraftDB_staging")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.getenv("SECRET_KEY", "supersecret")
     CORS_ORIGINS = "*"
