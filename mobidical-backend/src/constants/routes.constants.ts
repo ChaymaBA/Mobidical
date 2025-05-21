@@ -121,3 +121,7 @@ export const REWARD_ROUTES = {
   DELETE: '/:id',
   ATTRIBUER: '/attribuer/:userId/:rewardId'
 };
+
+export const RECOMMENDATION_ROUTES = {
+  GET_RECOMMENDATIONS: '/',
+};

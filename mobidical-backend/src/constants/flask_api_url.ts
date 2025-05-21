@@ -1,0 +1,3 @@
+export const API_CONSTANTS = {
+    FLASK_API_URL: process.env.FLASK_API_URL || 'http://192.168.1.12:5000/api'  
+};
