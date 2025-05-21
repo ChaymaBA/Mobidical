@@ -1,7 +1,6 @@
-import pandas as pd # type: ignore
+import pandas as pd  # type: ignore
 import logging
 from models.recommender import GameRecommender
-from models.preference_model import Preference
 
 # Set up logger
 logger = logging.getLogger(__name__)
@@ -13,21 +12,24 @@ recommender.preprocess_data()
 
 class RecommendationService:
     def generate_recommendations(self, user_data):
+        logger.info("Generating recommendations with user data: %s", user_data)
+
+        # Préparation des préférences utilisateur avec des valeurs par défaut robustes
         user_preferences = {
             "preferred_colors": user_data.get("preferred_colors", ""),
             "audio_sensitivity": user_data.get("audio_sensitivity", "medium"),
             "prefers_animations": user_data.get("prefers_animations", False),
-            "visual_complexity": user_data.get("visual_complexity", 2),
+            "visual_complexity": int(user_data.get("visual_complexity", 2)),
             "favorite_activities": user_data.get("favorite_activities", "")
         }
-        
-        recommendations = recommender.get_recommendations(
-            user_preferences,
-            num_recommendations=user_data.get("num_recommendations", 3)
-        )
-        
+
+        # Nombre de recommandations à générer
+        num_recommendations = int(user_data.get("num_recommendations", 3))
+
+        # Récupération des recommandations
+        recommendations = recommender.get_recommendations(user_preferences, num_recommendations)
         enriched = recommender.enrich_recommendations(recommendations)
-        
+
         return {
             "recommendations": enriched,
             "metadata": {
@@ -46,28 +48,6 @@ class RecommendationService:
             "preferred_colors": ["red", "blue", "green", "yellow", "purple"],
             "favorite_activities": ["puzzle", "drawing", "music", "sorting", "counting"]
         }
-    def generate_recommendations_from_db(self, user_data, child_id, num_recommendations=3):
-       
-        user_preferences = {
-            "preferred_colors": user_data.get("preferred_colors", ""),
-            "audio_sensitivity": user_data.get("audio_sensitivity", "medium"),
-            "prefers_animations": user_data.get("prefers_animations", False),
-            "visual_complexity": user_data.get("visual_complexity", 2),
-            "favorite_activities": user_data.get("favorite_activities", "")
-        }
-        
-        recommendations = recommender.get_recommendations(
-            user_preferences,
-            num_recommendations=user_data.get("num_recommendations", 3)
-        )
-        
-        enriched = recommender.enrich_recommendations(recommendations)
-        
-        return {
-            "recommendations": enriched,
-            "metadata": {
-                "preferences_used": user_preferences,
-                "recommendation_time": pd.Timestamp.now().isoformat()
-            }
-        }
+
+# Instance singleton
 recommendation_service = RecommendationService()
