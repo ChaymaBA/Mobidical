@@ -63,4 +63,11 @@ export class PreferenceRepository {
     const result = await preferenceRepository.delete(id);
     return result.affected ? result.affected > 0 : false;
   }
-}
+
+   async getPreferencesByChildId(childId: number): Promise<Preference | null> {
+    const preferenceRepository = AppDataSource.getRepository(Preference);
+    return preferenceRepository.findOne({
+      where: { child: { id: childId } },
+      relations: ['child'],
+    });
+  }}

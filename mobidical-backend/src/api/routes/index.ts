@@ -18,6 +18,7 @@ import { ExerciceRepository } from '@/repositories/exercice.repository';
  import { UserSessionRepository } from '@/repositories/user_session.repository';
  import { RewardRepository } from '@/repositories/reward.repository';
 
+
 // Services
 import { AuthService } from '@/services/auth.service';
 import { ExerciceService } from '@/services/exercice.service';
@@ -32,6 +33,7 @@ import { UserDeviceService } from '@/services/user_device.service';
 import { SessionService } from '@/services/session.service';
 import { UserSessionService } from '@/services/user_session.service';
 import { RewardService } from '@/services/reward.service';
+import { RecommendationService } from '@/services/recommendation.service';
 // Controllers
 import { AuthController } from '@/api/controllers/auth.controller';
 import { ExerciceController } from '@/api/controllers/exercice.controller';
@@ -46,6 +48,7 @@ import { UserDeviceController } from '@/api/controllers/user_device.controller';
 import { SessionController } from '@/api/controllers/session.controller';
 import { UserSessionController } from '@/api/controllers/user_session.controller';
 import { RewardController } from '@/api/controllers/reward.controller';
+import { RecommendationController } from '@/api/controllers/recommendation.controller';
 const repositories = {
   userRepository: new UserRepository(AppDataSource),
   exerciceRepository: new ExerciceRepository(AppDataSource),
@@ -88,6 +91,8 @@ const services = {
   sessionService: new SessionService(repositories.SessionRepository),
   userSessionService: new UserSessionService(repositories.userSessionRepository),
   rewardService: new RewardService(repositories.rewardRepository),
+  recommendationService: new RecommendationService(
+    repositories.preferenceRepository ),
 
 };
  
@@ -105,6 +110,7 @@ const controllers = {
   sessionController: new SessionController(services.sessionService),
   userSessionController: new UserSessionController(services.userSessionService),
   rewardController: new RewardController(services.rewardService),
+  recommendationController: new RecommendationController(services.recommendationService),
 };
  
 export function initializeRoutes(): express.Router {

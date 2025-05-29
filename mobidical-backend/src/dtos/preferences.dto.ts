@@ -8,20 +8,21 @@ export const PreferenceCreateDto = z.object({
   
   preferred_colors: z.string({
     required_error: "Preferred colors is required"
-  }),
+  }).default("blue"),
   audio_sensitivity: z.nativeEnum(AudioSensitivity, {
     required_error: "Audio sensitivity is required",
     invalid_type_error: "Invalid audio sensitivity value"
-  }),
+  }).default(AudioSensitivity.MEDIUM),
   prefers_animations: z.boolean({
     required_error: "Prefers animations is required",
     invalid_type_error: "Prefers animations must be a boolean"
-  }),
+  }).default(false),
   visual_complexity: z.number({
     required_error: "Visual complexity is required",
     invalid_type_error: "Visual complexity must be a number"
-  }).min(1, "Visual complexity must be at least 1").max(10, "Visual complexity must be at most 10"),
-  favorite_activities: z.any().optional()
+  }).min(1, "Visual complexity must be at least 1").max(10, "Visual complexity must be at most 10").default(5),
+  favorite_activities: z.any().optional().default(['puzzle']),
+  isDefault: z.boolean().optional().default(true)
 });
 
 // DTO pour la mise à jour d'une préférence

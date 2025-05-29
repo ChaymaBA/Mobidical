@@ -26,6 +26,9 @@ export class Preference {
   @Column({ type: "json", nullable: true })
   favorite_activities?: any; 
 
+  @Column({ type:"boolean", default: true })
+  isDefault!: boolean;
+
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   updated_at!: Date; 
   @ManyToOne(() => Children, (children) => children.preferences)

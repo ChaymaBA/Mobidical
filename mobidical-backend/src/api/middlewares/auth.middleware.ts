@@ -1,6 +1,7 @@
 import { TokenUtil } from '@/core/utils/jwt.utils';
 import { Request, Response, NextFunction } from 'express';
 import { UserRole } from '@/types/enum.type';
+import jwt from 'jsonwebtoken';
 
 
 
@@ -69,8 +70,8 @@ export class AuthMiddleware {
       res.status(403).json({ message: 'Unauthorized operation' });
     };
   }
-      // Future implementation for role-based access
-      // Requires adding roles to your User entity and token payload
-      
-    };
+}
+
+// Future implementation for role-based access
+// Requires adding roles to your User entity and token payload
   
